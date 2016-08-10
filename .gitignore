@@ -1,0 +1,10 @@
+#---- Gambas files to ignore (v1)
+.lock
+*~
+core
+core.*
+vgcore
+vgcore.*
+.kdbg*
+.*.prof
+#----

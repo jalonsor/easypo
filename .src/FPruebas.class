@@ -1,0 +1,67 @@
+' Gambas class file
+
+Static Private strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+Static Private strIniUrl As String = "https://translate.google.com/"
+Static Private strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
+Static Private tOut As Integer = 5
+
+Private http As HttpForm
+
+
+Private arrSourceLang As String[]
+Private arrTargetLang As String[]
+
+
+
+
+Public Sub Form_Open()
+
+  http = New HttpForm
+  
+  Object.Attach(http, Me, "http")
+  
+  http.CookiesFile = "/tmp/" & Application.Name & Application.Id & ".cookies"
+  http.UpdateCookies = True
+  http.Debug = True
+  http.URL = strIniUrl
+  http.Timeout = tOut
+  
+  
+  
+  http.Add("text", "Juanma: Traduce esto!")
+  
+  http.Submit
+  
+End
+
+
+Public Sub http_Finished()
+
+  Dim sline As String
+  
+  
+  If http.code = 200 Then
+    For Each sLine In http.Lines
+      Print "=======> " & sLine
+    Next
+    
+  Else
+      Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
+  Endif  
+End
+
+' Public Sub http_Cancel()
+'   
+' End
+' Public Sub http_Connect()
+'   
+' End
+Public Sub http_Error()
+  Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
+End
+' Public Sub http_Progress()
+'   
+' End  
+' Public Sub http_Read()
+'   
+' End

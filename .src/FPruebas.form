@@ -1,0 +1,31 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,63)
+  Text = ("Formulario de Pruebas")
+  Resizable = False
+  { TextArea1 TextArea
+    MoveScaled(1,6,62,18)
+  }
+  { TextArea2 TextArea
+    MoveScaled(1,29,62,21)
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(31,3,32,3)
+  }
+  { ComboBox2 ComboBox
+    MoveScaled(31,26,32,3)
+  }
+  { Button1 Button
+    MoveScaled(42,52,21,6)
+    Text = ("Translate")
+  }
+  { Label1 Label
+    MoveScaled(13,3,18,3)
+    Text = ("Source Language")
+  }
+  { Label2 Label
+    MoveScaled(13,26,18,3)
+    Text = ("Target Language")
+  }
+}

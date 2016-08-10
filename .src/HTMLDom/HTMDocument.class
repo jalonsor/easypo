@@ -1,0 +1,113 @@
+' Gambas class file
+
+''http://www.w3schools.com/js/js_htmldom.asp
+
+
+''Propiedades publicas
+Property innerHTML As String
+Private $innerHTML As String
+Property text As String
+Private $text As String
+
+Public root As HTMElement
+
+Public baseURI As String      'Returns the absolute base URI Of the document 3
+Public doctype As String      'Returns the document 's doctype 	3
+Public documentMode As String     'Returns the mode used by the browser 3
+Public documentURI As String      'Returns the URI Of the document 3
+Public domain As String       'Returns the domain name Of the document server 1
+Public domConfig As String 'Obsolete.Returns the DOM configuration 3
+Public implementation As String     'Returns the DOM implementation 3
+Public inputEncoding As String      'Returns the document 's encoding (character set) 	3
+Public lastModified As String      'Returns the Date And Time the document was updated 3
+Public referrer As String      'Returns the URI Of the referrer(the linking document)1
+Public URL As String      'Returns the complete URL Of the document 1
+
+Public readyState As Boolean = False      'Returns the(loading)status Of the document 3
+Public strictErrorChecking As Boolean = False     'Returns If Error checking Is Enforced 3
+
+Public anchors As HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
+Public applets As HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
+Public body As HTMElement[]      'Returns the < body > HTMElement 1
+Public cookie As HTMElement[]      'Returns the document 's cookie 	1
+Public documentHTMElement As HTMElement[]      'Returns the < html > HTMElement 3
+Public embeds As HTMElement[]      'Returns all < embed > HTMElements 3
+Public forms As HTMElement[]      'Returns all < form > HTMElements 1
+Public head As HTMElement[]      'Returns the < head > HTMElement 3
+Public images As HTMElement[]      'Returns all < img > HTMElements 1
+Public links As HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
+Public scripts As HTMElement[]      'Returns all < script > HTMElements 3
+Public title As HTMElement[]      'Returns the < title > HTMElement 1
+
+
+''Constructores y Propiedades
+Public Sub _new(strHtml As String)
+  $innerHTML = strHtml
+  $text = strHtml
+  initDom
+End
+
+Private Function innerHTML_Read() As String
+  Return $innerHTML
+End
+
+Private Sub innerHTML_Write(Value As String)
+  $innerHTML = Value
+  $Text = Value
+  initDom
+End
+
+Private Function text_Read() As String
+  Return $Text
+End
+
+Private Sub text_Write(Value As String)
+  $Text = Value
+  $innerHTML = Value
+  initDom
+End
+
+'**** Lo gordo de construir el DOM esta aqui ***
+Private Sub initDom()
+  
+End
+
+
+
+''Metodos Publicos
+'***Finding HTML HTMElements
+Public Function getElementById(id As String) As HTMElement
+  
+End
+
+Public Function getElementsByTagName(name As String) As HTMElement[]
+  
+End
+Public Function getElementsByClassName(name As String) As HTMElement[]
+  
+End
+Public Function querySelectorAll(strCSSSelector As String) As HTMElement[]
+  
+End
+
+'***Adding and Deleting HTMElements
+Public Function createElement(obElm As HTMElement) As Boolean
+  
+End
+Public Function createTextNode(STR As String) As HTMElement
+
+End
+Public Function removeChild(obElm As HTMElement) As Boolean
+  
+End
+Public Function appendChild(obElm As HTMElement) As Boolean
+  
+End
+Public Function replaceChild(obElm As HTMElement) As Boolean
+  
+End
+Public Function write(text As String) As Boolean
+  
+End
+
+

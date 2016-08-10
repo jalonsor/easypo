@@ -1,0 +1,30 @@
+https://translate.google.com/
+
+POST / HTTP/1.1
+Host: translate.google.com
+User-Agent: ELinks/0.11.1 (textmode; Linux; 180x64-2)
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate, br
+Referer: https://translate.google.com/
+Cookie: CONSENT=YES+ES.es+V9; _ga=GA1.3.374780395.1463660712; NID=84=ntlF5Y2V9n3M2WWXcV73FUuaQu21_sjCMUJWvmILDTvRfbsCfwaUudV5pmWojAjZplZNlgSYo2Lzzl2RS86HQoNXq74LcBzLpr9CJQcLeBuTws_UOWYNe1NwWxZw8hGGHsceNJ-h3yxeU6hVflgd8eI_fjjKHlG1TVEw0eMD6byL7-u79Vp-7tnpuxuXZeEvXWE4HtAQK_BaejbUJs2vLqTk3GVxmRqFIjVYicrYlByECBo; SID=ngNz3ZxHR1hmw7ftk4swa_KwQvGe3tXUg9gp1yS9P8kNLflVYr3rLY8LeMCywrBPbueY1w.; HSID=AaMut5BdqyuRl6oWF; SSID=AJH5hF88hfhKGpllP; APISID=JwLhiuWu-3NLeTzd/AqQi4NQMstw7JaGul; SAPISID=0HZAzdTPG0lpdSL6/AiWwHONKnA2_PBbmb; GMAIL_RTT=106
+Connection: keep-alive
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 90
+sl=en&tl=es&js=n&prev=_t&hl=es&ie=ISO-8859-1&text=Hello+Juanma.+Jejejeje.&file=&edit-text=
+HTTP/2.0 200 OK
+Date: Wed, 10 Aug 2016 08:10:38 GMT
+Expires: Fri, 01 Jan 1990 00:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+X-Frame-Options: DENY
+Content-Type: text/html; charset=ISO-8859-1
+Content-Language: es
+x-content-type-options: nosniff
+Content-Encoding: gzip
+Server: HTTP server (unknown)
+Content-Length: 8137
+X-XSS-Protection: 1; mode=block
+Alternate-Protocol: 443:quic
+Alt-Svc: quic=":443"; ma=2592000; v="36,35,34,33,32,31,30"
+X-Firefox-Spdy: h2

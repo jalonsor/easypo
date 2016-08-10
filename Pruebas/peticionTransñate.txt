@@ -1,0 +1,108 @@
+https://inputtools.google.com/ping?cs=1&app=translate&itc=vkd_en&uv=t|vk,lay|en,act|sw,st|10
+
+GET /ping?cs=1&app=translate&itc=vkd_en&uv=t|vk,lay|en,act|sw,st|10 HTTP/1.1
+Host: inputtools.google.com
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://translate.google.com/?hl=es
+Cookie: NID=84=FzGwX2ARM8GGroPVGwYvZdvJ85wVRRQDfjHwG7uemv0yx8zcqgFBmETsSkJtKCQEX2-92J-LM5Li0tNt79j7I7OPoYzq4IDAClOjSQtVTcmVXOw-XJK7qbDaYvR83S92DlvkQEZqHebJX9xHPbhjwmKZmbUuWmKhcoIDzjCCMENTaCflCnSjVT67DWLErcukHBC2CwT6U2iR6_zWbvVBMEbQMiEIX99M1P71bxMAXKIRcx_gtTwsoCsL6pJuRBZZ; CONSENT=YES+ES.en+20151206-18-0; OGPC=5061821-1:; SID=iANz3aeKI-S9TPJW-1SHy8Cg-zhloB2WA-efVbotHOsdzxk2wHOAFDLUNJkOlak_hs0Q0A.; HSID=AIJ5pT7TEMHm-JCuR; SSID=Al2ST4AaKQhrvSz51; APISID=xX-qAF5bT_B_54O-/AY9d8CD43UVdS7rLW; SAPISID=XxFBJn1w6a9FKj38/AzgyFLVu7N4G8Sh4c
+Connection: keep-alive
+
+HTTP/2.0 200 OK
+Date: Tue, 09 Aug 2016 15:46:03 GMT
+Pragma: no-cache
+Expires: -1
+Cache-Control: no-cache, must-revalidate
+Content-Type: text/html; charset=UTF-8
+x-content-type-options: nosniff
+Server: Google Input Server/1.0
+Content-Length: 0
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+Alternate-Protocol: 443:quic
+Alt-Svc: quic=":443"; ma=2592000; v="36,35,34,33,32,31,30"
+X-Firefox-Spdy: h2
+----------------------------------------------------------
+https://inputtools.google.com/ping?cs=1&app=translate&itc=vkd_es_es&uv=t|vk,lay|es_es,act|cl
+
+GET /ping?cs=1&app=translate&itc=vkd_es_es&uv=t|vk,lay|es_es,act|cl HTTP/1.1
+Host: inputtools.google.com
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://translate.google.com/?hl=es
+Cookie: NID=84=FzGwX2ARM8GGroPVGwYvZdvJ85wVRRQDfjHwG7uemv0yx8zcqgFBmETsSkJtKCQEX2-92J-LM5Li0tNt79j7I7OPoYzq4IDAClOjSQtVTcmVXOw-XJK7qbDaYvR83S92DlvkQEZqHebJX9xHPbhjwmKZmbUuWmKhcoIDzjCCMENTaCflCnSjVT67DWLErcukHBC2CwT6U2iR6_zWbvVBMEbQMiEIX99M1P71bxMAXKIRcx_gtTwsoCsL6pJuRBZZ; CONSENT=YES+ES.en+20151206-18-0; OGPC=5061821-1:; SID=iANz3aeKI-S9TPJW-1SHy8Cg-zhloB2WA-efVbotHOsdzxk2wHOAFDLUNJkOlak_hs0Q0A.; HSID=AIJ5pT7TEMHm-JCuR; SSID=Al2ST4AaKQhrvSz51; APISID=xX-qAF5bT_B_54O-/AY9d8CD43UVdS7rLW; SAPISID=XxFBJn1w6a9FKj38/AzgyFLVu7N4G8Sh4c
+Connection: keep-alive
+
+HTTP/2.0 200 OK
+Date: Tue, 09 Aug 2016 15:46:04 GMT
+Pragma: no-cache
+Expires: -1
+Cache-Control: no-cache, must-revalidate
+Content-Type: text/html; charset=UTF-8
+x-content-type-options: nosniff
+Server: Google Input Server/1.0
+Content-Length: 0
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: SAMEORIGIN
+Alternate-Protocol: 443:quic
+Alt-Svc: quic=":443"; ma=2592000; v="36,35,34,33,32,31,30"
+X-Firefox-Spdy: h2
+----------------------------------------------------------
+https://translate.google.com/translate_a/single?client=t&sl=es&tl=en&hl=es&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&swap=2&pc=1&ssel=5&tsel=5&kc=2&tk=204760.336903&q=Hello%20my%20world.
+
+GET /translate_a/single?client=t&sl=es&tl=en&hl=es&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&swap=2&pc=1&ssel=5&tsel=5&kc=2&tk=204760.336903&q=Hello%20my%20world. HTTP/1.1
+Host: translate.google.com
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://translate.google.com/?hl=es
+Cookie: NID=84=FzGwX2ARM8GGroPVGwYvZdvJ85wVRRQDfjHwG7uemv0yx8zcqgFBmETsSkJtKCQEX2-92J-LM5Li0tNt79j7I7OPoYzq4IDAClOjSQtVTcmVXOw-XJK7qbDaYvR83S92DlvkQEZqHebJX9xHPbhjwmKZmbUuWmKhcoIDzjCCMENTaCflCnSjVT67DWLErcukHBC2CwT6U2iR6_zWbvVBMEbQMiEIX99M1P71bxMAXKIRcx_gtTwsoCsL6pJuRBZZ; CONSENT=YES+ES.en+20151206-18-0; _ga=GA1.3.1952441925.1466509605; OGPC=5061821-1:; SID=iANz3aeKI-S9TPJW-1SHy8Cg-zhloB2WA-efVbotHOsdzxk2wHOAFDLUNJkOlak_hs0Q0A.; HSID=AIJ5pT7TEMHm-JCuR; SSID=Al2ST4AaKQhrvSz51; APISID=xX-qAF5bT_B_54O-/AY9d8CD43UVdS7rLW; SAPISID=XxFBJn1w6a9FKj38/AzgyFLVu7N4G8Sh4c
+Connection: keep-alive
+
+HTTP/2.0 200 OK
+X-Frame-Options: SAMEORIGIN
+Date: Tue, 09 Aug 2016 15:46:04 GMT
+Pragma: no-cache
+Expires: Fri, 01 Jan 1990 00:00:00 GMT
+Cache-Control: no-cache, no-store, must-revalidate
+Content-Type: application/json; charset=UTF-8
+x-content-type-options: nosniff
+Content-Disposition: attachment; filename="f.txt"
+Content-Encoding: gzip
+Server: HTTP server (unknown)
+Content-Length: 196
+X-XSS-Protection: 1; mode=block
+Alternate-Protocol: 443:quic
+Alt-Svc: quic=":443"; ma=2592000; v="36,35,34,33,32,31,30"
+X-Firefox-Spdy: h2
+----------------------------------------------------------
+https://csi.gstatic.com/csi?v=3&s=translate&action=at&sl=es&tl=en&size=19&e=17259,15700021&rt=prt.146,ol.154
+
+GET /csi?v=3&s=translate&action=at&sl=es&tl=en&size=19&e=17259,15700021&rt=prt.146,ol.154 HTTP/1.1
+Host: csi.gstatic.com
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://translate.google.com/?hl=es
+Connection: keep-alive
+
+HTTP/2.0 204 No Content
+Access-Control-Allow-Origin: *
+Date: Tue, 09 Aug 2016 15:46:04 GMT
+Pragma: no-cache
+Expires: Fri, 01 Jan 1990 00:00:00 GMT
+Cache-Control: no-cache, no-store, must-revalidate
+Last-Modified: Wed, 21 Jan 2004 19:51:30 GMT
+Content-Type: image/gif
+Server: Golfe2
+Content-Length: 0
+Alternate-Protocol: 443:quic
+Alt-Svc: quic=":443"; ma=2592000; v="36,35,34,33,32,31,30"
+X-Firefox-Spdy: h2
+----------------------------------------------------------
