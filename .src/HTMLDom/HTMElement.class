@@ -1,5 +1,7 @@
 ' Gambas class file
 
+EXPORT
+
 
 ''http://www.w3schools.com/js/js_htmldom.asp
 
@@ -18,19 +20,18 @@ Private $text As String
 
 Public id As String
 Public name As String
-Public classs As String
+Public (class) As String
 Public style As String
 Public type As String
 Public nodeType As String
 Public nodeValue As String ''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
 
-
-Public parentNode As Pointer
-Public childNodes As Pointer[]
-Public firstChild As Pointer
-Public lastChild As Pointer
-Public nextSibling As Pointer
-Public previousSibling As Pointer
+Public parentNode As HTMElement
+Public childNodes As HTMElement[]
+Public firstChild As HTMElement
+Public lastChild As HTMElement
+Public nextSibling As HTMElement
+Public previousSibling As HTMElement
 
 
 ''Constructores y Propiedades
@@ -77,3 +78,374 @@ insertBefore(para, child)
 removeChild(child)
 replaceChild(para, child)
 
+
+
+
+
+
+
+
+
+
+''*** IEXPLORER
+'~ nextSibling
+'~ onresizeend
+'~ onrowenter
+'~ aria-haspopup
+'~ childNodes
+'~ ondragleave
+'~ canHaveHTML
+'~ onbeforepaste
+'~ ondragover
+'~ onbeforecopy
+'~ aria-disabled
+'~ onpage
+'~ recordNumber
+'~ previousSibling
+'~ nodeName
+'~ onbeforeactivate
+'~ accessKey
+'~ currentStyle
+'~ scrollLeft
+'~ onbeforeeditfocus
+'~ oncontrolselect
+'~ aria-hidden
+'~ onblur
+'~ hideFocus
+'~ clientHeight
+'~ style
+'~ onbeforedeactivate
+'~ dir
+'~ aria-expanded
+'~ onkeydown
+'~ nodeType
+'~ ondragstart
+'~ onscroll
+'~ onpropertychange
+'~ ondragenter
+'~ id
+'~ aria-level
+'~ onrowsinserted
+'~ scopeName
+'~ lang
+'~ onmouseup
+'~ aria-busy
+'~ oncontextmenu
+'~ language
+'~ scrollTop
+'~ offsetWidth
+'~ onbeforeupdate
+'~ onreadystatechange
+'~ onmouseenter
+'~ filters
+'~ onresize
+'~ isContentEditable
+'~ aria-checked
+'~ aria-readonly
+'~ oncopy
+'~ onselectstart
+'~ scrollHeight
+'~ onmove
+'~ ondragend
+'~ onrowexit
+'~ lastChild
+'~ aria-secret
+'~ onactivate
+'~ canHaveChildren
+'~ onfocus
+'~ onfocusin
+'~ isMultiLine
+'~ onmouseover
+'~ offsetTop
+'~ oncut
+'~ parentNode
+'~ tagName
+'~ className
+'~ onmousemove
+'~ title
+'~ role
+'~ behaviorUrns
+'~ onfocusout
+'~ onfilterchange
+'~ disabled
+'~ parentTextEdit
+'~ ownerDocument
+'~ offsetParent
+'~ aria-posinset
+'~ ondrop
+'~ ondblclick
+'~ onrowsdelete
+'~ tabIndex
+'~ onkeypress
+'~ aria-relevant
+'~ onlosecapture
+'~ innerText
+'~ aria-live
+'~ parentElement
+'~ ondeactivate
+'~ aria-labelledby
+'~ aria-pressed
+'~ children
+'~ ondatasetchanged
+'~ ondataavailable
+'~ aria-invalid
+'~ onafterupdate
+'~ nodeValue
+'~ onmousewheel
+'~ onkeyup
+'~ readyState
+'~ onmovestart
+'~ aria-valuenow
+'~ aria-selected
+'~ onmouseout
+'~ aria-owns
+'~ aria-valuemax
+'~ onmoveend
+'~ contentEditable
+'~ document
+'~ firstChild
+'~ sourceIndex
+'~ outerText
+'~ isTextEdit
+'~ isDisabled
+'~ oncellchange
+'~ runtimeStyle
+'~ scrollWidth
+'~ aria-valuemin
+'~ onlayoutcomplete
+'~ onhelp
+'~ attributes
+'~ offsetHeight
+'~ onerrorupdate
+'~ onmousedown
+'~ clientTop
+'~ aria-setsize
+'~ clientWidth
+'~ onpaste
+'~ tagUrn
+'~ onmouseleave
+'~ onclick
+'~ outerHTML
+'~ ondrag
+'~ aria-controls
+'~ onresizestart
+'~ aria-flowto
+'~ ondatasetcomplete
+'~ aria-required
+'~ clientLeft
+'~ aria-describedby
+'~ all
+'~ onbeforecut
+'~ innerHTML
+'~ aria-activedescendant
+'~ aria-multiselectable
+'~ offsetLeft
+'~ clear
+'~ align
+
+
+
+
+''***FIREFOX
+'~ align
+'~ click
+'~ focus
+'~ blur
+'~ title
+'~ lang
+'~ dir
+'~ dataset
+'~ innerText
+'~ itemScope
+'~ itemType
+'~ itemId
+'~ itemRef
+'~ itemProp
+'~ properties
+'~ itemValue
+'~ hidden
+'~ tabIndex
+'~ accessKey
+'~ accessKeyLabel
+'~ draggable
+'~ contentEditable
+'~ isContentEditable
+'~ contextMenu
+'~ spellcheck
+'~ style
+'~ oncopy
+'~ oncut
+'~ onpaste
+'~ offsetParent
+'~ offsetTop
+'~ offsetLeft
+'~ offsetWidth
+'~ offsetHeight
+'~ onabort
+'~ onblur
+'~ onfocus
+'~ oncanplay
+'~ oncanplaythrough
+'~ onchange
+'~ onclick
+'~ oncontextmenu
+'~ ondblclick
+'~ ondrag
+'~ ondragend
+'~ ondragenter
+'~ ondragleave
+'~ ondragover
+'~ ondragstart
+'~ ondrop
+'~ ondurationchange
+'~ onemptied
+'~ onended
+'~ oninput
+'~ oninvalid
+'~ onkeydown
+'~ onkeypress
+'~ onkeyup
+'~ onload
+'~ onloadeddata
+'~ onloadedmetadata
+'~ onloadstart
+'~ onmousedown
+'~ onmouseenter
+'~ onmouseleave
+'~ onmousemove
+'~ onmouseout
+'~ onmouseover
+'~ onmouseup
+'~ onpause
+'~ onplay
+'~ onplaying
+'~ onprogress
+'~ onratechange
+'~ onreset
+'~ onresize
+'~ onscroll
+'~ onseeked
+'~ onseeking
+'~ onselect
+'~ onshow
+'~ onstalled
+'~ onsubmit
+'~ onsuspend
+'~ ontimeupdate
+'~ onvolumechange
+'~ onwaiting
+'~ onmozfullscreenchange
+'~ onmozfullscreenerror
+'~ onmozpointerlockchange
+'~ onmozpointerlockerror
+'~ onerror
+'~ getAttributeNames
+'~ getAttribute
+'~ getAttributeNS
+'~ setAttribute
+'~ setAttributeNS
+'~ removeAttribute
+'~ removeAttributeNS
+'~ hasAttribute
+'~ hasAttributeNS
+'~ hasAttributes
+'~ closest
+'~ matches
+'~ webkitMatchesSelector
+'~ getElementsByTagName
+'~ getElementsByTagNameNS
+'~ getElementsByClassName
+'~ mozMatchesSelector
+'~ setCapture
+'~ releaseCapture
+'~ mozRequestPointerLock
+'~ getAttributeNode
+'~ setAttributeNode
+'~ removeAttributeNode
+'~ getAttributeNodeNS
+'~ setAttributeNodeNS
+'~ getClientRects
+'~ getBoundingClientRect
+'~ scrollIntoView
+'~ scroll
+'~ scrollTo
+'~ scrollBy
+'~ insertAdjacentHTML
+'~ querySelector
+'~ querySelectorAll
+'~ mozRequestFullScreen
+'~ remove
+'~ tagName
+'~ id
+'~ className
+'~ classList
+'~ attributes
+'~ onwheel
+'~ scrollTop
+'~ scrollLeft
+'~ scrollWidth
+'~ scrollHeight
+'~ clientTop
+'~ clientLeft
+'~ clientWidth
+'~ clientHeight
+'~ scrollTopMax
+'~ scrollLeftMax
+'~ innerHTML
+'~ outerHTML
+'~ previousElementSibling
+'~ nextElementSibling
+'~ children
+'~ firstElementChild
+'~ lastElementChild
+'~ childElementCount
+'~ hasChildNodes
+'~ insertBefore
+'~ appendChild
+'~ replaceChild
+'~ removeChild
+'~ normalize
+'~ cloneNode
+'~ isEqualNode
+'~ compareDocumentPosition
+'~ contains
+'~ lookupPrefix
+'~ lookupNamespaceURI
+'~ isDefaultNamespace
+'~ nodeType
+'~ nodeName
+'~ baseURI
+'~ ownerDocument
+'~ parentNode
+'~ parentElement
+'~ childNodes
+'~ firstChild
+'~ lastChild
+'~ previousSibling
+'~ nextSibling
+'~ nodeValue
+'~ textContent
+'~ namespaceURI
+'~ prefix
+'~ localName
+'~ ELEMENT_NODE
+'~ ATTRIBUTE_NODE
+'~ TEXT_NODE
+'~ CDATA_SECTION_NODE
+'~ ENTITY_REFERENCE_NODE
+'~ ENTITY_NODE
+'~ PROCESSING_INSTRUCTION_NODE
+'~ COMMENT_NODE
+'~ DOCUMENT_NODE
+'~ DOCUMENT_TYPE_NODE
+'~ DOCUMENT_FRAGMENT_NODE
+'~ NOTATION_NODE
+'~ DOCUMENT_POSITION_DISCONNECTED
+'~ DOCUMENT_POSITION_PRECEDING
+'~ DOCUMENT_POSITION_FOLLOWING
+'~ DOCUMENT_POSITION_CONTAINS
+'~ DOCUMENT_POSITION_CONTAINED_BY
+'~ DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+'~ addEventListener
+'~ removeEventListener
+'~ dispatchEvent
