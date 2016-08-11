@@ -1,7 +1,9 @@
 ' Gambas class file
 
-''http://www.w3schools.com/js/js_htmldom.asp
+EXPORT
 
+
+''http://www.w3schools.com/js/js_htmldom.asp
 
 ''Propiedades publicas
 Property innerHTML As String
@@ -9,7 +11,34 @@ Private $innerHTML As String
 Property text As String
 Private $text As String
 
+''**** INICIO Coleccion para busquedas
+Private $all As HTMElement[]
+Private $ids As HTMElement[]
+Private $tagNames As HTMElement[][]
+Private $names As HTMElement[][]
+Private $classNames As HTMElement[][]
+''**** FIN Coleccion para busquedas
+
+Public document As HTMDocument=Me
+
+Public readyState As Boolean = False      'Returns the(loading)status Of the document 3
+Public strictErrorChecking As Boolean = False     'Returns If Error checking Is Enforced 3
+
 Public root As HTMElement
+Public head As HTMElement[]      'Returns the < head > HTMElement 1
+Public cookie As HTMElement[]      'Returns the document 's cookie 	1
+Public title As HTMElement[]      'Returns the < title > HTMElement 1
+Public body As HTMElement[]      'Returns the < body > HTMElement 1
+Public anchors As HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
+Public applets As HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
+Public documentElement As HTMElement[]      'Returns the < html > HTMElement 3
+Public embeds As HTMElement[]      'Returns all < embed > HTMElements 3
+Public forms As HTMElement[]      'Returns all < form > HTMElements 1
+Public head As HTMElement[]      'Returns the < head > HTMElement 3
+Public images As HTMElement[]      'Returns all < img > HTMElements 1
+Public links As HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
+Public scripts As HTMElement[]      'Returns all < script > HTMElements 3
+
 
 Public baseURI As String      'Returns the absolute base URI Of the document 3
 Public doctype As String      'Returns the document 's doctype 	3
@@ -23,21 +52,7 @@ Public lastModified As String      'Returns the Date And Time the document was u
 Public referrer As String      'Returns the URI Of the referrer(the linking document)1
 Public URL As String      'Returns the complete URL Of the document 1
 
-Public readyState As Boolean = False      'Returns the(loading)status Of the document 3
-Public strictErrorChecking As Boolean = False     'Returns If Error checking Is Enforced 3
 
-Public anchors As HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
-Public applets As HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
-Public body As HTMElement[]      'Returns the < body > HTMElement 1
-Public cookie As HTMElement[]      'Returns the document 's cookie 	1
-Public documentHTMElement As HTMElement[]      'Returns the < html > HTMElement 3
-Public embeds As HTMElement[]      'Returns all < embed > HTMElements 3
-Public forms As HTMElement[]      'Returns all < form > HTMElements 1
-Public head As HTMElement[]      'Returns the < head > HTMElement 3
-Public images As HTMElement[]      'Returns all < img > HTMElements 1
-Public links As HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
-Public scripts As HTMElement[]      'Returns all < script > HTMElements 3
-Public title As HTMElement[]      'Returns the < title > HTMElement 1
 
 
 ''Constructores y Propiedades
@@ -53,7 +68,7 @@ End
 
 Private Sub innerHTML_Write(Value As String)
   $innerHTML = Value
-  $Text = Value
+  $text = Value
   initDom
 End
 
@@ -62,7 +77,7 @@ Private Function text_Read() As String
 End
 
 Private Sub text_Write(Value As String)
-  $Text = Value
+  $text = Value
   $innerHTML = Value
   initDom
 End
@@ -79,8 +94,10 @@ End
 Public Function getElementById(id As String) As HTMElement
   
 End
-
 Public Function getElementsByTagName(name As String) As HTMElement[]
+  
+End
+Public Function getElementsByName(name As String) As HTMElement[]
   
 End
 Public Function getElementsByClassName(name As String) As HTMElement[]
@@ -110,4 +127,335 @@ Public Function write(text As String) As Boolean
   
 End
 
+
+
+
+
+
+
+
+''*** IEXPLORER
+'~ namespaces
+'~ lastModified
+'~ onstorage
+'~ parentNode
+'~ onstoragecommit
+'~ nodeType
+'~ fileCreatedDate
+'~ onbeforeeditfocus
+'~ bgColor
+'~ oncontextmenu
+'~ onrowexit
+'~ embeds
+'~ scripts
+'~ onactivate
+'~ mimeType
+'~ alinkColor
+'~ onmousemove
+'~ compatible
+'~ onselectstart
+'~ oncontrolselect
+'~ body
+'~ protocol
+'~ onkeypress
+'~ onrowenter
+'~ onmousedown
+'~ vlinkColor
+'~ URL
+'~ onreadystatechange
+'~ doctype
+'~ onbeforedeactivate
+'~ applets
+'~ fileModifiedDate
+'~ onmouseover
+'~ dir
+'~ media
+'~ defaultCharset
+'~ firstChild
+'~ plugins
+'~ onafterupdate
+'~ ondragstart
+'~ oncellchange
+'~ cookie
+'~ documentElement
+'~ nextSibling
+'~ nameProp
+'~ referrer
+'~ ondatasetcomplete
+'~ onmousewheel
+'~ onerrorupdate
+'~ onselectionchange
+'~ lastChild
+'~ ondblclick
+'~ onkeyup
+'~ location
+'~ forms
+'~ title
+'~ onrowsinserted
+'~ previousSibling
+'~ compatMode
+'~ onmouseup
+'~ onkeydown
+'~ onrowsdelete
+'~ documentMode
+'~ onfocusout
+'~ fgColor
+'~ ondatasetchanged
+'~ onmouseout
+'~ parentWindow
+'~ nodeName
+'~ onpropertychange
+'~ onstop
+'~ onhelp
+'~ linkColor
+'~ onbeforeactivate
+'~ images
+'~ readyState
+'~ frames
+'~ all
+'~ onbeforeupdate
+'~ onclick
+'~ childNodes
+'~ onfocusin
+'~ anchors
+'~ selection
+'~ fileUpdatedDate
+'~ domain
+'~ security
+'~ fileSize
+'~ ownerDocument
+'~ ondataavailable
+'~ styleSheets
+'~ nodeValue
+'~ attributes
+'~ activeElement
+'~ implementation
+'~ links
+'~ URLUnencoded
+'~ ondeactivate
+
+
+
+
+''***FIREFOX
+'~ location
+'~ getElementsByName
+'~ getItems
+'~ open
+'~ close
+'~ write
+'~ writeln
+'~ execCommand
+'~ queryCommandEnabled
+'~ queryCommandIndeterm
+'~ queryCommandState
+'~ queryCommandSupported
+'~ queryCommandValue
+'~ clear
+'~ getSelection
+'~ captureEvents
+'~ releaseEvents
+'~ domain
+'~ cookie
+'~ body
+'~ head
+'~ images
+'~ embeds
+'~ plugins
+'~ links
+'~ forms
+'~ scripts
+'~ designMode
+'~ fgColor
+'~ linkColor
+'~ vlinkColor
+'~ alinkColor
+'~ bgColor
+'~ anchors
+'~ applets
+'~ all
+'~ getElementsByTagName
+'~ getElementsByTagNameNS
+'~ getElementsByClassName
+'~ getElementById
+'~ createElement
+'~ createElementNS
+'~ createDocumentFragment
+'~ createTextNode
+'~ createComment
+'~ createProcessingInstruction
+'~ importNode
+'~ adoptNode
+'~ createEvent
+'~ createRange
+'~ createNodeIterator
+'~ createTreeWalker
+'~ createCDATASection
+'~ createAttribute
+'~ createAttributeNS
+'~ hasFocus
+'~ releaseCapture
+'~ mozSetImageElement
+'~ mozCancelFullScreen
+'~ mozExitPointerLock
+'~ enableStyleSheetsForSet
+'~ elementFromPoint
+'~ elementsFromPoint
+'~ caretPositionFromPoint
+'~ querySelector
+'~ querySelectorAll
+'~ createExpression
+'~ createNSResolver
+'~ evaluate
+'~ implementation
+'~ URL
+'~ documentURI
+'~ compatMode
+'~ characterSet
+'~ charset
+'~ inputEncoding
+'~ contentType
+'~ doctype
+'~ documentElement
+'~ referrer
+'~ lastModified
+'~ readyState
+'~ title
+'~ dir
+'~ defaultView
+'~ activeElement
+'~ onreadystatechange
+'~ onwheel
+'~ oncopy
+'~ oncut
+'~ onpaste
+'~ onbeforescriptexecute
+'~ onafterscriptexecute
+'~ currentScript
+'~ mozFullScreenEnabled
+'~ mozFullScreenElement
+'~ mozFullScreen
+'~ mozPointerLockElement
+'~ hidden
+'~ mozHidden
+'~ visibilityState
+'~ mozVisibilityState
+'~ styleSheets
+'~ selectedStyleSheetSet
+'~ lastStyleSheetSet
+'~ preferredStyleSheetSet
+'~ styleSheetSets
+'~ fonts
+'~ onabort
+'~ onblur
+'~ onfocus
+'~ oncanplay
+'~ oncanplaythrough
+'~ onchange
+'~ onclick
+'~ oncontextmenu
+'~ ondblclick
+'~ ondrag
+'~ ondragend
+'~ ondragenter
+'~ ondragleave
+'~ ondragover
+'~ ondragstart
+'~ ondrop
+'~ ondurationchange
+'~ onemptied
+'~ onended
+'~ oninput
+'~ oninvalid
+'~ onkeydown
+'~ onkeypress
+'~ onkeyup
+'~ onload
+'~ onloadeddata
+'~ onloadedmetadata
+'~ onloadstart
+'~ onmousedown
+'~ onmouseenter
+'~ onmouseleave
+'~ onmousemove
+'~ onmouseout
+'~ onmouseover
+'~ onmouseup
+'~ onpause
+'~ onplay
+'~ onplaying
+'~ onprogress
+'~ onratechange
+'~ onreset
+'~ onresize
+'~ onscroll
+'~ onseeked
+'~ onseeking
+'~ onselect
+'~ onshow
+'~ onstalled
+'~ onsubmit
+'~ onsuspend
+'~ ontimeupdate
+'~ onvolumechange
+'~ onwaiting
+'~ onmozfullscreenchange
+'~ onmozfullscreenerror
+'~ onmozpointerlockchange
+'~ onmozpointerlockerror
+'~ onerror
+'~ children
+'~ firstElementChild
+'~ lastElementChild
+'~ childElementCount
+'~ hasChildNodes
+'~ insertBefore
+'~ appendChild
+'~ replaceChild
+'~ removeChild
+'~ normalize
+'~ cloneNode
+'~ isEqualNode
+'~ compareDocumentPosition
+'~ contains
+'~ lookupPrefix
+'~ lookupNamespaceURI
+'~ isDefaultNamespace
+'~ nodeType
+'~ nodeName
+'~ baseURI
+'~ ownerDocument
+'~ parentNode
+'~ parentElement
+'~ childNodes
+'~ firstChild
+'~ lastChild
+'~ previousSibling
+'~ nextSibling
+'~ nodeValue
+'~ textContent
+'~ namespaceURI
+'~ prefix
+'~ localName
+'~ ELEMENT_NODE
+'~ ATTRIBUTE_NODE
+'~ TEXT_NODE
+'~ CDATA_SECTION_NODE
+'~ ENTITY_REFERENCE_NODE
+'~ ENTITY_NODE
+'~ PROCESSING_INSTRUCTION_NODE
+'~ COMMENT_NODE
+'~ DOCUMENT_NODE
+'~ DOCUMENT_TYPE_NODE
+'~ DOCUMENT_FRAGMENT_NODE
+'~ NOTATION_NODE
+'~ DOCUMENT_POSITION_DISCONNECTED
+'~ DOCUMENT_POSITION_PRECEDING
+'~ DOCUMENT_POSITION_FOLLOWING
+'~ DOCUMENT_POSITION_CONTAINS
+'~ DOCUMENT_POSITION_CONTAINED_BY
+'~ DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+'~ addEventListener
+'~ removeEventListener
+'~ dispatchEvent
 
