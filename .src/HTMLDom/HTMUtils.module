@@ -66,3 +66,29 @@ End
 '     MsgBox GetTagType("<h1 align='center'>")
 ' End Sub
 
+Dim HtmlTagsNotChild as Boolean[]=	[
+													"!--"->True,
+													"!doctype"->True,
+													"area"->True,
+													"base"->True,
+													"br"->True,
+													"col"->True,
+													"command"->True,
+													"embed"->True,
+													"hr"->True,
+													"img"->True,
+													"input"->True,
+													"keygen"->True,
+													"link"->True,
+													"meta"->True,
+													"param"->True,
+													"source"->True,
+													"track"->True,
+													"wbr"->True
+												]
+Public Function HtmlCanHaveChild(strTag As String) As Boolean
+	If HtmlTagsNotChild[strTag]=True Then Return False	''No puede tener hijos
+	Return True	''Si puede tener hijos
+End
+
+
