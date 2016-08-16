@@ -6,59 +6,65 @@
 
 
 Public Sub GetAllTags(sHtml As String, ByRef sArray As String[])
-	Dim Pos1 As Long
-	Dim Pos2 As Long
 
-	Do
-		Pos1 = InStr(Pos2 + 1, sHtml, "<")
-		Pos2 = InStr(Pos1 + 1, sHtml, ">")
-		If (Pos1 < 1) Or (Pos2 < 1) Then break
-		sArray.add(Mid$(sHtml, Pos1, Pos2 - Pos1 + 1))
-	Loop
+  Dim Pos1 As Long
+  Dim Pos2 As Long
+
+  Do
+    Pos1 = InStr(Pos2 + 1, sHtml, "<")
+    Pos2 = InStr(Pos1 + 1, sHtml, ">")
+    If (Pos1 < 1) Or (Pos2 < 1) Then Break
+    sArray.add(Mid$(sHtml, Pos1, Pos2 - Pos1 + 1))
+  Loop
+
 End
 
 Public Function GetTagType(Tag As String) As String
-	Dim Pos As Integer
 
-	If Tag = Null Then Return ""
+  Dim Pos As Integer
 
-	Pos = InStr(1, Tag, " ")
-	If Pos < 1 Then Pos = Len(Tag)
-	Return LCase$(Mid$(Tag, 2, Pos - 2))
+  If Tag = Null Then Return ""
+
+  Pos = InStr(1, Tag, " ")
+  If Pos < 1 Then Pos = Len(Tag)
+  Return LCase$(Mid$(Tag, 2, Pos - 2))
+
 End
 
-Public Function GetTagAttrValue(Tag, Attr As String) As String '//<a href=> href is the attr
-	Dim Pos As Long
-	Dim Pos2 As Long
-	Dim Sep As String
+Public Function GetTagAttrValue(Tag As String, Attr As String) As String '//<a href=> href is the attr
 
-	Attr = " " & Attr '//An atribute is always prefixed with a space
-	Pos = InStr(1, LCase$(Tag), LCase$(Attr))
+  Dim Pos As Long
+  Dim Pos2 As Long
+  Dim Sep As String
 
-	If Pos < 1 Then Return "" '// ATTR NOT FOUND___
-	Pos = Pos + Len(Attr) '//Move forward to the end of attr
+  Attr = " " & Attr '//An atribute is always prefixed with a space
+  Pos = InStr(1, LCase$(Tag), LCase$(Attr))
 
-	Do
-		Sep = Mid$(Tag, Pos, 1)
-		Pos = Pos + 1
-	Loop While (Sep = " ") Or (Sep = "=")
+  If Pos < 1 Then Return "" '// ATTR NOT FOUND___
+  Pos = Pos + Len(Attr) '//Move forward to the end of attr
 
-	Select Case Sep
-		Case "'"
-			Pos2 = InStr(Pos + 1, Tag, "'")
-			If Pos2 = 0 Then Return ""
-			Return Mid$(Tag, Pos, Pos2 - Pos)
-		
-		Case Chr(34)
-			Pos2 = InStr(Pos + 1, Tag, Chr(34))
-			If Pos2 = 0 Then Return ""
-			Return Mid$(Tag, Pos, Pos2 - Pos)
-		
-		Case Else 'sep is " ", or ">"
-			Pos2 = InStr(Pos + 1, Tag, " ")
-			If Pos2 < 1 Then Pos2 = Len(Tag) - 1 '//if no space is found, the end='>', thats always on  the end so len is faster
-			Return Mid$(Tag, Pos - 1, Pos2 - Pos + 1)
-	End Select
+  Do
+    Sep = Mid$(Tag, Pos, 1)
+    Pos = Pos + 1
+  Loop While (Sep = " ") Or (Sep = "=")
+
+  Select Case Sep
+    Case "'"
+      Pos2 = InStr(Pos + 1, Tag, "'")
+      If Pos2 = 0 Then Return ""
+      Return Mid$(Tag, Pos, Pos2 - Pos)
+
+    Case Chr(34)
+      Pos2 = InStr(Pos + 1, Tag, Chr(34))
+      If Pos2 = 0 Then Return ""
+      Return Mid$(Tag, Pos, Pos2 - Pos)
+
+    Case Else 'sep is " ", or ">"
+      Pos2 = InStr(Pos + 1, Tag, " ")
+      If Pos2 < 1 Then Pos2 = Len(Tag) - 1 '//if no space is found, the end='>', thats always on  the end so len is faster
+      Return Mid$(Tag, Pos - 1, Pos2 - Pos + 1)
+  End Select
+
 End
 
 ' Private Sub Form_Load()
@@ -66,29 +72,31 @@ End
 '     MsgBox GetTagType("<h1 align='center'>")
 ' End Sub
 
-Dim HtmlTagsNotChild as Boolean[]=	[
-													"!--"->True,
-													"!doctype"->True,
-													"area"->True,
-													"base"->True,
-													"br"->True,
-													"col"->True,
-													"command"->True,
-													"embed"->True,
-													"hr"->True,
-													"img"->True,
-													"input"->True,
-													"keygen"->True,
-													"link"->True,
-													"meta"->True,
-													"param"->True,
-													"source"->True,
-													"track"->True,
-													"wbr"->True
-												]
+Public HtmlTagsNotChild As Collection = [
+  "!--": True,
+  "!doctype": True,
+  "area": True,
+  "base": True,
+  "br": True,
+  "col": True,
+  "command": True,
+  "embed": True,
+  "hr": True,
+  "img": True,
+  "input": True,
+  "keygen": True,
+  "link": True,
+  "meta": True,
+  "param": True,
+  "source": True,
+  "track": True,
+  "wbr": True]
+
 Public Function HtmlCanHaveChild(strTag As String) As Boolean
-	If HtmlTagsNotChild[strTag]=True Then Return False	''No puede tener hijos
-	Return True	''Si puede tener hijos
+
+  If HtmlTagsNotChild[strTag] = True Then Return False 	''No puede tener hijos
+  Return True 	''Si puede tener hijos
+
 End
 
 

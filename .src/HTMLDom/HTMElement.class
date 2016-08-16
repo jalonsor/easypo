@@ -1,6 +1,6 @@
 ' Gambas class file
 
-EXPORT
+Export
 
 
 ''http://www.w3schools.com/js/js_htmldom.asp
@@ -25,10 +25,10 @@ Public style As String
 Public type As String
 Public nodeType As Byte
 Public nodeValue As String ''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
-Public attributes As String[]
+Public attributes As New Collection
 
 Public parentNode As HTMElement
-Public childNodes As HTMElement[]
+Public childNodes As New Collection ''HTMElement[]
 Public firstChild As HTMElement
 Public lastChild As HTMElement
 Public nextSibling As HTMElement
@@ -37,49 +37,59 @@ Public previousSibling As HTMElement
 
 ''Constructores y Propiedades
 Public Sub _new(strHtmlElem As String)
+
   $innerHTML = strHtmlElem
   $text = strHtmlElem
   initElement
+
 End
 
 Private Function innerHTML_Read() As String
+
   Return $innerHTML
+
 End
 
 Private Sub innerHTML_Write(Value As String)
+
   $innerHTML = Value
   $text = Value
   initElement
+
 End
 
 Private Function text_Read() As String
+
   Return $text
+
 End
 
 Private Sub text_Write(Value As String)
+
   $innerHTML = Value
   $text = Value
   initElement
+
 End
 
 '**** Lo gordo de construir el Element esta aqui ***
 Private Sub initElement()
-  
+
 End
 
 
 
-
-element.attribute = New Value Change the attribute value Of an HTML element
-element.setAttribute(attribute, value)Change the attribute value Of an HTML element
-element.style.property = New Style Change the style Of an HTML element
-
-appendChild(obElm As HTMElement) As Boolean
-insertBefore(para, child)
-removeChild(child)
-replaceChild(para, child)
-
-
+'
+' element.attribute = New Value Change the attribute value Of an HTML element
+' element.setAttribute(attribute, value)Change the attribute value Of an HTML element
+' element.style.property = New Style Change the style Of an HTML element
+'
+' appendChild(obElm As HTMElement) As Boolean
+' insertBefore(para, child)
+' removeChild(child)
+' replaceChild(para, child)
+'
+'
 
 
 

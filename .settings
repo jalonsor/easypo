@@ -1,22 +1,71 @@
+[Bookmarks]
+HTMDocument=[]
+
 [Breakpoints]
-Count=0
+Count=2
+Breakpoint[1]="HTMDocument.178"
+Breakpoint[2]="HTMDocument.250"
 
 [DebugWindow]
 Count=0
+
+[DebugWindow/$all]
+Geometry=[-3,0,448,669]
+
+[DebugWindow/$all[$all.Count - 1]]
+Geometry=[-3,0,260,475]
+
+[DebugWindow/$all[0]]
+Geometry=[11,14,448,669]
+
+[DebugWindow/$all[1]]
+Geometry=[11,14,448,669]
+
+[DebugWindow/$all[2]]
+Geometry=[11,14,448,669]
+
+[DebugWindow/$all[3]]
+Geometry=[11,14,448,669]
+
+[DebugWindow/Me.documentElement]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/Me.root]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/Split(auxStr, " ", "", True)]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/String[]]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/arrAux]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/arrRet]
+Geometry=[-3,0,224,280]
 
 [DebugWindow/http]
 Geometry=[-3,0,342,396]
 
 [OpenFile]
 File[1]=".src/FPruebas.form"
-Active=5
-File[2]=".src/FPruebas.class:21.26"
+Active=4
+File[2]=".src/FPruebas.class:6.49"
 File[3]=".src/Google/GoolgleTranslator.class:0.4"
 Count=6
-File[4]=".src/HTMLDom/HTMDocument.class:0.44"
-File[5]=".src/HTMLDom/HTMElement.class:0.67"
-File[6]=".src/HTMLDom/HTMUtils.module:2.65"
+File[4]=".src/HTMLDom/HTMDocument.class:20.395"
+File[5]=".src/HTMLDom/HTMElement.class:3.44"
+File[6]=".src/HTMLDom/HTMUtils.module:0.94"
 
 [Watches]
-Count=0
+Count=8
+Watch[1]="$strHtml"
+Watch[2]="Mid$($strHtml, i, 1)"
+Watch[3]="Mid($strHtml, i, 1)"
+Watch[4]="Mid($strHtml, 1, 1)"
+Watch[5]="Mid($strHtml, 0, 1)"
+Watch[6]="Me.root"
+Watch[7]="Me.documentElement"
+Watch[8]="$all[$all.Count - 1]"
 

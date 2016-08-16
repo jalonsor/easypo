@@ -1,6 +1,6 @@
 ' Gambas class file
 
-EXPORT
+Export
 
 
 ''http://www.w3schools.com/js/js_htmldom.asp
@@ -15,31 +15,33 @@ Private $strHtml As String '' *** Esta es la que se usa para el parser
 
 
 ''**** INICIO Coleccion para busquedas
-Private $all As HTMElement[]
-Private $ids As HTMElement[]
-Private $tagNames As HTMElement[][]
-Private $names As HTMElement[][]
-Private $classNames As HTMElement[][]
+Private $all As New HTMElement[]
+Private $ids As New Collection '' HTMElement[]
+Private $tagNames As New Collection '' HTMElement[][]
+Private $names As New Collection '' HTMElement[][]
+Private $classNames As New Collection '' HTMElement[][]
 ''**** FIN Coleccion para busquedas
 
-Public document As HTMDocument=Me
+Private $stackElm As New HTMElement[]
+
+Public document As HTMDocument = Me
 
 Public readyState As Boolean = False      'Returns the(loading)status Of the document 3
 Public strictErrorChecking As Boolean = False     'Returns If Error checking Is Enforced 3
 
-Public root As HTMElement		'Same as documentElement ---> '<html>'
+Public root As HTMElement 		'Same as documentElement ---> '<html>'
 Public documentElement As HTMElement      'Returns the < html > HTMElement 3
 Public head As HTMElement      'Returns the < head > HTMElement 1
 Public title As HTMElement      'Returns the < title > HTMElement 1
 Public body As HTMElement      'Returns the < body > HTMElement 1
-Public cookie As HTMElement[]      'Returns the document 's cookie 	1
-Public anchors As HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
-Public applets As HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
-Public embeds As HTMElement[]      'Returns all < embed > HTMElements 3
-Public forms As HTMElement[]      'Returns all < form > HTMElements 1
-Public images As HTMElement[]      'Returns all < img > HTMElements 1
-Public links As HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
-Public scripts As HTMElement[]      'Returns all < script > HTMElements 3
+Public cookie As New Collection '' HTMElement[]      'Returns the document 's cookie 	1
+Public anchors As New Collection '' HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
+Public applets As New Collection '' HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
+Public embeds As New Collection '' HTMElement[]      'Returns all < embed > HTMElements 3
+Public forms As New Collection '' HTMElement[]      'Returns all < form > HTMElements 1
+Public images As New Collection '' HTMElement[]      'Returns all < img > HTMElements 1
+Public links As New Collection '' HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
+Public scripts As New Collection '' HTMElement[]      'Returns all < script > HTMElements 3
 
 
 Public baseURI As String      'Returns the absolute base URI Of the document 3
@@ -57,38 +59,50 @@ Public URL As String      'Returns the complete URL Of the document 1
 
 ''****** INICIO Constructores y Propiedades
 Public Sub _new(strHtml As String)
+
   $innerHTML = strHtml
   $text = strHtml
   $strHtml = strHtml
   initDom
+
 End
 
 Private Function innerHTML_Read() As String
+
   Return $innerHTML
+
 End
 
 Private Sub innerHTML_Write(Value As String)
+
   $innerHTML = Value
   $text = Value
   $strHtml = Value
   initDom
+
 End
 
 Private Function text_Read() As String
+
   Return $Text
+
 End
 
 Private Sub text_Write(Value As String)
+
   $text = Value
   $innerHTML = Value
   $strHtml = Value
   initDom
+
 End
 
 '**** Lo gordo de construir el DOM esta aqui ***
 Private Sub initDom()
-	parseDocument
-	Me.readyState=True
+
+  parseDocument
+  Me.readyState = True
+
 End
 
 ''****** FIN Constructores y Propiedades
@@ -97,94 +111,112 @@ End
 ''Metodos Publicos
 '***Finding HTML HTMElements
 Public Function getElementById(id As String) As HTMElement
-  
+
 End
+
 Public Function getElementsByTagName(name As String) As HTMElement[]
-  
+
 End
+
 Public Function getElementsByName(name As String) As HTMElement[]
-  
+
 End
+
 Public Function getElementsByClassName(name As String) As HTMElement[]
-  
+
 End
+
 Public Function querySelectorAll(strCSSSelector As String) As HTMElement[]
-  
+
 End
 
 '***Adding and Deleting HTMElements
 Public Function createElement(obElm As HTMElement) As Boolean
-  
+
 End
+
 Public Function createTextNode(STR As String) As HTMElement
 
 End
+
 Public Function removeChild(obElm As HTMElement) As Boolean
-  
+
 End
+
 Public Function appendChild(obElm As HTMElement) As Boolean
-  
+
 End
+
 Public Function replaceChild(obElm As HTMElement) As Boolean
-  
+
 End
+
 Public Function write(text As String) As Boolean
-  
+
 End
 
 
 
 ''*********** INICIO PARSERS ****************
 Private Sub parseDocument()
-	Dim i as Long=0, j as Long=0, nTotTam as Long=0, currentPos as Long=0, auxPos1 as Long=0, auxPos2 as Long=0
-	Dim auxStr as String, auxStrTagName As String
-	Dim swStartParse as Boolean=False	
-	
-	nTotTam=Len($strHtml)
-	
-	for i=0 to i < nTotTam	''Consume los espacios y basura hasta llegar al primer tag.
-		If Mid$($strHtml, i, 1) = "<" then
-			swStartParse=True
-			currentPos=i
-			break
-		EndIf
-	next
-	
-	for i=currentPos to i < nTotTam
-		If Mid$($strHtml, i, 1) = "<" then
-			auxStrTagName=parseGetTagName(i)
-			if  parseIsDoctype(auxStrTagName) = True Then
-				i=parseDocType(i)	''Returns where parsing ends, so we continue after
-			else
-				if parseIsComment(auxStrTagName) = True Then
-					i=parseCommen(i)	''Returns where parsing ends, so we continue after
-				else if parseIsHtml(auxStrTagName) Then
-					i=parseElement(i, True)	''Returns where parsing ends, so we continue after
-				else
-					i=parseElement(i)	''Returns where parsing ends, so we continue after
-				EndIf
-			EndIf
-		EndIf
-	next
+
+  Dim i As Integer = 0, j As Integer = 0, nTotTam As Integer = 0, currentPos As Integer = 0, auxPos1 As Integer = 0, auxPos2 As Integer = 0
+  Dim auxStr As String, auxStrTagName As String
+  Dim swStartParse As Boolean = False
+
+  nTotTam = Len($strHtml)
+
+  For i = 1 To nTotTam 	''Consume los espacios y basura hasta llegar al primer tag.
+    If Mid$($strHtml, i, 1) = "<" Then
+      swStartParse = True
+      currentPos = i
+      Break
+    Endif
+  Next
+
+  For i = currentPos To nTotTam
+    If Mid$($strHtml, i, 1) = "<" Then
+      auxStrTagName = parseGetTagName(i)
+      If parseIsDoctype(auxStrTagName) = True Then
+        i = parseDocType(i) 	''Returns where parsing ends, so we continue after
+      Else
+        If parseIsComment(auxStrTagName) = True Then
+          i = parseCommen(i) 	''Returns where parsing ends, so we continue after
+        Else If parseIsHtml(auxStrTagName) Then
+          i = parseElement(i, True) 	''Returns where parsing ends, so we continue after
+        Else
+          i = parseElement(i) 	''Returns where parsing ends, so we continue after
+        Endif
+      Endif
+    Endif
+  Next
+
 End
 
 
-Private Sub parseDocType(strPos as Long) As Long
-	Dim endPos as Long=0
-	Me.doctype=parseGetEtiquetaCompleta(strPos, ByRef endPos)
-	Return endPos
+Private Sub parseDocType(strPos As Integer) As Integer
+
+  Dim endPos As Integer = 0
+  Me.doctype = parseGetEtiquetaCompleta(strPos, ByRef endPos)
+
+  Return endPos
+
 End
 
-Private Sub parseCommen(strPos as Long) As Long
-	Dim endPos as Long=0
-	
-	Return endPos
+Private Sub parseCommen(strPos As Integer) As Integer
+
+  Dim endPos As Integer = 0
+
+  Return endPos
+
 End
 
-Private Sub parseText(strPos as Long) As Long
-	Dim endPos as Long=0
-	
-	Return endPos
+Private Sub parseText(strPos As Integer) As Integer
+
+  Dim endPos As Integer = 0
+
+  Return endPos
+
 End
 
 
@@ -209,124 +241,173 @@ End
 '~ Private $classNames As HTMElement[][]
 
 
-Private Sub parseElement(strPos as Long, Optional isRoot as Boolean=False) As Long
-	Dim endPos as Long=0, startChildPos as Long=0
-	Dim i as Long, j As Long
-	Dim auxStr as String, auxStrTagName As String, arrAuxAttr As String[]
-	Dim actualElm as HTMElement
-	
-	if isRoot then	''<html> Tag
-	
-	
-	else
-		if parseIsComment(auxStrTagName) = True Then
-			endPos=parseCommen(strPos)	''Returns where parsing ends, so we continue after
-		else if (startChildPos=parseHasTextChild(strPos)) > 0 then
-			endPos=parseText(startChildPos)
-		else if (startChildPos=parseHasTagChild(strPos)) > 0 then
-			endPos=parseElement(startChildPos)
-		else	'' Here we arrive when There are NO Childs
-			auxStr=parseGetEtiquetaCompleta(strPos, ByRef endPos)
-			arrAuxAttr=parseGetAttribs(auxStr)
-			
-			$all.Add(New HTMElement)
-			actualElm=$all[$all.Count-1]
-			
-			'' *** HTMElement Props.
-			actualElm.tagName=parseGetTagName(strPos)
-			actualElm.id=arrAuxAttr["id"]
-			actualElm.name=arrAuxAttr["name"]
-			actualElm.(class)=arrAuxAttr["class"]
-			actualElm.style=arrAuxAttr["style"]
-			actualElm.type=arrAuxAttr["type"]
-			actualElm.nodeType=parseGetElementType(actualElm.tagName)
-			actualElm.nodeValue=Null		''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
-			
-			arrAuxAttr.Remove("id")
-			arrAuxAttr.Remove("name")
-			arrAuxAttr.Remove("class")
-			arrAuxAttr.Remove("style")
-			arrAuxAttr.Remove("type")
-			actualElm.attributes.Insert(arrAuxAttr, 0)
+Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
+
+  Dim endPos As Integer = 0, startChildPos As Integer = 0
+  Dim i As Integer, j As Integer
+  Dim auxStr As String, auxStrTagName As String, arrAuxAttr As Collection
+  Dim actualElm As HTMElement
+
+  If parseIsComment(auxStrTagName) = True Then
+    endPos = parseCommen(strPos) 	''Returns where parsing ends, so we continue after
+  Else If (startChildPos = parseHasTextChild(strPos)) > 0 Then
+    endPos = parseText(startChildPos)
+  Else If (startChildPos = parseHasTagChild(strPos)) > 0 Then
+    endPos = parseElement(startChildPos)
+  Else 	'' Here we arrive when There are NO Childs
+    auxStr = parseGetEtiquetaCompleta(strPos, ByRef endPos)
+    arrAuxAttr = parseGetAttribs(auxStr)
+
+    $all.Add(Null)
+    $all[$all.Count - 1] = New HTMElement("")
+    actualElm = $all[$all.Count - 1]
+    If isRoot Then 	''<html> Tag
+      Me.root = $all[$all.Count - 1]
+      Me.documentElement = Me.root
+    Endif
+
+    '' *** HTMElement Props.
+    actualElm.tagName = parseGetTagName(strPos)
+    actualElm.id = arrAuxAttr["id"]
+    actualElm.name = arrAuxAttr["name"]
+    actualElm.class = arrAuxAttr["class"]
+    actualElm.style = arrAuxAttr["style"]
+    actualElm.type = arrAuxAttr["type"]
+    actualElm.nodeType = parseGetElementType(actualElm.tagName)
+    actualElm.nodeValue = Null 		''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
+
+    arrAuxAttr.Remove("id")
+    arrAuxAttr.Remove("name")
+    arrAuxAttr.Remove("class")
+    arrAuxAttr.Remove("style")
+    arrAuxAttr.Remove("type")
+    actualElm.attributes = arrAuxAttr.Copy()
 
 
-			''TODO: **** References
-			'~ Public parentNode As HTMElement
-			'~ Public childNodes As HTMElement[]
-			'~ Public firstChild As HTMElement
-			'~ Public lastChild As HTMElement
-			'~ Public nextSibling As HTMElement
-			'~ Public previousSibling As HTMElement
+    ''TODO: **** References
+    '~ Public parentNode As HTMElement
+    '~ Public childNodes As HTMElement[]
+    '~ Public firstChild As HTMElement
+    '~ Public lastChild As HTMElement
+    '~ Public nextSibling As HTMElement
+    '~ Public previousSibling As HTMElement
 
-			
-			
-		EndIf
-	EndIf
-	
-	Return endPos
-End
 
-Private function parseGetAttribs(strEtiqueta As String) as String[]
-	Dim ntam as Long=0, nTam As Long=0
-	Dim auxStr As String, sAux1 as String, arrAux as String[], auxArrKeyVal As String[], arrRet as String[]
-	
-	''StringArray = Split ( String [ , Separators , Escape , IgnoreVoid , KeepEscape ] )
-	auxStr=parseTrim(strEtiqueta, [" ", "\n" , "<", ">"])
-	arrAux=Split(auxStr, " ", , "", True)
 
-	arrAux.Remove(0) ' Quitar el TagName
-	
-	for Each sAux1 IN arrAux
-		auxArrKeyVal=Split(auxStr, "=", , "", True)
-		if auxArrKeyVal.Count>1 then
-			arrRet[auxArrKeyVal[0]]=auxArrKeyVal[1]
-		else
-			arrRet[auxArrKeyVal[0]]=""
-		EndIf
-	Next
-	
-	Return arrRet
-End
-Private function parseGetEtiquetaCompleta(strPos as Long, ByRef endPos as Long) As String
-	Return Mid$($strHtml, strPos, ((endPos=InStr($strHtml, ">" , strPos))-(strPos)))
-End
-Private function parseGetTagName(strPos as Long) As String
-	Return Lcase$(Mid$($strHtml, strPos+1, (InStr($strHtml, " " , strPos+1)-(strPos+1))))
-End
-Private function parseIsHtml(strTagName as String) As Boolean
-	if Lcase$(strTagName)="html" Then Return True
-	Return False
-End
-Private function parseIsDoctype(strTagName as String) As Boolean
-	if Lcase$(strTagName)="!doctype" Then Return True
-	Return False
-End
-Private function parseIsComment(strTagName as String) As Boolean
-	if Left$(strTagName, 3)="!--" Then Return True
-	Return False
-End
-Private function parseHasTextChild(strPos as Long) As Long ''Return 0 if NOT, >0 is the start Possition
+  Endif
+
+  Return endPos
 
 End
-Private function parseHasTagChild(strPos as Long) As Long ''Return 0 if NOT, >0 is the start Possition
+
+Private Function parseGetAttribs(strEtiqueta As String) As Collection
+
+  Dim ntam As Integer = 0
+  Dim auxStr As String, sAux1 As String, arrAux As String[], auxArrKeyVal As New Collection, arrRet As New Collection
+
+  ''StringArray = Split ( String [ , Separators , Escape , IgnoreVoid , KeepEscape ] )
+  auxStr = parseTrim(strEtiqueta, [" ", "\n", "<", ">"])
+  arrAux = Split(auxStr, " ", "", True)
+
+  arrAux.Remove(0) ' Quitar el TagName
+
+  For Each sAux1 In arrAux
+    auxArrKeyVal = Split(auxStr, "=", "", True)
+    If auxArrKeyVal.Count > 1 Then
+      arrRet[auxArrKeyVal[0]] = auxArrKeyVal[1]
+    Else
+      arrRet[auxArrKeyVal[0]] = ""
+    Endif
+  Next
+
+  Return arrRet
 
 End
-Private function parseFindCloseTag(strPos as Long) As Long ''Return 0 if NOT, >0 is the END Possition
+
+Private Function parseGetEtiquetaCompleta(strPos As Integer, ByRef endPos As Integer) As String
+
+  endPos = InStr($strHtml, ">", strPos)
+  Return Mid$($strHtml, strPos, (endPos - (strPos)))
 
 End
-Private function parseGetElementType(strTagName as String) As Byte
-	''**** Tipos de elementos: http://www.w3schools.com/js/js_htmldom_navigation.asp
-	' Element 1
-	' Attribute 2
-	' Text 3
-	' Comment 8
-	' Document
 
-	Return 0
+Private Function parseGetTagName(strPos As Integer) As String
+
+  Dim spcPos As Integer, closePos As Integer
+
+  spcPos = InStr($strHtml, " ", strPos + 1)
+  closePos = InStr($strHtml, ">", strPos + 1)
+  If closePos < spcPos Then
+    Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, ">", strPos + 1) - (strPos + 1))))
+  Endif
+  Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, " ", strPos + 1) - (strPos + 1))))
+
 End
 
-Private Function parseTrim(strEtiqueta, arrStrTrimed as String[]) As String
+Private Function parseIsHtml(strTagName As String) As Boolean
 
+  If LCase$(strTagName) = "html" Then Return True
+  Return False
+
+End
+
+Private Function parseIsDoctype(strTagName As String) As Boolean
+
+  If LCase$(strTagName) = "!doctype" Then Return True
+  Return False
+
+End
+
+Private Function parseIsComment(strTagName As String) As Boolean
+
+  If Left$(strTagName, 3) = "!--" Then Return True
+  Return False
+
+End
+
+Private Function parseHasTextChild(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+
+End
+
+Private Function parseHasTagChild(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+
+End
+
+Private Function parseFindCloseTag(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the END Possition
+
+End
+
+Private Function parseGetElementType(strTagName As String) As Byte
+  ''**** Tipos de elementos: http://www.w3schools.com/js/js_htmldom_navigation.asp
+  ' Element 1
+  ' Attribute 2
+  ' Text 3
+  ' Comment 8
+  ' Document
+
+  Return 0
+
+End
+
+Private Function parseTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
+  Dim i As Integer, j As Integer, nTam As Integer
+  Dim strRet As Tring = ""
+  
+  Return strEtiqueta
+  ' nTam = Len(strEtiqueta)
+  ' 
+  ' For i = 1 To nTam
+  '   For j = 0 To arrStrTrimed.Count - 1
+  '     If Mid$(strEtiqueta, i, 1) = arrStrTrimed[j] Then
+  '       
+  '     Endif
+  '     
+  '   Next
+  ' Next
+  ' 
+  ' For i = nTam To 1
+  '   
+  ' Next
 End
 ''*********** FIN PARSERS ****************
 
