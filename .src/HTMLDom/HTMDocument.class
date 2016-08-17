@@ -391,23 +391,26 @@ End
 
 Private Function parseTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
   Dim i As Integer, j As Integer, nTam As Integer
-  Dim strRet As Tring = ""
+  Dim strAux as String="", strRet As Tring = ""
   
-  Return strEtiqueta
-  ' nTam = Len(strEtiqueta)
-  ' 
-  ' For i = 1 To nTam
-  '   For j = 0 To arrStrTrimed.Count - 1
-  '     If Mid$(strEtiqueta, i, 1) = arrStrTrimed[j] Then
-  '       
-  '     Endif
-  '     
-  '   Next
-  ' Next
-  ' 
-  ' For i = nTam To 1
-  '   
-  ' Next
+  ''Return strEtiqueta
+  nTam = Len(strEtiqueta)
+  
+  For i = 1 To nTam
+	If arrStrTrimed.Find(Mid$(strEtiqueta, i, 1)) < 0 Then	'Si se encuentra algún caracter que no hay que trimar ....
+		strAux= Mid$(strEtiqueta, i)
+		break
+	Endif
+  Next
+  
+  nTam = Len(strAux)
+  For i = nTam To 1
+    If arrStrTrimed.Find(Mid$(strAux, i, 1)) < 0 Then	'Si se encuentra algún caracter que no hay que trimar ....
+		strRet=Mid$(strAux, 1, nTam-i)
+		break
+	EndIf
+  Next
+  Return strRet
 End
 ''*********** FIN PARSERS ****************
 
