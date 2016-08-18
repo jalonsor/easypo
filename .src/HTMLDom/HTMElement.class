@@ -1,6 +1,6 @@
 ' Gambas class file
 
-INHERITS HTMCONSTS
+Inherits HTMCONSTS
 
 Export
 
@@ -29,11 +29,11 @@ Public nodeType As Byte
 Public nodeValue As String ''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
 Public attributes As New Collection
 
-Public parentNode As HTMElement=Null
-Public firstChild As HTMElement=Null
-Public lastChild As HTMElement=Null
-Public nextSibling As HTMElement=Null
-Public previousSibling As HTMElement=Null
+Public parentNode As HTMElement = Null
+Public firstChild As HTMElement = Null
+Public lastChild As HTMElement = Null
+Public nextSibling As HTMElement = Null
+Public previousSibling As HTMElement = Null
 Public childNodes As New HTMElement[]
 
 

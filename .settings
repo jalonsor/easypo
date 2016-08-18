@@ -1,71 +1,104 @@
-[Bookmarks]
-HTMDocument=[]
-
 [Breakpoints]
-Count=2
-Breakpoint[1]="HTMDocument.178"
-Breakpoint[2]="HTMDocument.250"
+Count=0
 
 [DebugWindow]
 Count=0
 
 [DebugWindow/$all]
-Geometry=[-3,0,448,669]
+Geometry=[-3,0,357,528]
 
-[DebugWindow/$all[$all.Count - 1]]
-Geometry=[-3,0,260,475]
+[DebugWindow/$ids]
+Geometry=[-3,0,461,668]
 
-[DebugWindow/$all[0]]
-Geometry=[11,14,448,669]
+[DebugWindow/$ids["file"]]
+Geometry=[11,14,461,668]
 
-[DebugWindow/$all[1]]
-Geometry=[11,14,448,669]
+[DebugWindow/$ids["file"][0]]
+Geometry=[25,28,461,668]
 
-[DebugWindow/$all[2]]
-Geometry=[11,14,448,669]
+[DebugWindow/$ids["file"][0].attributes]
+Geometry=[39,42,461,668]
 
-[DebugWindow/$all[3]]
-Geometry=[11,14,448,669]
+[DebugWindow/$ids["gt-sl"]]
+Geometry=[11,14,461,668]
 
-[DebugWindow/Me.documentElement]
+[DebugWindow/$ids["gt-sl"][0]]
+Geometry=[25,28,461,668]
+
+[DebugWindow/$names]
 Geometry=[-3,0,224,280]
 
-[DebugWindow/Me.root]
-Geometry=[-3,0,224,280]
+[DebugWindow/$tagNames]
+Geometry=[-3,0,564,542]
 
-[DebugWindow/Split(auxStr, " ", "", True)]
-Geometry=[-3,0,224,280]
+[DebugWindow/$tagNames["html"]]
+Geometry=[11,14,564,542]
 
-[DebugWindow/String[]]
-Geometry=[-3,0,224,280]
+[DebugWindow/$tagNames["html"][0]]
+Geometry=[25,28,564,542]
+
+[DebugWindow/$tagNames["meta"]]
+Geometry=[11,14,564,542]
+
+[DebugWindow/$tagNames["meta"][0]]
+Geometry=[25,28,564,542]
+
+[DebugWindow/$tagNames["meta"][0].attributes]
+Geometry=[39,42,564,542]
+
+[DebugWindow/$tagNames["meta"][1]]
+Geometry=[25,28,564,542]
+
+[DebugWindow/$tagNames["meta"][1].attributes]
+Geometry=[39,42,666,542]
+
+[DebugWindow/$tagNames["meta"][2]]
+Geometry=[25,28,564,542]
+
+[DebugWindow/$tagNames["meta"][2].attributes]
+Geometry=[39,42,564,542]
+
+[DebugWindow/$tagNames["meta"][2].childNodes]
+Geometry=[39,42,564,542]
+
+[DebugWindow/$tagNames["meta"][3]]
+Geometry=[25,28,564,542]
+
+[DebugWindow/$tagNames["meta"][3].attributes]
+Geometry=[39,42,564,542]
+
+[DebugWindow/$tagNames["meta"][4]]
+Geometry=[25,28,564,542]
+
+[DebugWindow/$tagNames["meta"][4].attributes]
+Geometry=[39,42,564,542]
+
+[DebugWindow/actualElm]
+Geometry=[-3,0,227,457]
 
 [DebugWindow/arrAux]
+Geometry=[-3,0,365,280]
+
+[DebugWindow/arrAuxAttr]
 Geometry=[-3,0,224,280]
 
 [DebugWindow/arrRet]
 Geometry=[-3,0,224,280]
 
-[DebugWindow/http]
-Geometry=[-3,0,342,396]
+[DebugWindow/arrStrTrimed]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/auxArrKeyVal]
+Geometry=[-3,0,224,280]
 
 [OpenFile]
-File[1]=".src/FPruebas.form"
-Active=4
-File[2]=".src/FPruebas.class:6.49"
-File[3]=".src/Google/GoolgleTranslator.class:0.4"
-Count=6
-File[4]=".src/HTMLDom/HTMDocument.class:20.395"
-File[5]=".src/HTMLDom/HTMElement.class:3.44"
-File[6]=".src/HTMLDom/HTMUtils.module:0.94"
+Active=1
+File[1]=".src/HTMLDom/HTMDocument.class:82.543"
+File[2]=".src/HTMLDom/HTMCONSTS.class:80.10"
+File[3]=".src/FPruebas.form"
+File[4]=".src/FPruebas.class:6.48"
+Count=4
 
 [Watches]
-Count=8
-Watch[1]="$strHtml"
-Watch[2]="Mid$($strHtml, i, 1)"
-Watch[3]="Mid($strHtml, i, 1)"
-Watch[4]="Mid($strHtml, 1, 1)"
-Watch[5]="Mid($strHtml, 0, 1)"
-Watch[6]="Me.root"
-Watch[7]="Me.documentElement"
-Watch[8]="$all[$all.Count - 1]"
+Count=0
 
