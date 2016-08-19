@@ -5,7 +5,49 @@ Count=0
 Count=0
 
 [DebugWindow/$all]
-Geometry=[-3,0,357,528]
+Geometry=[-3,0,1106,607]
+
+[DebugWindow/$all[2]]
+Geometry=[11,14,1106,607]
+
+[DebugWindow/$all[2].attributes]
+Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[3]]
+Geometry=[11,14,1106,607]
+
+[DebugWindow/$all[3].attributes]
+Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[3].childNodes]
+Geometry=[25,28,357,528]
+
+[DebugWindow/$all[4]]
+Geometry=[11,14,1106,607]
+
+[DebugWindow/$all[4].attributes]
+Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[4].childNodes]
+Geometry=[25,28,357,528]
+
+[DebugWindow/$all[5]]
+Geometry=[11,14,357,528]
+
+[DebugWindow/$all[5].childNodes]
+Geometry=[25,28,357,528]
+
+[DebugWindow/$all[6]]
+Geometry=[11,14,357,528]
+
+[DebugWindow/$all[6].attributes]
+Geometry=[25,28,357,528]
+
+[DebugWindow/$all[7]]
+Geometry=[11,14,357,528]
+
+[DebugWindow/$all[7].childNodes]
+Geometry=[25,28,357,528]
 
 [DebugWindow/$ids]
 Geometry=[-3,0,461,668]
@@ -76,6 +118,9 @@ Geometry=[39,42,564,542]
 [DebugWindow/actualElm]
 Geometry=[-3,0,227,457]
 
+[DebugWindow/actualElm.attributes]
+Geometry=[11,14,227,457]
+
 [DebugWindow/arrAux]
 Geometry=[-3,0,365,280]
 
@@ -83,7 +128,7 @@ Geometry=[-3,0,365,280]
 Geometry=[-3,0,224,280]
 
 [DebugWindow/arrRet]
-Geometry=[-3,0,224,280]
+Geometry=[567,297,305,280]
 
 [DebugWindow/arrStrTrimed]
 Geometry=[-3,0,224,280]
@@ -91,13 +136,43 @@ Geometry=[-3,0,224,280]
 [DebugWindow/auxArrKeyVal]
 Geometry=[-3,0,224,280]
 
+[DebugWindow/htDoc]
+Geometry=[-3,0,703,667]
+
+[DebugWindow/htDoc.body]
+Geometry=[11,14,703,667]
+
+[DebugWindow/htDoc.body.childNodes]
+Geometry=[25,28,703,667]
+
+[DebugWindow/htDoc.document]
+Geometry=[11,14,703,667]
+
+[DebugWindow/htDoc.document.anchors]
+Geometry=[25,28,703,667]
+
+[DebugWindow/htDoc.document.document]
+Geometry=[25,28,703,667]
+
+[DebugWindow/htDoc.head]
+Geometry=[11,14,703,667]
+
+[DebugWindow/htDoc.head.childNodes]
+Geometry=[25,28,703,667]
+
+[DebugWindow/notEnclosedIn]
+Geometry=[608,297,224,280]
+
 [OpenFile]
 Active=1
-File[1]=".src/HTMLDom/HTMDocument.class:82.543"
-File[2]=".src/HTMLDom/HTMCONSTS.class:80.10"
-File[3]=".src/FPruebas.form"
-File[4]=".src/FPruebas.class:6.48"
-Count=4
+File[1]=".src/HTMLDom/HTMDocument.class:80.190"
+File[2]=".src/FPruebas.form"
+File[3]=".src/FPruebas.class:18.50"
+Count=7
+File[4]=".src/HTMLDom/_HTMCONSTS.class:13.26"
+File[5]=".src/HTMLDom/_HUtil.class:2.56"
+File[6]=".src/HTMLDom/HTMElement.class:24.85"
+File[7]=".src/HTMLDom/_HTMAsciiSymbol.class:0.441"
 
 [Watches]
 Count=0

@@ -48,6 +48,7 @@ Public Sub http_Finished()
     
     ''Print "======================>" & sTotLines
     htDoc = New HTMDocument(sTotLines)
+    htDoc.getTimeStats(True)
     
   Else
       Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)

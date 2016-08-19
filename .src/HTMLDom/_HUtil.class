@@ -4,44 +4,57 @@ Create Static
 
 
 ''*********** INICIO UTILIDADES ****************
-Public Static Function utilSplit(str As String, strSep as String, Optional notEnclosedIn as String[]=Null) As String[]
-	Dim i as Integer, nTam as Integer, straAux as String, idxEnclosed as Integer=-1, strEnclosed as String="", strChar as String
-	Dim arrRet As String[]
+Static Public Function utilSplit(str As String, strSep As String, Optional notEnclosedIn As String[] = Null) As String[]
+	Dim i As Integer, nTam As Integer, strAux As String, idxEnclosed As Integer = -1, strEnclosed As String = "", strChar As String
+	Dim arrRet As New String[]
 	
-	if notEnclosedIn=Null then
-		arrRet=Split(str, strSep, "", True)
-	else
-		nTam=Len(str)
-		strAux=""
-		for i=1 to nTam
-			strChar=Mid$(str, i, 1)
-			if strChar=strSep then
-				if Len(strEnclosed)=0 then
+	If notEnclosedIn = Null Then
+		arrRet = Split(str, strSep, "", True)
+	Else
+		nTam = Len(str)
+		strAux = ""
+		For i = 1 To nTam
+			strChar = Mid$(str, i, 1)
+			idxEnclosed = notEnclosedIn.Find(strChar)
+			If strChar = strSep Then
+				If Len(strEnclosed) = 0 Then
 					arrRet.Add(strAux)
-					strAux=""
-				else
-					strAux &=strChar
-				EndIf
-			else if Len(strEnclosed)=0 and (idxEnclosed=notEnclosedIn.Find(strChar))>-1 then
-				strEnclosed=notEnclosedIn[idxEnclosed]
-			else if strEnclosed = strChar then
-				strEnclosed=""
-				idxEnclosed=-1
-			else
-				strAux &=strChar
-			EndIf
-		next
+					strAux = ""
+				Else
+					strAux &= strChar
+				Endif
+			Else If Len(strEnclosed) = 0 And idxEnclosed > -1 Then
+				strEnclosed = notEnclosedIn[idxEnclosed]
+				strAux &= strChar
+			Else If strEnclosed = strChar Then
+				strEnclosed = ""
+				idxEnclosed = -1
+				strAux &= strChar
+			Else
+				strAux &= strChar
+			Endif
+		Next
 	Endif
+	
+	If Not arrRet Or arrRet.Count = 0 Then
+    arrRet.Add(str)
+  Else If Len(strAux) > 0 Then
+    arrRet.Add(strAux)
+    strEnclosed = ""
+    idxEnclosed = -1
+    strAux = ""
+  Endif
 	
 	Return arrRet
 End
 
-Public Static Function utilTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
+Static Public Function utilTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
   Dim i As Integer, j As Integer, nTam As Integer
   Dim strAux As String = "", strRet As String = ""
 
   nTam = Len(strEtiqueta)
-
+  If nTam = 0 Then Return strEtiqueta
+  
   For i = 1 To nTam
     If arrStrTrimed.Find(Mid$(strEtiqueta, i, 1)) < 0 Then 	'Si se encuentra algun caracter que no hay que trimar ....
       strAux = Mid$(strEtiqueta, i)

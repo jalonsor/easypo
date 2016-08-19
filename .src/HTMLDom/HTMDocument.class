@@ -17,16 +17,16 @@ Private $strHtml As String '' *** Esta es la que se usa para el parser
 Private $removeBlankText As Boolean = False
 
 ''*** INICIO Time Measurements
-Private $swLoadedByFile as Boolean=False
-Private $timeStartLoadString as Date
-Private $timeEndLoadString as Date
-Property Read timeLoadString as Integer
-Private $timeStartLoadFile as Date
-Private $timeEndLoadFile as Date
-Property Read timeLoadFile as Integer
-Private $timeStartBuildDOM as Date
-Private $timeEndBuildDOM as Date
-Property Read timeBuildDOM as Integer
+Private $swLoadedByFile As Boolean = False
+Private $timeStartLoadString As Date
+Private $timeEndLoadString As Date
+Property Read timeLoadString As Integer
+Private $timeStartLoadFile As Date
+Private $timeEndLoadFile As Date
+Property Read timeLoadFile As Integer
+Private $timeStartBuildDOM As Date
+Private $timeEndBuildDOM As Date
+Property Read timeBuildDOM As Integer
 ''*** FIN Time Measurements
 
 ''**** INICIO Coleccion para busquedas
@@ -80,26 +80,30 @@ Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As B
   $removeBlankText = removeBlankText
   
   If strHtml <> Null Then
-	$swLoadedByFile=False
-	$timeStartLoadString=Now
+	$swLoadedByFile = False
+	$timeStartLoadString = Now
     $innerHTML = strHtml
     $strHtml = strHtml
-	$timeEndLoadString=Now
+	$timeEndLoadString = Now
     initDom
   Endif
-
 End
+
+Public Sub _free() ''***Se invoca al destruir el objeto
+  clearDom  ''Liberar Objetos y Referencias
+End
+
 
 Private Function innerHTML_Read() As String
   Return $innerHTML
 End
 
 Private Sub innerHTML_Write(Value As String)
-  $swLoadedByFile=False
-  $timeStartLoadString=Now
+  $swLoadedByFile = False
+  $timeStartLoadString = Now
   $innerHTML = Value
   $strHtml = Value
-  $timeEndLoadString=Now
+  $timeEndLoadString = Now
   initDom
 End
 
@@ -115,18 +119,18 @@ Private Sub text_Write(Value As String)
 End
 
 Private Function timeLoadString_Read() As Integer
-  Return (DateDiff ($timeStartLoadString, $timeEndLoadString, gb.Millisecond))
+  Return (DateDiff($timeStartLoadString, $timeEndLoadString, gb.Millisecond))
 End
 Private Function timeLoadFile_Read() As Integer
-  Return (DateDiff ($timeStartLoadFile, $timeEndLoadFile, gb.Millisecond))
+  Return (DateDiff($timeStartLoadFile, $timeEndLoadFile, gb.Millisecond))
 End
 Private Function timeBuildDOM_Read() As Integer
-  Return (DateDiff ($timeStartBuildDOM, $timeEndBuildDOM, gb.Millisecond))
+  Return (DateDiff($timeStartBuildDOM, $timeEndBuildDOM, gb.Millisecond))
 End
 
 '**** Lo gordo de construir el DOM esta aqui ***
 Private Sub initDom()
-  $timeStartBuildDOM=Now
+  $timeStartBuildDOM = Now
   
   If Me.readyState = True Then
     clearDom
@@ -136,7 +140,7 @@ Private Sub initDom()
   parseDocument
   Me.readyState = True
   
-  $timeEndBuildDOM=Now
+  $timeEndBuildDOM = Now
 End
 
 Private Sub clearDom()
@@ -149,11 +153,11 @@ End
 
 ''*** Metodos Publicos
 Public Sub fromString(strHtml As String)
-  $swLoadedByFile=False
-  $timeStartLoadString=Now
+  $swLoadedByFile = False
+  $timeStartLoadString = Now
   $innerHTML = strHtml
   $strHtml = strHtml
-  $timeEndLoadString=Now
+  $timeEndLoadString = Now
   initDom
 End
 
@@ -162,8 +166,8 @@ Public Function fromFile(strFilepath As String) As Boolean
   Dim strLine As String
 
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
-    $swLoadedByFile=True
-    $timeStartLoadFile=Now
+    $swLoadedByFile = True
+    $timeStartLoadFile = Now
 	
     pF = Open strFilepath For Input
     While Not Eof(pF)
@@ -172,26 +176,26 @@ Public Function fromFile(strFilepath As String) As Boolean
     Wend
     Close #pF
 
-    $timeEndLoadFile=Now
+    $timeEndLoadFile = Now
     Return True
   Endif
 
   Return False
 End
 
-Public Function getTimeStats(Optional printIt as Boolean=True) As String
-	Dim strRet as String=""
+Public Function getTimeStats(Optional printIt As Boolean = True) As String
+	Dim strRet As String = ""
 	
-	strRet &="**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
-	if $swLoadedByFile=True then
-	  strRet &="\tTime to load File:\t" & (Me.timeLoadFile/1000) & " Seconds.\n"
-	else
-	  strRet &="\tTime to load String:\t" & (Me.timeLoadString/1000) & " Seconds.\n"
-	EndIf
-	strRet &="\tTime to Build DOM:\t" & (Me.timeBuildDOM/1000) & " Seconds.\n"
-	strRet &="*************************************************************\n\n"
+	strRet &= "**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
+	If $swLoadedByFile = True Then
+	  strRet &= "\tTime to load File:\t" & (Me.timeLoadFile / 1000) & " Seconds.\n"
+	Else
+	  strRet &= "\tTime to load String:\t" & (Me.timeLoadString / 1000) & " Seconds.\n"
+	Endif
+	strRet &= "\tTime to Build DOM:\t" & (Me.timeBuildDOM / 1000) & " Seconds.\n"
+	strRet &= "*************************************************************\n\n"
 	
-	if printIt=True Then Print strRet
+	If printIt = True Then Print strRet
 	
 	Return strRet
 End
@@ -541,7 +545,7 @@ Private Function parseIsComment(strTagName As String) As Boolean
   If Left$(strTagName, 3) = "!--" Then Return True
   Return False
 
-End
+End 
 
 Private Function parseIsText(strTagName As String) As Boolean
   ''TODO: parseIsText

@@ -46,6 +46,10 @@ Public Sub _new(strHtmlElem As String)
 
 End
 
+Public Sub _free() ''***Se invoca al destruir el objeto
+  clearElement  ''Liberar Objetos y Referencias
+End
+
 Private Function innerHTML_Read() As String
 
   Return $innerHTML
@@ -79,6 +83,10 @@ Private Sub initElement()
 
 End
 
+Private Sub clearElement()
+  ''TODO: Clear and initialize all objects
+
+End
 
 
 '
