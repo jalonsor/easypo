@@ -2,8 +2,6 @@
 
 Export
 
-' Gambas module file
-
 '' **** Constantes y Utilidades para el Parser
 
 ''http://www.freevbcode.com/ShowCode.asp?ID=8701
@@ -43,7 +41,7 @@ Private $HtmlTagsNotChild As Collection = [
   "track": True,
   "wbr": True]
 
-Private $asciiTable As Collection '_HTMAciiSymbol[]. http://ascii.cl/es/codigos-html.htm
+Private $asciiTable As Collection '_HTMAsciiSymbol[]. http://ascii.cl/es/codigos-html.htm
 
 
 

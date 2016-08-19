@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Inherits HTMCONSTS
+Inherits _HTMCONSTS
 
 Export
 
@@ -14,8 +14,20 @@ Property text As String
 Private $text As String
 
 Private $strHtml As String '' *** Esta es la que se usa para el parser
-
 Private $removeBlankText As Boolean = False
+
+''*** INICIO Time Measurements
+Private $swLoadedByFile as Boolean=False
+Private $timeStartLoadString as Date
+Private $timeEndLoadString as Date
+Property Read timeLoadString as Integer
+Private $timeStartLoadFile as Date
+Private $timeEndLoadFile as Date
+Property Read timeLoadFile as Integer
+Private $timeStartBuildDOM as Date
+Private $timeEndBuildDOM as Date
+Property Read timeBuildDOM as Integer
+''*** FIN Time Measurements
 
 ''**** INICIO Coleccion para busquedas
 Private $all As New HTMElement[]
@@ -68,45 +80,54 @@ Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As B
   $removeBlankText = removeBlankText
   
   If strHtml <> Null Then
+	$swLoadedByFile=False
+	$timeStartLoadString=Now
     $innerHTML = strHtml
     $strHtml = strHtml
+	$timeEndLoadString=Now
     initDom
   Endif
 
 End
 
 Private Function innerHTML_Read() As String
-
   Return $innerHTML
-
 End
 
 Private Sub innerHTML_Write(Value As String)
-
+  $swLoadedByFile=False
+  $timeStartLoadString=Now
   $innerHTML = Value
   $strHtml = Value
+  $timeEndLoadString=Now
   initDom
-
 End
 
 Private Function text_Read() As String
-
   Return $Text
-
 End
 
 Private Sub text_Write(Value As String)
-
   $text = Value
   $innerHTML = Value
   $strHtml = Value
   initDom
+End
 
+Private Function timeLoadString_Read() As Integer
+  Return (DateDiff ($timeStartLoadString, $timeEndLoadString, gb.Millisecond))
+End
+Private Function timeLoadFile_Read() As Integer
+  Return (DateDiff ($timeStartLoadFile, $timeEndLoadFile, gb.Millisecond))
+End
+Private Function timeBuildDOM_Read() As Integer
+  Return (DateDiff ($timeStartBuildDOM, $timeEndBuildDOM, gb.Millisecond))
 End
 
 '**** Lo gordo de construir el DOM esta aqui ***
 Private Sub initDom()
-
+  $timeStartBuildDOM=Now
+  
   If Me.readyState = True Then
     clearDom
     Me.readyState = False
@@ -114,7 +135,8 @@ Private Sub initDom()
 
   parseDocument
   Me.readyState = True
-
+  
+  $timeEndBuildDOM=Now
 End
 
 Private Sub clearDom()
@@ -122,25 +144,27 @@ Private Sub clearDom()
 
 End
 
-
 ''****** FIN Constructores y Propiedades
 
 
-''Metodos Publicos
+''*** Metodos Publicos
 Public Sub fromString(strHtml As String)
-
+  $swLoadedByFile=False
+  $timeStartLoadString=Now
   $innerHTML = strHtml
   $strHtml = strHtml
+  $timeEndLoadString=Now
   initDom
-
 End
 
 Public Function fromFile(strFilepath As String) As Boolean
-
   Dim pF As File
   Dim strLine As String
 
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
+    $swLoadedByFile=True
+    $timeStartLoadFile=Now
+	
     pF = Open strFilepath For Input
     While Not Eof(pF)
       Line Input #pF, strLine
@@ -148,13 +172,29 @@ Public Function fromFile(strFilepath As String) As Boolean
     Wend
     Close #pF
 
+    $timeEndLoadFile=Now
     Return True
   Endif
 
   Return False
-
 End
 
+Public Function getTimeStats(Optional printIt as Boolean=True) As String
+	Dim strRet as String=""
+	
+	strRet &="**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
+	if $swLoadedByFile=True then
+	  strRet &="\tTime to load File:\t" & (Me.timeLoadFile/1000) & " Seconds.\n"
+	else
+	  strRet &="\tTime to load String:\t" & (Me.timeLoadString/1000) & " Seconds.\n"
+	EndIf
+	strRet &="\tTime to Build DOM:\t" & (Me.timeBuildDOM/1000) & " Seconds.\n"
+	strRet &="*************************************************************\n\n"
+	
+	if printIt=True Then Print strRet
+	
+	Return strRet
+End
 
 '***Finding HTML HTMElements
 Public Function getElementById(id As String) As HTMElement
@@ -206,7 +246,6 @@ End
 
 ''*********** INICIO PARSERS ****************
 Private Sub parseDocument()
-
   Dim i As Integer = 0, j As Integer = 0, nTotTam As Integer = 0, currentPos As Integer = 0, auxPos1 As Integer = 0, auxPos2 As Integer = 0
   Dim auxStr As String, auxStrTagName As String
   Dim swStartParse As Boolean = False
@@ -423,50 +462,42 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
   Endif
 
   Return endPos
-
 End
 
 Private Sub parseDocType(strPos As Integer) As Integer
-
   Dim endPos As Integer = 0
   ''TODO: parseDocType
   Me.doctype = parseGetEtiquetaCompleta(strPos, ByRef endPos)
 
   Return endPos
-
 End
 
 Private Sub parseComment(strPos As Integer) As Integer
-
   Dim endPos As Integer = 0
   ''TODO: parseComment
   Return endPos
-
 End
 
 Private Sub parseText(strPos As Integer) As Integer
-
   Dim endPos As Integer = 0
   ''TODO: parseText
   Return endPos
-
 End
 
 Private Function parseGetAttribs(strEtiqueta As String) As Collection
   Dim ntam As Integer = 0
   Dim auxStr As String, sAux1 As String, arrAux As String[], auxArrKeyVal As String[], arrRet As New Collection
 
-  ''StringArray = Split ( String [ , Separators , Escape , IgnoreVoid , KeepEscape ] )
-  auxStr = parseTrim(strEtiqueta, [" ", "\n", "<", ">"])
-  arrAux = Split(auxStr, " ", "\"", True)
+  auxStr = utilTrim(strEtiqueta, [" ", "\n", "<", ">"])
+  arrAux = utilSplit(auxStr, " ", ["\"", "'"])
 
   arrAux.Remove(0) ' Quitar el TagName
 
   ''TODO: El siguiente split corta por los = que hay dentro del valor del atributo. Hay que reparar.
   For Each sAux1 In arrAux
-    auxArrKeyVal = Split(sAux1, "=", "\"", True)
+    auxArrKeyVal = utilSplit(sAux1, "=", ["\"", "'"])
     If auxArrKeyVal.Count > 1 Then
-      arrRet[Trim(auxArrKeyVal[0])] = parseTrim(auxArrKeyVal[1], [" ", "\""])
+      arrRet[Trim(auxArrKeyVal[0])] = utilTrim(auxArrKeyVal[1], [" ", "\""])
     Else
       arrRet[Trim(auxArrKeyVal[0])] = ""
     Endif
@@ -476,10 +507,8 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
 End
 
 Private Function parseGetEtiquetaCompleta(strPos As Integer, ByRef endPos As Integer) As String
-
   endPos = InStr($strHtml, ">", strPos)
   Return Mid$($strHtml, strPos, (endPos - (strPos)))
-
 End
 
 Private Function parseGetTagName(strPos As Integer) As String
@@ -496,10 +525,8 @@ Private Function parseGetTagName(strPos As Integer) As String
 End
 
 Private Function parseIsHtml(strTagName As String) As Boolean
-
   If LCase$(strTagName) = "html" Then Return True
   Return False
-
 End
 
 Private Function parseIsDoctype(strTagName As String) As Boolean
@@ -519,7 +546,6 @@ End
 Private Function parseIsText(strTagName As String) As Boolean
   ''TODO: parseIsText
   Return False
-
 End
 
 Private Function parseHasTextChild(endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
@@ -551,15 +577,48 @@ Private Function parseGetElementType(strTagName As String) As Byte
   ''TODO: parseGetElementType
 
   Return 1
-
 End
 
-Private Function parseTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
+''*********** FIN PARSERS ****************
 
+
+''*********** INICIO UTILIDADES ****************
+Private Function utilSplit(str As String, strSep as String, Optional notEnclosedIn as String[]=Null) As String[]
+	Dim i as Integer, nTam as Integer, straAux as String, idxEnclosed as Integer=-1, strEnclosed as String="", strChar as String
+	Dim arrRet As String[]
+	
+	if notEnclosedIn=Null then
+		arrRet=Split(str, strSep, "", True)
+	else
+		nTam=Len(str)
+		strAux=""
+		for i=1 to nTam
+			strChar=Mid$(str, i, 1)
+			if strChar=strSep then
+				if Len(strEnclosed)=0 then
+					arrRet.Add(strAux)
+					strAux=""
+				else
+					strAux &=strChar
+				EndIf
+			else if Len(strEnclosed)=0 and (idxEnclosed=notEnclosedIn.Find(strChar))>-1 then
+				strEnclosed=notEnclosedIn[idxEnclosed]
+			else if strEnclosed = strChar then
+				strEnclosed=""
+				idxEnclosed=-1
+			else
+				strAux &=strChar
+			EndIf
+		next
+	Endif
+	
+	Return arrRet
+End
+
+Private Function utilTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
   Dim i As Integer, j As Integer, nTam As Integer
   Dim strAux As String = "", strRet As String = ""
 
-  ''Return strEtiqueta
   nTam = Len(strEtiqueta)
 
   For i = 1 To nTam
@@ -578,12 +637,7 @@ Private Function parseTrim(strEtiqueta As String, arrStrTrimed As String[]) As S
   Next
   Return strRet
 End
-''*********** FIN PARSERS ****************
-
-
-
-
-
+''*********** FIN UTILIDADES ****************
 
 
 

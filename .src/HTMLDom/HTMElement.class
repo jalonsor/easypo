@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Inherits HTMCONSTS
+Inherits _HTMCONSTS
 
 Export
 
