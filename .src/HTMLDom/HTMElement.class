@@ -16,8 +16,8 @@ Export
 
 Property innerHTML As String
 Private $innerHTML As String
-Property text As String
-Private $text As String
+Property innerTEXT As String
+Private $innerTEXT As String
 
 Public tagName As String
 Public id As String
@@ -38,12 +38,10 @@ Public childNodes As New HTMElement[]
 
 
 ''Constructores y Propiedades
-Public Sub _new(strHtmlElem As String)
-
+Public Sub _new(Optional strHtmlElem As String = Null)
+  If strHtmlElem = Null Or Len(strHtmlElem) = 0 Then Return
   $innerHTML = strHtmlElem
-  $text = strHtmlElem
   initElement
-
 End
 
 Public Sub _free() ''***Se invoca al destruir el objeto
@@ -51,31 +49,21 @@ Public Sub _free() ''***Se invoca al destruir el objeto
 End
 
 Private Function innerHTML_Read() As String
-
   Return $innerHTML
-
 End
 
 Private Sub innerHTML_Write(Value As String)
-
   $innerHTML = Value
-  $text = Value
   initElement
-
 End
 
-Private Function text_Read() As String
-
-  Return $text
-
+Private Function innerTEXT_Read() As String
+  Return $innerTEXT
 End
 
-Private Sub text_Write(Value As String)
-
-  $innerHTML = Value
-  $text = Value
+Private Sub innerTEXT_Write(Value As String)
+  $innerTEXT = Value
   initElement
-
 End
 
 '**** Lo gordo de construir el Element esta aqui ***

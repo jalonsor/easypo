@@ -15,22 +15,28 @@ Private arrTargetLang As String[]
 
 
 Public Sub Form_Open()
-
-  http = New HttpForm
+  Dim htDoc As HTMDocument
   
-  Object.Attach(http, Me, "http")
+  ' http = New HttpForm
+  ' 
+  ' Object.Attach(http, Me, "http")
+  ' 
+  ' http.CookiesFile = "/tmp/" & Application.Name & Application.Id & ".cookies"
+  ' http.UpdateCookies = True
+  ' http.Debug = True
+  ' http.URL = strIniUrl
+  ' http.Timeout = tOut
+  ' 
+  ' 
+  ' 
+  ' http.Add("text", "Juanma: Traduce esto!")
+  ' 
+  ' http.Submit
   
-  http.CookiesFile = "/tmp/" & Application.Name & Application.Id & ".cookies"
-  http.UpdateCookies = True
-  http.Debug = True
-  http.URL = strIniUrl
-  http.Timeout = tOut
+    htDoc = New HTMDocument
+    htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.txt")
+    htDoc.objectStats(True)
   
-  
-  
-  http.Add("text", "Juanma: Traduce esto!")
-  
-  http.Submit
   
 End
 
@@ -48,7 +54,7 @@ Public Sub http_Finished()
     
     ''Print "======================>" & sTotLines
     htDoc = New HTMDocument(sTotLines)
-    htDoc.getTimeStats(True)
+    htDoc.objectStats(True)
     
   Else
       Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)

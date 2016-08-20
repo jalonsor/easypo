@@ -8,6 +8,16 @@ Export
 ''http://www.w3schools.com/js/js_htmldom.asp
 
 ''Propiedades publicas
+'****Info del Objeto
+Property Read className As String
+Property Read classVersion As String
+Property Read classDescription As String
+Property Read classVendor As String
+Private $classVersion As String = "1.0.0"
+Private $classDescription As String = "Extended JSDOM (http://www.w3schools.com/js/js_htmldom.asp) Implementation for Gambas Language writed in pure Gambas."
+Private $classVendor As String = "Jalonsor. (PierreNoDoyUna). https://github.com/jalonsor"
+
+'****Del DOM
 Property innerHTML As String
 Private $innerHTML As String
 Property text As String
@@ -60,6 +70,8 @@ Public links As New HTMElement[]      'Returns all < area > And < a > HTMElement
 Public metas As New HTMElement[]      'Returns all < meta > HTMElements
 Public linkRels As New HTMElement[]      'Returns all < link > HTMElements
 Public scripts As New HTMElement[]      'Returns all < script > HTMElements 3
+Public comments As New HTMElement[]      'Returns all <!-- .. --> HTMElements 3
+Public texts As New HTMElement[]      'Returns all Texts HTMElements 3
 
 
 Public baseURI As String      'Returns the absolute base URI Of the document 3
@@ -80,11 +92,11 @@ Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As B
   $removeBlankText = removeBlankText
   
   If strHtml <> Null Then
-	$swLoadedByFile = False
-	$timeStartLoadString = Now
+    $swLoadedByFile = False
+    $timeStartLoadString = Now
     $innerHTML = strHtml
     $strHtml = strHtml
-	$timeEndLoadString = Now
+    $timeEndLoadString = Now
     initDom
   Endif
 End
@@ -128,6 +140,19 @@ Private Function timeBuildDOM_Read() As Integer
   Return (DateDiff($timeStartBuildDOM, $timeEndBuildDOM, gb.Millisecond))
 End
 
+Private Function classVersion_Read() As String
+  Return $classVersion
+End
+Private Function classDescription_Read() As String
+  Return $classDescription
+End
+Private Function className_Read() As String
+  Return Object.Class(Me).Name
+End
+Private Function classVendor_Read() As String
+  Return $classVendor
+End
+
 '**** Lo gordo de construir el DOM esta aqui ***
 Private Sub initDom()
   $timeStartBuildDOM = Now
@@ -165,6 +190,7 @@ Public Function fromFile(strFilepath As String) As Boolean
   Dim pF As File
   Dim strLine As String
 
+  ''TODO: Missing "\n" whith Line Input. Must Repair. (***) Using LineEnds broke the DOM. Must Repair.
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
     $swLoadedByFile = True
     $timeStartLoadFile = Now
@@ -177,13 +203,14 @@ Public Function fromFile(strFilepath As String) As Boolean
     Close #pF
 
     $timeEndLoadFile = Now
+    initDom
     Return True
   Endif
 
   Return False
 End
 
-Public Function getTimeStats(Optional printIt As Boolean = True) As String
+Public Function objectStats(Optional printIt As Boolean = True) As String
 	Dim strRet As String = ""
 	
 	strRet &= "**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
@@ -282,13 +309,6 @@ Private Sub parseDocument()
   Next
 
 End
-
-'~ 		Private $all As HTMElement[]
-'~ 		Private $ids As HTMElement[]
-'~ 		Private $tagNames As HTMElement[][]
-'~ 		Private $names As HTMElement[][]
-'~ 		Private $classNames As HTMElement[][]
-
 
 Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
   Dim endPos As Integer = 0, startChildPos As Integer = 0
@@ -396,32 +416,8 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
         actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
       Endif
     Endif
+    
     ''**** References
-    '~ 		Public parentNode As HTMElement
-    '~ 		Public childNodes As HTMElement[]
-    '~ 		Public firstChild As HTMElement
-    '~ 		Public lastChild As HTMElement
-    '~ 		Public nextSibling As HTMElement
-    '~		 Public previousSibling As HTMElement
-
-
-    '~ 		Public root As HTMElement		'Same as documentElement ---> '<html>'
-    '~ 		Public documentElement As HTMElement      'Returns the < html > HTMElement 3
-    '~ 		Public head As HTMElement      'Returns the < head > HTMElement 1
-    '~		 Public title As HTMElement      'Returns the < title > HTMElement 1
-    '~		 Public body As HTMElement      'Returns the < body > HTMElement 1
-    '~ Public cookie As HTMElement[]      'Returns the document 's cookie 	1
-    '~ 		Public anchors As HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
-    '~ 		Public applets As HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
-    '~		Public embeds As HTMElement[]      'Returns all < embed > HTMElements 3
-    '~ 		Public forms As HTMElement[]      'Returns all < form > HTMElements 1
-    '~ 		Public images As HTMElement[]      'Returns all < img > HTMElements 1
-    '~ 		Public links As HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
-    '~ 		Public scripts As HTMElement[]      'Returns all < script > HTMElements 3
-    '~ 		Public metas As New Collection '' HTMElement[]      'Returns all < meta > HTMElements
-    '~ 		Public linkRels As New Collection '' HTMElement[]      'Returns all < link > HTMElements
-    '~		Public favicon As HTMElement=Null		'<link rel="shortcut icon" type="image/png" href="http://eg.com/favicon.png"/>
-
     Select actualElm.tagName
       Case "head"
         Me.head = actualElm
@@ -454,12 +450,16 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
 
 
     ''**** If there are Childs ....
-    If (startChildPos = parseHasTextChild(endPos)) > 0 Then
-      $stackElm[$stackElm.Count] = actualElm 	''To keep nesting track
+    startChildPos = parseHasTextChild(endPos)
+    If startChildPos > 0 Then
+      $stackElm.Add(actualElm) 	''To keep nesting track
       endPos = parseText(startChildPos) 	''Returns where parsing ends, so we continue after
       $stackElm.Remove($stackElm.Count)
-    Else If (startChildPos = parseHasTagChild(endPos)) > 0 Then
-      $stackElm[$stackElm.Count] = actualElm 	''To keep nesting track
+    Endif
+    
+    startChildPos = parseHasTagChild(endPos)
+    If startChildPos > 0 Then
+      $stackElm.Add(actualElm) 	''To keep nesting track
       endPos = parseElement(startChildPos) 	''Returns where parsing ends, so we continue after
       $stackElm.Remove($stackElm.Count)
     Endif
@@ -473,17 +473,80 @@ Private Sub parseDocType(strPos As Integer) As Integer
   ''TODO: parseDocType
   Me.doctype = parseGetEtiquetaCompleta(strPos, ByRef endPos)
 
-  Return endPos
+  Return endPos ''(**OJO**) Is returned by parseGetEtiquetaCompleta ByRef
 End
 
 Private Sub parseComment(strPos As Integer) As Integer
   Dim endPos As Integer = 0
-  ''TODO: parseComment
+  Dim lenStartTag As Integer = 4  ''Len("<!--")
+  Dim actualElm As HTMElement
+  Dim actualElmIdx As Integer
+  
+  '<!--...-->
+  endPos = InStr($strHtml, "-->", strPos)
+  
+  $all.Add(Null)
+  $all[$all.Count - 1] = New HTMElement("")
+  actualElm = $all[$all.Count - 1]
+  Me.comments.Add(actualElm)
+  
+  actualElm.nodeValue = Mid$($strHtml, strPos + lenStartTag, (endPos - strPos - lenStartTag))
+  actualElm.nodeType = Me.NODETYPE_COMMENT
+  
+  If $stackElm.Count > 0 Then
+    actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+    If actualElm.parentNode.firstChild = Null Then
+      actualElm.parentNode.firstChild = actualElm
+    Endif
+    actualElm.parentNode.lastChild = actualElm
+  
+    actualElm.parentNode.childNodes.Add(actualElm)
+  
+    actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+    If actualElmIdx > 0 Then
+      actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+    Endif
+    If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+      actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+    Endif
+  Endif
+
   Return endPos
 End
 
 Private Sub parseText(strPos As Integer) As Integer
   Dim endPos As Integer = 0
+  Dim actualElm As HTMElement
+  Dim actualElmIdx As Integer
+  
+  endPos = InStr($strHtml, "<", strPos)
+  
+  $all.Add(Null)
+  $all[$all.Count - 1] = New HTMElement("")
+  actualElm = $all[$all.Count - 1]
+  Me.texts.Add(actualElm)
+  
+  actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+  actualElm.nodeType = Me.NODETYPE_TEXT
+  
+  If $stackElm.Count > 0 Then
+    actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+    If actualElm.parentNode.firstChild = Null Then
+      actualElm.parentNode.firstChild = actualElm
+    Endif
+    actualElm.parentNode.lastChild = actualElm
+  
+    actualElm.parentNode.childNodes.Add(actualElm)
+  
+    actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+    If actualElmIdx > 0 Then
+      actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+    Endif
+    If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+      actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+    Endif
+  Endif
+
   ''TODO: parseText
   Return endPos
 End
@@ -497,7 +560,6 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
 
   arrAux.Remove(0) ' Quitar el TagName
 
-  ''TODO: El siguiente split corta por los = que hay dentro del valor del atributo. Hay que reparar.
   For Each sAux1 In arrAux
     auxArrKeyVal = _HUtil.utilSplit(sAux1, "=", ["\"", "'"])
     If auxArrKeyVal.Count > 1 Then
@@ -564,10 +626,12 @@ End
 
 Private Function parseHasTagChild(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
   ''TODO: parseHasTagChild
+  Return 0
 End
 
 Private Function parseFindCloseTag(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the END Possition
   ''TODO: parseFindCloseTag
+  Return 0
 End
 
 Private Function parseGetElementType(strTagName As String) As Byte
@@ -584,6 +648,8 @@ Private Function parseGetElementType(strTagName As String) As Byte
 End
 
 ''*********** FIN PARSERS ****************
+
+
 
 
 

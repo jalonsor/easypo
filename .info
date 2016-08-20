@@ -54,6 +54,22 @@ i
 #HTMDocument
 _HTMCONSTS
 C
+className
+r
+s
+
+classVersion
+r
+s
+
+classDescription
+r
+s
+
+classVendor
+r
+s
+
 innerHTML
 p
 s
@@ -150,6 +166,14 @@ scripts
 v
 HTMElement[]
 
+comments
+v
+HTMElement[]
+
+texts
+v
+HTMElement[]
+
 baseURI
 v
 s
@@ -210,7 +234,7 @@ fromFile
 m
 b
 (strFilepath)s
-getTimeStats
+objectStats
 m
 s
 [(printIt)b]
@@ -265,7 +289,7 @@ innerHTML
 p
 s
 
-text
+innerTEXT
 p
 s
 
@@ -332,7 +356,7 @@ HTMElement[]
 _new
 m
 
-(strHtmlElem)s
+[(strHtmlElem)s]
 _free
 m
 

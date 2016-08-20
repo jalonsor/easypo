@@ -1,5 +1,10 @@
+[Bookmarks]
+HTMDocument=[]
+
 [Breakpoints]
-Count=0
+Count=2
+Breakpoint[1]="HTMDocument.452"
+Breakpoint[2]="FPruebas.36"
 
 [DebugWindow]
 Count=0
@@ -7,11 +12,44 @@ Count=0
 [DebugWindow/$all]
 Geometry=[-3,0,1106,607]
 
+[DebugWindow/$all[28]]
+Geometry=[11,14,1106,607]
+
+[DebugWindow/$all[29]]
+Geometry=[11,14,1106,607]
+
 [DebugWindow/$all[2]]
 Geometry=[11,14,1106,607]
 
 [DebugWindow/$all[2].attributes]
 Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[30]]
+Geometry=[11,14,1106,607]
+
+[DebugWindow/$all[30].childNodes]
+Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[30].parentNode]
+Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[30].parentNode.childNodes]
+Geometry=[39,42,1106,607]
+
+[DebugWindow/$all[30].parentNode.childNodes[2]]
+Geometry=[53,56,1106,607]
+
+[DebugWindow/$all[30].parentNode.childNodes[3]]
+Geometry=[53,56,1106,607]
+
+[DebugWindow/$all[30].parentNode.firstChild]
+Geometry=[39,42,1106,607]
+
+[DebugWindow/$all[30].previousSibling]
+Geometry=[25,28,1106,607]
+
+[DebugWindow/$all[31]]
+Geometry=[11,14,1106,607]
 
 [DebugWindow/$all[3]]
 Geometry=[11,14,1106,607]
@@ -70,6 +108,9 @@ Geometry=[25,28,461,668]
 [DebugWindow/$names]
 Geometry=[-3,0,224,280]
 
+[DebugWindow/$stackElm]
+Geometry=[-3,0,224,280]
+
 [DebugWindow/$tagNames]
 Geometry=[-3,0,564,542]
 
@@ -116,10 +157,22 @@ Geometry=[25,28,564,542]
 Geometry=[39,42,564,542]
 
 [DebugWindow/actualElm]
-Geometry=[-3,0,227,457]
+Geometry=[454,176,532,521]
 
 [DebugWindow/actualElm.attributes]
 Geometry=[11,14,227,457]
+
+[DebugWindow/actualElm.childNodes]
+Geometry=[468,190,532,521]
+
+[DebugWindow/actualElm.parentNode]
+Geometry=[468,190,532,521]
+
+[DebugWindow/actualElm.parentNode.childNodes]
+Geometry=[482,204,532,521]
+
+[DebugWindow/actualElm.parentNode.childNodes[0]]
+Geometry=[496,218,532,521]
 
 [DebugWindow/arrAux]
 Geometry=[-3,0,365,280]
@@ -135,6 +188,21 @@ Geometry=[-3,0,224,280]
 
 [DebugWindow/auxArrKeyVal]
 Geometry=[-3,0,224,280]
+
+[DebugWindow/comments]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/comments[0]]
+Geometry=[11,14,698,585]
+
+[DebugWindow/comments[0].childNodes]
+Geometry=[25,28,698,585]
+
+[DebugWindow/comments[0].parentNode]
+Geometry=[25,28,698,585]
+
+[DebugWindow/comments[0].parentNode.lastChild]
+Geometry=[39,42,698,585]
 
 [DebugWindow/htDoc]
 Geometry=[-3,0,703,667]
@@ -163,16 +231,20 @@ Geometry=[25,28,703,667]
 [DebugWindow/notEnclosedIn]
 Geometry=[608,297,224,280]
 
+[DebugWindow/scripts]
+Geometry=[-3,0,224,280]
+
+[DebugWindow/texts]
+Geometry=[-3,0,367,470]
+
 [OpenFile]
-Active=1
-File[1]=".src/HTMLDom/HTMDocument.class:80.190"
-File[2]=".src/FPruebas.form"
-File[3]=".src/FPruebas.class:18.50"
-Count=7
-File[4]=".src/HTMLDom/_HTMCONSTS.class:13.26"
-File[5]=".src/HTMLDom/_HUtil.class:2.56"
-File[6]=".src/HTMLDom/HTMElement.class:24.85"
-File[7]=".src/HTMLDom/_HTMAsciiSymbol.class:0.441"
+Active=2
+File[1]=".src/HTMLDom/_HUtil.class:2.56"
+File[2]=".src/HTMLDom/HTMDocument.class:13.71"
+File[3]=".src/HTMLDom/HTMElement.class:46.41"
+Count=5
+File[4]=".src/FPruebas.form"
+File[5]=".src/FPruebas.class:0.36"
 
 [Watches]
 Count=0
