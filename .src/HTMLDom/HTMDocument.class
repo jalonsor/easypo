@@ -283,13 +283,7 @@ Private Sub parseDocument()
 
   nTotTam = Len($strHtml)
 
-  For i = 1 To nTotTam 	''Consume los espacios y basura hasta llegar al primer tag.
-    If Mid$($strHtml, i, 1) = "<" Then
-      swStartParse = True
-      currentPos = i
-      Break
-    Endif
-  Next
+  currentPos = InStr($strHtml, "<", 1)  ''Consume los espacios y basura hasta llegar al primer tag.
 
   For i = currentPos To nTotTam
     If Mid$($strHtml, i, 1) = "<" Then
@@ -310,7 +304,7 @@ Private Sub parseDocument()
 
 End
 
-Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
+Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
   Dim endPos As Integer = 0, startChildPos As Integer = 0
   Dim i As Integer, j As Integer
   Dim auxStr As String, auxStrTagName As String, arrAuxAttr As Collection
@@ -319,6 +313,10 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
   Dim arrAuxElems As HTMElement[]
 
   auxStrTagName = parseGetTagName(strPos)
+  
+  If Left$(auxStrTagName, 1) = "/" Then ''Ignore Close Tag
+    Return (InStr($strHtml, ">", strPos) + 1)
+  Endif
   
   If parseIsComment(auxStrTagName) = True Then
     endPos = parseComment(strPos) 		''Returns where parsing ends, so we continue after
@@ -399,10 +397,10 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
       actualElm.parentNode = Null
       actualElm.nextSibling = Null
       actualElm.previousSibling = Null
-	  
+  
 	  $stackElm.Add(actualElm)  ''First Parent of the DOM
     Endif
-    If $stackElm.Count > 0 and actualElm.tagName <> "html" Then
+    If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
       actualElm.parentNode = $stackElm[$stackElm.Count - 1]
       If actualElm.parentNode.firstChild = Null Then
         actualElm.parentNode.firstChild = actualElm
@@ -453,19 +451,21 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
 
 
     ''**** If there are Childs ....
-    startChildPos = parseHasTextChild(endPos)
+    startChildPos = parseHasTextChild(actualElm.tagName, endPos)
     If startChildPos > 0 Then
       $stackElm.Add(actualElm) 	''To keep nesting track
       endPos = parseText(startChildPos) 	''Returns where parsing ends, so we continue after
-      $stackElm.Remove($stackElm.Count)
+      $stackElm.Remove($stackElm.Count - 1)
     Endif
     
-    startChildPos = parseHasTagChild(actualElm.tagName, endPos)
-    If startChildPos > 0 Then
-      $stackElm.Add(actualElm) 	''To keep nesting track
-      endPos = parseElement(startChildPos) 	''Returns where parsing ends, so we continue after
-      $stackElm.Remove($stackElm.Count)
-    Endif
+    Do ''While has ChildTags
+      startChildPos = parseHasTagChild(actualElm.tagName, endPos)
+      If startChildPos > 0 Then
+        $stackElm.Add(actualElm) 	''To keep nesting track
+        endPos = parseElement(startChildPos) 	''Returns where parsing ends, so we continue after
+        $stackElm.Remove($stackElm.Count - 1)
+      Endif
+    Loop Until startChildPos = 0
   Endif
 
   Return endPos
@@ -518,7 +518,7 @@ Private Sub parseComment(strPos As Integer) As Integer
 End
 
 Private Sub parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
-  Dim endPos As Integer = 0, startTagSibilingPos as Integer=0
+  Dim endPos As Integer = 0, startTagSibilingPos As Integer = 0
   Dim actualElm As HTMElement
   Dim actualElmIdx As Integer
   
@@ -544,23 +544,25 @@ Private Sub parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPT
     Endif
   Endif
 
-  if actualElm.parentNode.tagName = "script" then
+  If actualElm.parentNode.tagName = "script" Then
     endPos = InStr($strHtml, "</script>", strPos)
 	actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
 	Me.scripts.Add(actualElm)
-	endPos +=9 ''Len("</script>")
-  else
+	endPos += 9 ''Len("</script>")
+  Else
     endPos = InStr($strHtml, "<", strPos)
 	actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
 	Me.texts.Add(actualElm)
-  EndIf
+  Endif
   
   actualElm.nodeType = Me.NODETYPE_TEXT
   
-  startTagSibilingPos=parseHasTagSibiling(endPos)
-  if  startTagSibiling > 0 then ''Return 0 if NOT, >0 is the start Possition
-    endPos = parseElement(startTagSibilingPos)
-  EndIf
+  If actualElm.parentNode.tagName <> "script" Then
+    startTagSibilingPos = parseHasTagSibiling(endPos)
+    If startTagSibilingPos > 0 Then ''Return 0 if NOT, >0 is the start Possition
+      endPos = parseElement(startTagSibilingPos)
+    Endif
+  Endif
   
   ''TODO: parseText --> Parser for TEXT and SCRIPTS content. See if Right
   Return endPos
@@ -626,27 +628,36 @@ End
 
 Private Function parseIsText(strTagName As String) As Boolean
   ''TODO: parseIsText. See if Correct.
-  if len(trim(strTagName))=0 teh Return True
+  If Len(Trim(strTagName)) = 0 Then Return True
   Return False
 End
 
-Private Function parseHasTextChild(endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
   Dim iniNewTagPos As Integer = 0
-
-  iniNewTagPos = InStr($strHtml, "<", endTagPos)  'Open tag
+  Dim actualElm As HTMElement
+  
+  If tagName = "script" Then
+    iniNewTagPos = InStr($strHtml, "</script>", endTagPos)  'Open tag
+    If iniNewTagPos > 0 Then iniNewTagPos += 9 ''Len("</script>")
+  Else
+    iniNewTagPos = InStr($strHtml, "<", endTagPos)  'Open tag
+  Endif
+  
   If iniNewTagPos > (endTagPos + 1) Then ''There is Text Child
     Return (endTagPos + 1)
   Endif
   Return 0 ''No Text Child
 End
 
-Private Function parseHasTagChild(tagName as String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
   Dim endPos As Integer = 0
   ''TODO: parseHasTagChild
+  If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
+  If tagName = "script" Then Return 0 ''No TagChild cause is script
   
-  if tagCanHaveChild(tagName)=False Then Return 0
+  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''If can not have tagChild ...
   
-  
+  endPos = InStr($strHtml, "<", strPos)  'Open tag
   
   Return endPos
 End

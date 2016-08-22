@@ -414,3 +414,7 @@ NODETYPE_NOTATION
 C
 i
 12
+tagCanHaveChild
+m
+b
+(strTag)s

@@ -47,7 +47,7 @@ Private $asciiTable As Collection '_HTMAsciiSymbol[]. http://ascii.cl/es/codigos
 
 
 
-Private Function tagCanHaveChild(strTag As String) As Boolean
+Public Function tagCanHaveChild(strTag As String) As Boolean
   If $HtmlTagsNotChild[strTag] = True Then Return False 	''No puede tener hijos
   Return True 	''Si puede tener hijos
 End

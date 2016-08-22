@@ -34,7 +34,7 @@ Public Sub Form_Open()
   ' http.Submit
   
     htDoc = New HTMDocument
-    htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.txt")
+    htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.html")
     htDoc.objectStats(True)
   
   
