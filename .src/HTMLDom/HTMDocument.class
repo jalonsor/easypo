@@ -319,6 +319,7 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
   Dim arrAuxElems As HTMElement[]
 
   auxStrTagName = parseGetTagName(strPos)
+  
   If parseIsComment(auxStrTagName) = True Then
     endPos = parseComment(strPos) 		''Returns where parsing ends, so we continue after
   Else If parseIsText(auxStrTagName) = True Then
@@ -336,7 +337,7 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
     Endif
 
     '' *** HTMElement Props.
-    actualElm.tagName = parseGetTagName(strPos)
+    actualElm.tagName = auxStrTagName
     If actualElm.tagName Then
       If $tagNames.Exist(actualElm.tagName) = False Then
         arrAuxElems = New HTMElement[]
@@ -398,8 +399,10 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
       actualElm.parentNode = Null
       actualElm.nextSibling = Null
       actualElm.previousSibling = Null
+	  
+	  $stackElm.Add(actualElm)  ''First Parent of the DOM
     Endif
-    If $stackElm.Count > 0 Then
+    If $stackElm.Count > 0 and actualElm.tagName <> "html" Then
       actualElm.parentNode = $stackElm[$stackElm.Count - 1]
       If actualElm.parentNode.firstChild = Null Then
         actualElm.parentNode.firstChild = actualElm
@@ -457,7 +460,7 @@ Private Sub parseElement(strPos As Integer, Optional isRoot As Boolean = False) 
       $stackElm.Remove($stackElm.Count)
     Endif
     
-    startChildPos = parseHasTagChild(endPos)
+    startChildPos = parseHasTagChild(actualElm.tagName, endPos)
     If startChildPos > 0 Then
       $stackElm.Add(actualElm) 	''To keep nesting track
       endPos = parseElement(startChildPos) 	''Returns where parsing ends, so we continue after
@@ -514,20 +517,14 @@ Private Sub parseComment(strPos As Integer) As Integer
   Return endPos
 End
 
-Private Sub parseText(strPos As Integer) As Integer
-  Dim endPos As Integer = 0
+Private Sub parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
+  Dim endPos As Integer = 0, startTagSibilingPos as Integer=0
   Dim actualElm As HTMElement
   Dim actualElmIdx As Integer
-  
-  endPos = InStr($strHtml, "<", strPos)
   
   $all.Add(Null)
   $all[$all.Count - 1] = New HTMElement("")
   actualElm = $all[$all.Count - 1]
-  Me.texts.Add(actualElm)
-  
-  actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
-  actualElm.nodeType = Me.NODETYPE_TEXT
   
   If $stackElm.Count > 0 Then
     actualElm.parentNode = $stackElm[$stackElm.Count - 1]
@@ -547,7 +544,25 @@ Private Sub parseText(strPos As Integer) As Integer
     Endif
   Endif
 
-  ''TODO: parseText
+  if actualElm.parentNode.tagName = "script" then
+    endPos = InStr($strHtml, "</script>", strPos)
+	actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+	Me.scripts.Add(actualElm)
+	endPos +=9 ''Len("</script>")
+  else
+    endPos = InStr($strHtml, "<", strPos)
+	actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+	Me.texts.Add(actualElm)
+  EndIf
+  
+  actualElm.nodeType = Me.NODETYPE_TEXT
+  
+  startTagSibilingPos=parseHasTagSibiling(endPos)
+  if  startTagSibiling > 0 then ''Return 0 if NOT, >0 is the start Possition
+    endPos = parseElement(startTagSibilingPos)
+  EndIf
+  
+  ''TODO: parseText --> Parser for TEXT and SCRIPTS content. See if Right
   Return endPos
 End
 
@@ -610,7 +625,8 @@ Private Function parseIsComment(strTagName As String) As Boolean
 End 
 
 Private Function parseIsText(strTagName As String) As Boolean
-  ''TODO: parseIsText
+  ''TODO: parseIsText. See if Correct.
+  if len(trim(strTagName))=0 teh Return True
   Return False
 End
 
@@ -624,9 +640,21 @@ Private Function parseHasTextChild(endTagPos As Integer) As Integer ''Return 0 i
   Return 0 ''No Text Child
 End
 
-Private Function parseHasTagChild(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+Private Function parseHasTagChild(tagName as String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+  Dim endPos As Integer = 0
   ''TODO: parseHasTagChild
-  Return 0
+  
+  if tagCanHaveChild(tagName)=False Then Return 0
+  
+  
+  
+  Return endPos
+End
+
+Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+  Dim endPos As Integer = 0
+  
+  Return endPos
 End
 
 Private Function parseFindCloseTag(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the END Possition

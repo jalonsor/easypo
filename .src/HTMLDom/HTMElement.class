@@ -7,13 +7,6 @@ Export
 
 ''http://www.w3schools.com/js/js_htmldom.asp
 
-''**** Tipos de elementos: http://www.w3schools.com/js/js_htmldom_navigation.asp
-' Element 1
-' Attribute 2
-' Text 3
-' Comment 8
-' Document
-
 Property innerHTML As String
 Private $innerHTML As String
 Property innerTEXT As String
