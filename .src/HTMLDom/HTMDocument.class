@@ -24,7 +24,9 @@ Property text As String
 Private $text As String
 
 Private $strHtml As String '' *** Esta es la que se usa para el parser
-Private $removeBlankText As Boolean = False
+
+Private $removeBlankText As Boolean = True  ''Do not create TEXT elements for blank texts (\n, \t, space, ...)
+Property removeBlankText As Boolean
 
 ''*** INICIO Time Measurements
 Private $swLoadedByFile As Boolean = False
@@ -47,20 +49,20 @@ Private $names As New Collection '' HTMElement[][]
 Private $classNames As New Collection '' HTMElement[][]
 ''**** FIN Coleccion para busquedas
 
-Private $stackElm As New HTMElement[] 		''To keep nesting track
+Private $stackElm As New HTMElement[]     ''To keep nesting track
 
 Public document As HTMDocument = Me
 
 Public readyState As Boolean = False      'Returns the(loading)status Of the document 3
 Public strictErrorChecking As Boolean = False     'Returns If Error checking Is Enforced 3
 
-Public root As HTMElement = Null 		'Same as documentElement ---> '<html>'
+Public root As HTMElement = Null     'Same as documentElement ---> '<html>'
 Public documentElement As HTMElement = Null      'Returns the < html > HTMElement 3
 Public head As HTMElement = Null      'Returns the < head > HTMElement 1
-Public favicon As HTMElement = Null 		'<link rel="shortcut icon" type="image/png" href="http://eg.com/favicon.png"/>
+Public favicon As HTMElement = Null     '<link rel="shortcut icon" type="image/png" href="http://eg.com/favicon.png"/>
 Public title As HTMElement = Null      'Returns the < title > HTMElement 1
 Public body As HTMElement = Null      'Returns the < body > HTMElement 1
-Public cookie As New HTMElement[]      'Returns the document 's cookie 	1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
+Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
 Public anchors As New HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
 Public applets As New HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
 Public embeds As New HTMElement[]      'Returns all < embed > HTMElements 3
@@ -75,20 +77,20 @@ Public texts As New HTMElement[]      'Returns all Texts HTMElements 3
 
 
 Public baseURI As String      'Returns the absolute base URI Of the document 3
-Public doctype As String      'Returns the document 's doctype 	3
+Public doctype As String      'Returns the document 's doctype   3
 Public documentMode As String     'Returns the mode used by the browser 3
 Public documentURI As String      'Returns the URI Of the document 3
 Public domain As String       'Returns the domain name Of the document server 1
 Public domConfig As String 'Obsolete.Returns the DOM configuration 3
 Public implementation As String     'Returns the DOM implementation 3
-Public inputEncoding As String      'Returns the document 's encoding (character set) 	3
+Public inputEncoding As String      'Returns the document 's encoding (character set)   3
 Public lastModified As String      'Returns the Date And Time the document was updated 3
 Public referrer As String      'Returns the URI Of the referrer(the linking document)1
 Public URL As String      'Returns the complete URL Of the document 1
 
 
 ''****** INICIO Constructores y Propiedades
-Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As Boolean = False)
+Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As Boolean = True)
   $removeBlankText = removeBlankText
   
   If strHtml <> Null Then
@@ -128,6 +130,14 @@ Private Sub text_Write(Value As String)
   $innerHTML = Value
   $strHtml = Value
   initDom
+End
+
+Private Function removeBlankText_Read() As Boolean
+  Return $removeBlankText
+End
+
+Private Sub removeBlankText_Write(Value As Boolean)
+  $removeBlankText=Value
 End
 
 Private Function timeLoadString_Read() As Integer
@@ -177,7 +187,8 @@ End
 
 
 ''*** Metodos Publicos
-Public Sub fromString(strHtml As String)
+Public Sub fromString(strHtml As String, Optional removeBlankText as Boolean=True)
+  $removeBlankText=removeBlankText
   $swLoadedByFile = False
   $timeStartLoadString = Now
   $innerHTML = strHtml
@@ -186,15 +197,17 @@ Public Sub fromString(strHtml As String)
   initDom
 End
 
-Public Function fromFile(strFilepath As String) As Boolean
+Public Function fromFile(strFilepath As String, Optional removeBlankText as Boolean=True) As Boolean
   Dim pF As File
   Dim strLine As String
 
+  $removeBlankText=removeBlankText
+  
   ''TODO: Missing "\n" whith Line Input. Must Repair. (***) Using LineEnds broke the DOM. Must Repair.
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
     $swLoadedByFile = True
     $timeStartLoadFile = Now
-	
+  
     pF = Open strFilepath For Input
     While Not Eof(pF)
       Line Input #pF, strLine
@@ -210,69 +223,93 @@ Public Function fromFile(strFilepath As String) As Boolean
   Return False
 End
 
+Public Function domTree(Optional printIt As Boolean = True) As String
+  Dim strRet As String = ""
+  ''TODO: domTree
+  Return strRet
+End
+
 Public Function objectStats(Optional printIt As Boolean = True) As String
-	Dim strRet As String = ""
-	
-	strRet &= "**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
-	If $swLoadedByFile = True Then
-	  strRet &= "\tTime to load File:\t" & (Me.timeLoadFile / 1000) & " Seconds.\n"
-	Else
-	  strRet &= "\tTime to load String:\t" & (Me.timeLoadString / 1000) & " Seconds.\n"
-	Endif
-	strRet &= "\tTime to Build DOM:\t" & (Me.timeBuildDOM / 1000) & " Seconds.\n"
-	strRet &= "*************************************************************\n\n"
-	
-	If printIt = True Then Print strRet
-	
-	Return strRet
+  Dim strRet As String = ""
+  
+  strRet &= "**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
+  If $swLoadedByFile = True Then
+    strRet &= "\tTime to load File:\t" & (Me.timeLoadFile / 1000) & " Seconds.\n"
+  Else
+    strRet &= "\tTime to load String:\t" & (Me.timeLoadString / 1000) & " Seconds.\n"
+  Endif
+  strRet &= "\tTime to Build DOM:\t" & (Me.timeBuildDOM / 1000) & " Seconds.\n"
+  strRet &= "*************************************************************\n\n"
+  
+  If printIt = True Then Print strRet
+  
+  Return strRet
 End
 
 '***Finding HTML HTMElements
 Public Function getElementById(id As String) As HTMElement
-
+  Return $id[id]
 End
 
-Public Function getElementsByTagName(name As String) As HTMElement[]
-
+Public Function getElementsByTagName(tagName As String) As HTMElement[]
+  Return $tagNames[name]
 End
 
 Public Function getElementsByName(name As String) As HTMElement[]
-
+  Return $names[name]
 End
 
-Public Function getElementsByClassName(name As String) As HTMElement[]
-
+Public Function getElementsByClassName(className As String) As HTMElement[]
+  Return $classNames[className]
 End
 
 Public Function querySelectorAll(strCSSSelector As String) As HTMElement[]
+  ''TODO: querySelectorAll
+End
 
+''**** PseudoXPath *****
+'Syntax:    http://www.w3schools.com/xsl/xpath_syntax.asp
+'Examples:  http://www.w3schools.com/xsl/xpath_examples.asp
+Public Function getByPseudoXPath(pseudoXPath As String) As HTMElement[] ''HTMLDOM (This)
+  ''TODO: getByPseudoXPath
+End
+
+Public Function selectNodes(pseudoXPath As String) As HTMElement[]  ''MS - Internet Explorer
+  Return getByPseudoXPath(pseudoXPath)
+End
+
+Public Function evaluate(pseudoXPath As String) As HTMElement[]  ''Firefox, Chrome, Opera and Safari
+  Return getByPseudoXPath(pseudoXPath)
 End
 
 '***Adding and Deleting HTMElements
 Public Function createElement(obElm As HTMElement) As Boolean
-
+  ''TODO: createElement
 End
 
 Public Function createTextNode(STR As String) As HTMElement
-
+  ''TODO: createTextNode
 End
 
 Public Function removeChild(obElm As HTMElement) As Boolean
-
+  ''TODO: removeChild
 End
 
 Public Function appendChild(obElm As HTMElement) As Boolean
-
+  ''TODO: appendChild
 End
 
 Public Function replaceChild(obElm As HTMElement) As Boolean
-
+  ''TODO: replaceChild
 End
 
 Public Function write(text As String) As Boolean
-
+  ''TODO: write
 End
 
+Public Function appendText(text As String) As Boolean
+  ''TODO: appendText
+End
 
 
 ''*********** INICIO PARSERS ****************
@@ -283,25 +320,24 @@ Private Sub parseDocument()
 
   nTotTam = Len($strHtml)
 
-  currentPos = InStr($strHtml, "<", 1)  ''Consume los espacios y basura hasta llegar al primer tag.
+  currentPos = InStr($strHtml, "<", 1)  'Drops dirty chars before the first tag.
 
   For i = currentPos To nTotTam
-    If Mid$($strHtml, i, 1) = "<" Then
+    If Mid$($strHtml, i, 1) = "<" Then  ''TODO: parseDocument: Must Find '<', but not inside scripts or styles blocks.
       auxStrTagName = parseGetTagName(i)
       If parseIsDoctype(auxStrTagName) = True Then
-        i = parseDocType(i) 		''Returns where parsing ends, so we continue after
+        i = parseDocType(i)     ''Returns where parsing ends, so we continue after
       Else If parseIsComment(auxStrTagName) = True Then
-        i = parseComment(i) 	''Returns where parsing ends, so we continue after
+        i = parseComment(i)   ''Returns where parsing ends, so we continue after
       Else If parseIsText(auxStrTagName) = True Then
-        i = parseText(i) 			''Returns where parsing ends, so we continue after
+        i = parseText(i)       ''Returns where parsing ends, so we continue after
       Else If parseIsHtml(auxStrTagName) Then
-        i = parseElement(i, True) 	''Returns where parsing ends, so we continue after
+        i = parseElement(i, True)   ''Returns where parsing ends, so we continue after
       Else
-        i = parseElement(i) 	''Returns where parsing ends, so we continue after
+        i = parseElement(i)   ''Returns where parsing ends, so we continue after
       Endif
     Endif
   Next
-
 End
 
 Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
@@ -319,17 +355,17 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
   Endif
   
   If parseIsComment(auxStrTagName) = True Then
-    endPos = parseComment(strPos) 		''Returns where parsing ends, so we continue after
+    endPos = parseComment(strPos)     ''Returns where parsing ends, so we continue after
   Else If parseIsText(auxStrTagName) = True Then
-    endPos = parseText(strPos) 			''Returns where parsing ends, so we continue after
-  Else 	'' Here we arrive when dealing wtih common tags.
+    endPos = parseText(strPos)       ''Returns where parsing ends, so we continue after
+  Else   '' Here we arrive when dealing wtih common tags.
     auxStr = parseGetEtiquetaCompleta(strPos, ByRef endPos) ''Returns Byref the endPos(End Posittion) of the Tag.
     arrAuxAttr = parseGetAttribs(auxStr)
 
     $all.Add(Null)
     $all[$all.Count - 1] = New HTMElement("")
     actualElm = $all[$all.Count - 1]
-    If isRoot Then 	''<html> Tag
+    If isRoot Then   ''<html> Tag
       Me.root = $all[$all.Count - 1]
       Me.documentElement = Me.root
     Endif
@@ -382,7 +418,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
     actualElm.style = arrAuxAttr["style"]
     actualElm.type = arrAuxAttr["type"]
     actualElm.nodeType = parseGetElementType(actualElm.tagName)
-    actualElm.nodeValue = Null 		''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
+    actualElm.nodeValue = Null     ''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
 
     ''**** Don't remove this attributes. So we can get them by two methods (By the property and by the attributes collection).
     '~ arrAuxAttr.Remove("id")
@@ -393,12 +429,12 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
     actualElm.attributes = arrAuxAttr.Copy()
 
     ''**** INICIO Element DOM References
-    If isRoot Then 	''<html> Tag
+    If isRoot Then   ''<html> Tag
       actualElm.parentNode = Null
       actualElm.nextSibling = Null
       actualElm.previousSibling = Null
   
-	  $stackElm.Add(actualElm)  ''First Parent of the DOM
+    ''REMOVED: It is not necesary at this point. $stackElm.Add(actualElm)  ''First Parent of the DOM
     Endif
     If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
       actualElm.parentNode = $stackElm[$stackElm.Count - 1]
@@ -408,14 +444,14 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
       actualElm.parentNode.lastChild = actualElm
 
       actualElm.parentNode.childNodes.Add(actualElm)
-
       actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
       If actualElmIdx > 0 Then
         actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+    actualElm.previousSibling.nextSibling=actualElm ''Inform the nextSibiling from the previousSibling.
       Endif
-      If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-        actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-      Endif
+      '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+        '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+      '~ Endif
     Endif
     
     ''**** References
@@ -453,25 +489,25 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
     ''**** If there are Childs ....
     startChildPos = parseHasTextChild(actualElm.tagName, endPos)
     If startChildPos > 0 Then
-      $stackElm.Add(actualElm) 	''To keep nesting track
-      endPos = parseText(startChildPos) 	''Returns where parsing ends, so we continue after
+      $stackElm.Add(actualElm)   ''To keep nesting track
+      endPos = parseText(startChildPos)   ''Returns where parsing ends, so we continue after
       $stackElm.Remove($stackElm.Count - 1)
     Endif
     
     Do ''While has ChildTags
       startChildPos = parseHasTagChild(actualElm.tagName, endPos)
       If startChildPos > 0 Then
-        $stackElm.Add(actualElm) 	''To keep nesting track
-        endPos = parseElement(startChildPos) 	''Returns where parsing ends, so we continue after
+        $stackElm.Add(actualElm)   ''To keep nesting track
+        endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
         $stackElm.Remove($stackElm.Count - 1)
       Endif
-    Loop Until startChildPos = 0
+    Loop Until startChildPos = 0  'No more Childrens TAGS
   Endif
 
   Return endPos
 End
 
-Private Sub parseDocType(strPos As Integer) As Integer
+Private Function parseDocType(strPos As Integer) As Integer
   Dim endPos As Integer = 0
   ''TODO: parseDocType
   Me.doctype = parseGetEtiquetaCompleta(strPos, ByRef endPos)
@@ -479,7 +515,7 @@ Private Sub parseDocType(strPos As Integer) As Integer
   Return endPos ''(**OJO**) Is returned by parseGetEtiquetaCompleta ByRef
 End
 
-Private Sub parseComment(strPos As Integer) As Integer
+Private Function parseComment(strPos As Integer) As Integer
   Dim endPos As Integer = 0
   Dim lenStartTag As Integer = 4  ''Len("<!--")
   Dim actualElm As HTMElement
@@ -517,7 +553,7 @@ Private Sub parseComment(strPos As Integer) As Integer
   Return endPos
 End
 
-Private Sub parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
+Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
   Dim endPos As Integer = 0, startTagSibilingPos As Integer = 0
   Dim actualElm As HTMElement
   Dim actualElmIdx As Integer
@@ -545,14 +581,14 @@ Private Sub parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPT
   Endif
 
   If actualElm.parentNode.tagName = "script" Then
-    endPos = InStr($strHtml, "</script>", strPos)
-	actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
-	Me.scripts.Add(actualElm)
-	endPos += 9 ''Len("</script>")
+    endPos = InStr($strHtml, "</script>", strPos, gb.IgnoreCase)
+  actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+  Me.scripts.Add(actualElm)
+  endPos += 9 ''Len("</script>")
   Else
     endPos = InStr($strHtml, "<", strPos)
-	actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
-	Me.texts.Add(actualElm)
+  actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+  Me.texts.Add(actualElm)
   Endif
   
   actualElm.nodeType = Me.NODETYPE_TEXT
@@ -564,7 +600,7 @@ Private Sub parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPT
     Endif
   Endif
   
-  ''TODO: parseText --> Parser for TEXT and SCRIPTS content. See if Right
+  ''TODO: parseText --> Parser for TEXT, SCRIPTS  and STYLE content. See if Right
   Return endPos
 End
 
@@ -595,7 +631,6 @@ Private Function parseGetEtiquetaCompleta(strPos As Integer, ByRef endPos As Int
 End
 
 Private Function parseGetTagName(strPos As Integer) As String
-
   Dim spcPos As Integer, closePos As Integer
 
   spcPos = InStr($strHtml, " ", strPos + 1)
@@ -604,7 +639,6 @@ Private Function parseGetTagName(strPos As Integer) As String
     Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, ">", strPos + 1) - (strPos + 1))))
   Endif
   Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, " ", strPos + 1) - (strPos + 1))))
-
 End
 
 Private Function parseIsHtml(strTagName As String) As Boolean
@@ -613,17 +647,13 @@ Private Function parseIsHtml(strTagName As String) As Boolean
 End
 
 Private Function parseIsDoctype(strTagName As String) As Boolean
-
   If LCase$(strTagName) = "!doctype" Then Return True
   Return False
-
 End
 
 Private Function parseIsComment(strTagName As String) As Boolean
-
   If Left$(strTagName, 3) = "!--" Then Return True
   Return False
-
 End 
 
 Private Function parseIsText(strTagName As String) As Boolean
@@ -633,33 +663,54 @@ Private Function parseIsText(strTagName As String) As Boolean
 End
 
 Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim iniNewTagPos As Integer = 0
+  Dim iniNewTagPos As Integer = 0, nTamAux as Integer=0, strAux as String=""
   Dim actualElm As HTMElement
   
+  ''TODO: parseHasTextChild: Need Logic Revision.
+  
   If tagName = "script" Then
-    iniNewTagPos = InStr($strHtml, "</script>", endTagPos)  'Open tag
+    iniNewTagPos = InStr($strHtml, "</script>", endTagPos, gb.IgnoreCase)  'Open tag
     If iniNewTagPos > 0 Then iniNewTagPos += 9 ''Len("</script>")
+  Else If tagName = "style" Then
+    iniNewTagPos = InStr($strHtml, "</style>", endTagPos, gb.IgnoreCase)  'Open tag
+    If iniNewTagPos > 0 Then iniNewTagPos += 8 ''Len("</style>")
   Else
     iniNewTagPos = InStr($strHtml, "<", endTagPos)  'Open tag
   Endif
   
   If iniNewTagPos > (endTagPos + 1) Then ''There is Text Child
-    Return (endTagPos + 1)
+	if $removeBlankText = True Then
+		'nTamAux as Integer=0, strAux as String=""
+		strAux=_HUtil.utilTrim(Mid$($strHtml, (endTagPos + 1), iniNewTagPos), [" ", "\t", "\n", "\r", "\l"])
+		if Len(strAux) > 0 then ''If there is no blank Text ...
+			Return (endTagPos + 1)
+		EndIf
+	EndIf
   Endif
+  
   Return 0 ''No Text Child
 End
 
 Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim endPos As Integer = 0
-  ''TODO: parseHasTagChild
+  Dim endPos As Integer = 0, posCloseTag as Integer=0
+  
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
+  If tagName = "style" Then Return 0 ''No TagChild cause is style
   
-  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''If can not have tagChild ...
+  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
   
   endPos = InStr($strHtml, "<", strPos)  'Open tag
+  ''TODO: parseHasTagChild: Is the new Tag really a children?. Is Close Tag?
   
-  Return endPos
+  posCloseTag = parseFindCloseTag(tagName, strPos)
+  if posCloseTag > 0 then 'If there is Close Tag ....
+  if endPos < posCloseTag then  'If there is a new OpenTag before the close tag ...
+    return endPos ''Return the initial possition of the Child Tag.
+  EndIf
+  EndIf
+  
+  Return 0 ''No ChildTag
 End
 
 Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
@@ -668,18 +719,28 @@ Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if
   Return endPos
 End
 
-Private Function parseFindCloseTag(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the END Possition
-  ''TODO: parseFindCloseTag
-  Return 0
+Private Function parseFindCloseTag(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the START Possition of the Close Tag
+  Dim strCloseTag as string
+  Dim posCloseTag as Integer=0, nTamCloaseTag as Integer=0
+  
+  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
+  
+  strCloseTag="</" & tagName & ">"
+  nTamCloaseTag=Len(strCloseTag)
+  posCloseTag = InStr($strHtml, strCloseTag, strPos, gb.IgnoreCase)  'Close tag
+  
+  ''TODO: parseFindCloseTag: See if Right.
+  
+  Return posCloseTag
 End
 
 Private Function parseGetElementType(strTagName As String) As Byte
   ''**** Tipos de elementos: http://www.w3schools.com/jsref/prop_node_nodetype.asp
-  ' Element		1
-  ' Attribute		2
-  ' Text			3
-  ' Comment		8
-  ' Document	9
+  ' Element    1
+  ' Attribute    2
+  ' Text      3
+  ' Comment    8
+  ' Document  9
 
   ''TODO: parseGetElementType
 

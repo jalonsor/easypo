@@ -48,16 +48,16 @@ Static Public Function utilSplit(str As String, strSep As String, Optional notEn
 	Return arrRet
 End
 
-Static Public Function utilTrim(strEtiqueta As String, arrStrTrimed As String[]) As String
+Static Public Function utilTrim(str As String, arrStrTrimed As String[]) As String
   Dim i As Integer, j As Integer, nTam As Integer
   Dim strAux As String = "", strRet As String = ""
 
-  nTam = Len(strEtiqueta)
-  If nTam = 0 Then Return strEtiqueta
+  nTam = Len(str)
+  If nTam = 0 Then Return str
   
   For i = 1 To nTam
-    If arrStrTrimed.Find(Mid$(strEtiqueta, i, 1)) < 0 Then 	'Si se encuentra algun caracter que no hay que trimar ....
-      strAux = Mid$(strEtiqueta, i)
+    If arrStrTrimed.Find(Mid$(str, i, 1)) < 0 Then 	'Si se encuentra algun caracter que no hay que trimar ....
+      strAux = Mid$(str, i)
       Break
     Endif
   Next
