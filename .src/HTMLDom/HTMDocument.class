@@ -436,23 +436,25 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
   
     ''REMOVED: It is not necesary at this point. $stackElm.Add(actualElm)  ''First Parent of the DOM
     Endif
-    If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
-      actualElm.parentNode = $stackElm[$stackElm.Count - 1]
-      If actualElm.parentNode.firstChild = Null Then
-        actualElm.parentNode.firstChild = actualElm
-      Endif
-      actualElm.parentNode.lastChild = actualElm
-
-      actualElm.parentNode.childNodes.Add(actualElm)
-      actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
-      If actualElmIdx > 0 Then
-        actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-    actualElm.previousSibling.nextSibling = actualElm ''Inform the nextSibiling from the previousSibling.
-      Endif
-      '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-        '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-      '~ Endif
-    Endif
+    
+    parsePutDOMReferences(actualElm)
+    ' If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
+    '   actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+    '   If actualElm.parentNode.firstChild = Null Then
+    '     actualElm.parentNode.firstChild = actualElm
+    '   Endif
+    '   actualElm.parentNode.lastChild = actualElm
+    ' 
+    '   actualElm.parentNode.childNodes.Add(actualElm)
+    '   actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+    '   If actualElmIdx > 0 Then
+    '     actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+    '     actualElm.previousSibling.nextSibling = actualElm ''Inform the nextSibiling from the previousSibling.
+    '   Endif
+    '   '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+    '     '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+    '   '~ Endif
+    ' Endif
     
     ''**** References
     Select actualElm.tagName
@@ -532,23 +534,24 @@ Private Function parseComment(strPos As Integer) As Integer
   actualElm.nodeValue = Mid$($strHtml, strPos + lenStartTag, (endPos - strPos - lenStartTag))
   actualElm.nodeType = Me.NODETYPE_COMMENT
   
-  If $stackElm.Count > 0 Then
-    actualElm.parentNode = $stackElm[$stackElm.Count - 1]
-    If actualElm.parentNode.firstChild = Null Then
-      actualElm.parentNode.firstChild = actualElm
-    Endif
-    actualElm.parentNode.lastChild = actualElm
-  
-    actualElm.parentNode.childNodes.Add(actualElm)
-  
-    actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
-    If actualElmIdx > 0 Then
-      actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-    Endif
-    If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-      actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-    Endif
-  Endif
+  parsePutDOMReferences(actualElm)
+  ' If $stackElm.Count > 0 Then
+  '   actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+  '   If actualElm.parentNode.firstChild = Null Then
+  '     actualElm.parentNode.firstChild = actualElm
+  '   Endif
+  '   actualElm.parentNode.lastChild = actualElm
+  ' 
+  '   actualElm.parentNode.childNodes.Add(actualElm)
+  ' 
+  '   actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+  '   If actualElmIdx > 0 Then
+  '     actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+  '   Endif
+  '   If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+  '     actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+  '   Endif
+  ' Endif
 
   Return endPos
 End
@@ -562,38 +565,44 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
   $all[$all.Count - 1] = New HTMElement("")
   actualElm = $all[$all.Count - 1]
   
-  If $stackElm.Count > 0 Then
-    actualElm.parentNode = $stackElm[$stackElm.Count - 1]
-    If actualElm.parentNode.firstChild = Null Then
-      actualElm.parentNode.firstChild = actualElm
-    Endif
-    actualElm.parentNode.lastChild = actualElm
-  
-    actualElm.parentNode.childNodes.Add(actualElm)
-  
-    actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
-    If actualElmIdx > 0 Then
-      actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-    Endif
-    If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-      actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-    Endif
-  Endif
+  parsePutDOMReferences(actualElm)
+  ' If $stackElm.Count > 0 Then
+  '   actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+  '   If actualElm.parentNode.firstChild = Null Then
+  '     actualElm.parentNode.firstChild = actualElm
+  '   Endif
+  '   actualElm.parentNode.lastChild = actualElm
+  ' 
+  '   actualElm.parentNode.childNodes.Add(actualElm)
+  ' 
+  '   actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+  '   If actualElmIdx > 0 Then
+  '     actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+  '   Endif
+  '   If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+  '     actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+  '   Endif
+  ' Endif
 
   If actualElm.parentNode.tagName = "script" Then
     endPos = InStr($strHtml, "</script>", strPos, gb.IgnoreCase)
-  actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
-  Me.scripts.Add(actualElm)
-  endPos += 9 ''Len("</script>")
+    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+    Me.scripts.Add(actualElm)
+    endPos += 9 ''Len("</script>")
+  Else If actualElm.parentNode.tagName = "style" Then
+    endPos = InStr($strHtml, "</style>", strPos, gb.IgnoreCase)
+    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+    Me.scripts.Add(actualElm)
+    endPos += 8 ''Len("</style>")
   Else
     endPos = InStr($strHtml, "<", strPos)
-  actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
-  Me.texts.Add(actualElm)
+    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+    Me.texts.Add(actualElm)
   Endif
   
   actualElm.nodeType = Me.NODETYPE_TEXT
   
-  If actualElm.parentNode.tagName <> "script" Then
+  If actualElm.parentNode.tagName <> "script" Or actualElm.parentNode.tagName <> "style" Then
     startTagSibilingPos = parseHasTagSibiling(endPos)
     If startTagSibilingPos > 0 Then ''Return 0 if NOT, >0 is the start Possition
       endPos = parseElement(startTagSibilingPos)
@@ -694,7 +703,7 @@ Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As I
 End
 
 Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim endPos As Integer = 0, posCloseTag As Integer = 0
+  Dim endPos As Integer = 0, posCloseTag As Integer = 0, straux As String = ""
   
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
@@ -703,6 +712,9 @@ Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integ
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
   
   endPos = InStr($strHtml, "<", strPos)  'Open tag
+  ''endPos = parseInstr($strHtml, "<", ["/"], strPos)
+  If endPos > 0 Then straux = Mid$($strHtml, endPos, 10) ''Only to see what happens. Must delete this line after debugin
+  
   ''TODO: parseHasTagChild: Is the new Tag really a children?. Is Close Tag?
   
   posCloseTag = parseFindCloseTag(tagName, strPos)
@@ -715,11 +727,27 @@ Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integ
   Return 0 ''No ChildTag
 End
 
-Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim endPos As Integer = 0
+Private Function parseInstr(str As String, strFind As String, notFollowedBy As String[], startPos As Integer) As Integer
+  Dim nAuxPos As Integer = 0, nTamStr As Integer = 0, auxPos As Integer = 0
+  Dim strChar As String = ""
   
-  Return endPos
+  nTamStr = Len(str)
+  auxPos = startPos
+  
+  Do 
+    nAuxPos = InStr(str, strFind, auxPos)
+    If nAuxPos > 0 Then
+      strChar = Mid$(str, nAuxPos + 1, 1)
+      If notFollowedBy.Find(strChar) = -1 Then
+        Return nAuxPos
+      Endif
+      auxPos += nAuxPos
+    Endif
+  Loop Until auxPos <= nTamStr And nAuxPos > 0
+  
+  Return 0
 End
+
 
 Private Function parseFindCloseTag(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the START Possition of the Close Tag
   Dim strCloseTag As String
@@ -734,6 +762,33 @@ Private Function parseFindCloseTag(tagName As String, strPos As Integer) As Inte
   ''TODO: parseFindCloseTag: See if Right.
   
   Return posCloseTag
+End
+
+Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+  Dim endPos As Integer = 0
+  
+  Return endPos
+End
+
+Private Sub parsePutDOMReferences(actualElm As HTMElement)
+  Dim actualElmIdx As Integer
+    If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
+      actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+      If actualElm.parentNode.firstChild = Null Then
+        actualElm.parentNode.firstChild = actualElm
+      Endif
+      actualElm.parentNode.lastChild = actualElm
+
+      actualElm.parentNode.childNodes.Add(actualElm)
+      actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+      If actualElmIdx > 0 Then
+        actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+        actualElm.previousSibling.nextSibling = actualElm ''Inform the nextSibiling from the previousSibling.
+      Endif
+      '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+        '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+      '~ Endif
+    Endif
 End
 
 Private Function parseGetElementType(strTagName As String) As Byte
