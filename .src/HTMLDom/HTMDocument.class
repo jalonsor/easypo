@@ -137,7 +137,7 @@ Private Function removeBlankText_Read() As Boolean
 End
 
 Private Sub removeBlankText_Write(Value As Boolean)
-  $removeBlankText=Value
+  $removeBlankText = Value
 End
 
 Private Function timeLoadString_Read() As Integer
@@ -187,8 +187,8 @@ End
 
 
 ''*** Metodos Publicos
-Public Sub fromString(strHtml As String, Optional removeBlankText as Boolean=True)
-  $removeBlankText=removeBlankText
+Public Sub fromString(strHtml As String, Optional removeBlankText As Boolean = True)
+  $removeBlankText = removeBlankText
   $swLoadedByFile = False
   $timeStartLoadString = Now
   $innerHTML = strHtml
@@ -197,11 +197,11 @@ Public Sub fromString(strHtml As String, Optional removeBlankText as Boolean=Tru
   initDom
 End
 
-Public Function fromFile(strFilepath As String, Optional removeBlankText as Boolean=True) As Boolean
+Public Function fromFile(strFilepath As String, Optional removeBlankText As Boolean = True) As Boolean
   Dim pF As File
   Dim strLine As String
 
-  $removeBlankText=removeBlankText
+  $removeBlankText = removeBlankText
   
   ''TODO: Missing "\n" whith Line Input. Must Repair. (***) Using LineEnds broke the DOM. Must Repair.
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
@@ -248,11 +248,11 @@ End
 
 '***Finding HTML HTMElements
 Public Function getElementById(id As String) As HTMElement
-  Return $id[id]
+  Return $ids[id]
 End
 
 Public Function getElementsByTagName(tagName As String) As HTMElement[]
-  Return $tagNames[name]
+  Return $tagNames[tagName]
 End
 
 Public Function getElementsByName(name As String) As HTMElement[]
@@ -447,7 +447,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
       actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
       If actualElmIdx > 0 Then
         actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-    actualElm.previousSibling.nextSibling=actualElm ''Inform the nextSibiling from the previousSibling.
+    actualElm.previousSibling.nextSibling = actualElm ''Inform the nextSibiling from the previousSibling.
       Endif
       '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
         '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
@@ -614,11 +614,13 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
   arrAux.Remove(0) ' Quitar el TagName
 
   For Each sAux1 In arrAux
-    auxArrKeyVal = _HUtil.utilSplit(sAux1, "=", ["\"", "'"])
-    If auxArrKeyVal.Count > 1 Then
-      arrRet[Trim(auxArrKeyVal[0])] = _HUtil.utilTrim(auxArrKeyVal[1], [" ", "\""])
-    Else
-      arrRet[Trim(auxArrKeyVal[0])] = ""
+    If Len(sAux1) > 0 Then
+      auxArrKeyVal = _HUtil.utilSplit(sAux1, "=", ["\"", "'"])
+      If auxArrKeyVal.Count > 1 Then
+        arrRet[Trim(auxArrKeyVal[0])] = _HUtil.utilTrim(auxArrKeyVal[1], [" ", "\""])
+      Else
+        arrRet[Trim(auxArrKeyVal[0])] = ""
+      Endif
     Endif
   Next
 
@@ -663,7 +665,7 @@ Private Function parseIsText(strTagName As String) As Boolean
 End
 
 Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim iniNewTagPos As Integer = 0, nTamAux as Integer=0, strAux as String=""
+  Dim iniNewTagPos As Integer = 0, nTamAux As Integer = 0, strAux As String = ""
   Dim actualElm As HTMElement
   
   ''TODO: parseHasTextChild: Need Logic Revision.
@@ -679,20 +681,20 @@ Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As I
   Endif
   
   If iniNewTagPos > (endTagPos + 1) Then ''There is Text Child
-	if $removeBlankText = True Then
+	If $removeBlankText = True Then
 		'nTamAux as Integer=0, strAux as String=""
-		strAux=_HUtil.utilTrim(Mid$($strHtml, (endTagPos + 1), iniNewTagPos), [" ", "\t", "\n", "\r", "\l"])
-		if Len(strAux) > 0 then ''If there is no blank Text ...
+		strAux = _HUtil.utilTrim(Mid$($strHtml, (endTagPos + 1), iniNewTagPos - (endTagPos + 1)), [" ", "\t", "\n", "\r", "\v", "\f", "\e"])
+		If Len(strAux) > 0 Then ''If there is no blank Text ...
 			Return (endTagPos + 1)
-		EndIf
-	EndIf
+		Endif
+	Endif
   Endif
   
   Return 0 ''No Text Child
 End
 
 Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim endPos As Integer = 0, posCloseTag as Integer=0
+  Dim endPos As Integer = 0, posCloseTag As Integer = 0
   
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
@@ -704,11 +706,11 @@ Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integ
   ''TODO: parseHasTagChild: Is the new Tag really a children?. Is Close Tag?
   
   posCloseTag = parseFindCloseTag(tagName, strPos)
-  if posCloseTag > 0 then 'If there is Close Tag ....
-  if endPos < posCloseTag then  'If there is a new OpenTag before the close tag ...
-    return endPos ''Return the initial possition of the Child Tag.
-  EndIf
-  EndIf
+  If posCloseTag > 0 Then 'If there is Close Tag ....
+  If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
+    Return endPos ''Return the initial possition of the Child Tag.
+  Endif
+  Endif
   
   Return 0 ''No ChildTag
 End
@@ -720,13 +722,13 @@ Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if
 End
 
 Private Function parseFindCloseTag(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the START Possition of the Close Tag
-  Dim strCloseTag as string
-  Dim posCloseTag as Integer=0, nTamCloaseTag as Integer=0
+  Dim strCloseTag As String
+  Dim posCloseTag As Integer = 0, nTamCloaseTag As Integer = 0
   
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
   
-  strCloseTag="</" & tagName & ">"
-  nTamCloaseTag=Len(strCloseTag)
+  strCloseTag = "</" & tagName & ">"
+  nTamCloaseTag = Len(strCloseTag)
   posCloseTag = InStr($strHtml, strCloseTag, strPos, gb.IgnoreCase)  'Close tag
   
   ''TODO: parseFindCloseTag: See if Right.

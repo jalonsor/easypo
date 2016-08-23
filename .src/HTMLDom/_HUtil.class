@@ -63,6 +63,7 @@ Static Public Function utilTrim(str As String, arrStrTrimed As String[]) As Stri
   Next
 
   nTam = Len(strAux)
+  If nTam < 1 Then Return strAux
   For i = 0 To nTam
     If arrStrTrimed.Find(Mid$(strAux, nTam - i, 1)) < 0 Then 	'Si se encuentra algun caracter que no hay que trimar ....
       strRet = Mid$(strAux, 1, nTam - i)

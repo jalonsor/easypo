@@ -78,6 +78,10 @@ text
 p
 s
 
+removeBlankText
+p
+b
+
 timeLoadString
 r
 i
@@ -229,11 +233,15 @@ m
 fromString
 m
 
-(strHtml)s
+(strHtml)s[(removeBlankText)b]
 fromFile
 m
 b
-(strFilepath)s
+(strFilepath)s[(removeBlankText)b]
+domTree
+m
+s
+[(printIt)b]
 objectStats
 m
 s
@@ -245,7 +253,7 @@ HTMElement
 getElementsByTagName
 m
 HTMElement[]
-(Name)s
+(tagName)s
 getElementsByName
 m
 HTMElement[]
@@ -253,11 +261,23 @@ HTMElement[]
 getElementsByClassName
 m
 HTMElement[]
-(Name)s
+(className)s
 querySelectorAll
 m
 HTMElement[]
 (strCSSSelector)s
+getByPseudoXPath
+m
+HTMElement[]
+(pseudoXPath)s
+selectNodes
+m
+HTMElement[]
+(pseudoXPath)s
+evaluate
+m
+HTMElement[]
+(pseudoXPath)s
 createElement
 m
 b
@@ -279,6 +299,10 @@ m
 b
 (obElm)HTMElement;
 write
+m
+b
+(text)s
+appendText
 m
 b
 (text)s
