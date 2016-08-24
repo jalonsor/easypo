@@ -358,23 +358,23 @@ Public Function evaluate(pseudoXPath As String) As HTMElement[]  ''Firefox, Chro
 End
 
 '***Adding and Deleting HTMElements
-Public Function createElement(obElm As HTMElement) As Boolean
+Public Function createElement(strTag As String) As HTMElement	''Return Value: 	An Element object, which represents the created Element node
   ''TODO: createElement
 End
 
-Public Function createTextNode(STR As String) As HTMElement
+Public Function createTextNode(str As String) As HTMElement	''Return Value: 	A Text Node object with the created Text Node
   ''TODO: createTextNode
 End
 
-Public Function removeChild(obElm As HTMElement) As Boolean
+Public Function removeChild(obElm As HTMElement) As HTMElement	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
   ''TODO: removeChild
 End
 
-Public Function appendChild(obElm As HTMElement) As Boolean
+Public Function appendChild(obElm As HTMElement) As HTMElement	''Return Value: 	A Node Object, representing the appended node
   ''TODO: appendChild
 End
 
-Public Function replaceChild(obElm As HTMElement) As Boolean
+Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement	''Return Value: 	A Node object, representing the replaced node
   ''TODO: replaceChild
 End
 
@@ -438,7 +438,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
     arrAuxAttr = parseGetAttribs(auxStr)
 
     $all.Add(Null)
-    $all[$all.Count - 1] = New HTMElement("")
+    $all[$all.Count - 1] = New HTMElement(Me)
     actualElm = $all[$all.Count - 1]
     If isRoot Then   ''<html> Tag
       Me.root = $all[$all.Count - 1]
@@ -602,7 +602,7 @@ Private Function parseComment(strPos As Integer) As Integer
   endPos = InStr($strHtml, "-->", strPos)
   
   $all.Add(Null)
-  $all[$all.Count - 1] = New HTMElement("")
+  $all[$all.Count - 1] = New HTMElement(Me)
   actualElm = $all[$all.Count - 1]
   Me.comments.Add(actualElm)
   
@@ -637,7 +637,7 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
   Dim actualElmIdx As Integer
   
   $all.Add(Null)
-  $all[$all.Count - 1] = New HTMElement("")
+  $all[$all.Count - 1] = New HTMElement(Me)
   actualElm = $all[$all.Count - 1]
   
   parsePutDOMReferences(actualElm)

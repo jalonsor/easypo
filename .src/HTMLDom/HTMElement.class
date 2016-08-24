@@ -12,6 +12,8 @@ Private $innerHTML As String
 Property innerTEXT As String
 Private $innerTEXT As String
 
+Private $obDocument as HTMDocument	''Reference to Document Object to operate references.
+
 Public tagName As String
 Public id As String
 Public name As String
@@ -31,7 +33,7 @@ Public childNodes As New HTMElement[]
 
 
 ''Constructores y Propiedades
-Public Sub _new(Optional strHtmlElem As String = Null)
+Public Sub _new(obDocument as HTMDocument, Optional strHtmlElem As String = Null)
   If strHtmlElem = Null Or Len(strHtmlElem) = 0 Then Return
   $innerHTML = strHtmlElem
   initElement
@@ -68,6 +70,8 @@ Private Sub destroyELEMENT()
 	$innerHTML = Null
 	$innerTEXT = Null
 
+	$obDocument = Null
+
 	tagName = Null
 	id = Null
 	name = Null
@@ -87,18 +91,55 @@ Private Sub destroyELEMENT()
 	childNodes = Null
 End
 
+Public Function elementTree(Optional printIt As Boolean = True) As String
+  Dim strRet As String = ""
+  ''TODO: elementTree
+  Return strRet
+End
+
+
+''***** METHODS and PROPERTIES for Element: http://www.w3schools.com/jsref/dom_obj_all.asp
+
 
 '
 ' element.attribute = New Value Change the attribute value Of an HTML element
 ' element.setAttribute(attribute, value)Change the attribute value Of an HTML element
 ' element.style.property = New Style Change the style Of an HTML element
-'
-' appendChild(obElm As HTMElement) As Boolean
-' insertBefore(para, child)
-' removeChild(child)
-' replaceChild(para, child)
-'
-'
+
+
+Public Function appendChild(obElm As HTMElement) As HTMElement	''Return Value: 	A Node Object, representing the appended node
+  ''TODO: appendChild
+End
+
+Public Function insertBefore(obNewElm As HTMElement,obExistingElm As HTMElement) As HTMElement	''Return Value: 	A Node Object, representing the inserted node
+  ''TODO: insertBefore
+End
+
+Function insertAfter(obNewElm As HTMElement, obExistingElm As HTMElement) As HTMElement	''Return Value: 	A Node Object, representing the inserted node
+	Dim parent As HTMElement
+    '~ //target is what you want it to go after. Look for this elements parent.
+    parent = obExistingElm.parentNode;
+
+    '~ //if the parents lastchild is the targetElement...
+    If parent.lastchild = obExistingElm Then
+        '~ //add the newElement after the target element.
+        parent.appendChild(obNewElm)
+	Else
+        '~ // else the target has siblings, insert the new element between the target and it's next sibling.
+        parent.insertBefore(obNewElm, obExistingElm.nextSibling)
+    EndIf
+	
+	Return obNewElm
+End
+
+Public Function removeChild(obElm As HTMElement) As HTMElement	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
+  ''TODO: removeChild
+End
+
+
+Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement	''Return Value: 	A Node object, representing the replaced node
+  ''TODO: replaceChild
+End
 
 
 
