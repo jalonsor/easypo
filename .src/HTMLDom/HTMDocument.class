@@ -104,7 +104,7 @@ Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As B
 End
 
 Public Sub _free() ''***Se invoca al destruir el objeto
-  clearDom  ''Liberar Objetos y Referencias
+  destroyDOM  ''Liberar Objetos y Referencias
 End
 
 
@@ -178,9 +178,84 @@ Private Sub initDom()
   $timeEndBuildDOM = Now
 End
 
-Private Sub clearDom()
-  ''TODO: Clear and initialize all objects
+Private Sub destroyDOM()
+	$classVersion = Null
+	$classDescription = Null
+	$classVendor = Null
+	
+	''*** INICIO Time Measurements
+	$timeStartLoadString = Null
+	$timeEndLoadString = Null
+	$timeStartLoadFile = Null
+	$timeEndLoadFile = Null
+	$timeStartBuildDOM = Null
+	$timeEndBuildDOM = Null
+	''*** FIN Time Measurements
 
+	
+	$innerHTML = Null
+	$text = Null
+	$strHtml = Null
+
+	baseURI = Null
+	doctype = Null
+	documentMode = Null
+	documentURI = Null
+	domain = Null
+	domConfig = Null
+	implementation = Null
+	inputEncoding = Null
+	lastModified = Null
+	referrer = Null
+	URL = Null
+
+	''**** INICIO Coleccion para busquedas
+	$all.Clear
+	$all=Null
+	$ids.Clear
+	$ids = Null
+	$tagNames.Clear
+	$tagNames = Null
+	$names.Clear
+	$names = Null
+	$classNames.Clear
+	$classNames = Null
+	''**** FIN Coleccion para busquedas
+
+	$stackElm.Clear
+	$stackElm = Null
+	document = Null
+
+	root = Null
+	documentElement = Null
+	head = Null
+	favicon = Null
+	title = Null
+	body = Null
+	cookie.Clear
+	cookie = Null
+	anchors.Clear
+	anchors = Null
+	applets.Clear
+	applets = Null
+	embeds.Clear
+	embeds = Null
+	forms.Clear
+	forms = Null
+	images.Clear
+	images = Null
+	links.Clear
+	links = Null
+	metas.Clear
+	metas = Null
+	linkRels.Clear
+	linkRels = Null
+	scripts.Clear
+	scripts = Null
+	comments.Clear
+	comments = Null
+	texts.Clear
+	texts = Null
 End
 
 ''****** FIN Constructores y Propiedades
