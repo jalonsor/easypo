@@ -280,24 +280,24 @@ HTMElement[]
 (pseudoXPath)s
 createElement
 m
-b
-(obElm)HTMElement;
+HTMElement
+(strTag)s
 createTextNode
 m
 HTMElement
-(STR)s
+(str)s
 removeChild
 m
-b
+HTMElement
 (obElm)HTMElement;
 appendChild
 m
-b
+HTMElement
 (obElm)HTMElement;
 replaceChild
 m
-b
-(obElm)HTMElement;
+HTMElement
+(obNewElm)HTMElement;(obOldElm)HTMElement;
 write
 m
 b
@@ -380,11 +380,31 @@ HTMElement[]
 _new
 m
 
-[(strHtmlElem)s]
+(obDocument)HTMDocument;[(strHtmlElem)s]
 _free
 m
 
 
+elementTree
+m
+s
+[(printIt)b]
+appendChild
+m
+HTMElement
+(obElm)HTMElement;
+insertBefore
+m
+HTMElement
+(obNewElm)HTMElement;(obExistingElm)HTMElement;
+removeChild
+m
+HTMElement
+(obElm)HTMElement;
+replaceChild
+m
+HTMElement
+(obNewElm)HTMElement;(obOldElm)HTMElement;
 #_HTMCONSTS
 
 C

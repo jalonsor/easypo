@@ -50,6 +50,7 @@ Private $classNames As New Collection '' HTMElement[][]
 ''**** FIN Coleccion para busquedas
 
 Private $stackElm As New HTMElement[]     ''To keep nesting track
+Private $tmpArrElm As New HTMElement[]     ''To keep temporary creation of objects before insert them in DOM
 
 Public document As HTMDocument = Me
 
@@ -178,6 +179,10 @@ Private Sub initDom()
   $timeEndBuildDOM = Now
 End
 
+Private Sub clearDom()
+  
+End
+
 Private Sub destroyDOM()
 	$classVersion = Null
 	$classDescription = Null
@@ -211,7 +216,7 @@ Private Sub destroyDOM()
 
 	''**** INICIO Coleccion para busquedas
 	$all.Clear
-	$all=Null
+	$all = Null
 	$ids.Clear
 	$ids = Null
 	$tagNames.Clear
@@ -358,23 +363,23 @@ Public Function evaluate(pseudoXPath As String) As HTMElement[]  ''Firefox, Chro
 End
 
 '***Adding and Deleting HTMElements
-Public Function createElement(strTag As String) As HTMElement	''Return Value: 	An Element object, which represents the created Element node
+Public Function createElement(strTag As String) As HTMElement 	''Return Value: 	An Element object, which represents the created Element node
   ''TODO: createElement
 End
 
-Public Function createTextNode(str As String) As HTMElement	''Return Value: 	A Text Node object with the created Text Node
+Public Function createTextNode(str As String) As HTMElement 	''Return Value: 	A Text Node object with the created Text Node
   ''TODO: createTextNode
 End
 
-Public Function removeChild(obElm As HTMElement) As HTMElement	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
+Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
   ''TODO: removeChild
 End
 
-Public Function appendChild(obElm As HTMElement) As HTMElement	''Return Value: 	A Node Object, representing the appended node
+Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node Object, representing the appended node
   ''TODO: appendChild
 End
 
-Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement	''Return Value: 	A Node object, representing the replaced node
+Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the replaced node
   ''TODO: replaceChild
 End
 
@@ -564,6 +569,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
 
 
     ''**** If there are Childs ....
+    Do ''While has ChildTags
     startChildPos = parseHasTextChild(actualElm.tagName, endPos)
     If startChildPos > 0 Then
       $stackElm.Add(actualElm)   ''To keep nesting track
@@ -571,7 +577,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
       $stackElm.Remove($stackElm.Count - 1)
     Endif
     
-    Do ''While has ChildTags
+    ''Do ''While has ChildTags
       startChildPos = parseHasTagChild(actualElm.tagName, endPos)
       If startChildPos > 0 Then
         $stackElm.Add(actualElm)   ''To keep nesting track
@@ -641,34 +647,17 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
   actualElm = $all[$all.Count - 1]
   
   parsePutDOMReferences(actualElm)
-  ' If $stackElm.Count > 0 Then
-  '   actualElm.parentNode = $stackElm[$stackElm.Count - 1]
-  '   If actualElm.parentNode.firstChild = Null Then
-  '     actualElm.parentNode.firstChild = actualElm
-  '   Endif
-  '   actualElm.parentNode.lastChild = actualElm
-  ' 
-  '   actualElm.parentNode.childNodes.Add(actualElm)
-  ' 
-  '   actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
-  '   If actualElmIdx > 0 Then
-  '     actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-  '   Endif
-  '   If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-  '     actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-  '   Endif
-  ' Endif
 
   If actualElm.parentNode.tagName = "script" Then
     endPos = InStr($strHtml, "</script>", strPos, gb.IgnoreCase)
     actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
     Me.scripts.Add(actualElm)
-    endPos += 9 ''Len("</script>")
+    endPos += 8 ''Len("</script>") - 1
   Else If actualElm.parentNode.tagName = "style" Then
     endPos = InStr($strHtml, "</style>", strPos, gb.IgnoreCase)
     actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
     Me.scripts.Add(actualElm)
-    endPos += 8 ''Len("</style>")
+    endPos += 7 ''Len("</style>") -1
   Else
     endPos = InStr($strHtml, "<", strPos)
     actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
@@ -677,8 +666,8 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
   
   actualElm.nodeType = Me.NODETYPE_TEXT
   
-  If actualElm.parentNode.tagName <> "script" Or actualElm.parentNode.tagName <> "style" Then
-    startTagSibilingPos = parseHasTagSibiling(endPos)
+  If actualElm.parentNode.tagName <> "script" And If actualElm.parentNode.tagName <> "style" Then
+    startTagSibilingPos = parseHasTagSibiling(actualElm.parentNode.tagName, endPos)
     If startTagSibilingPos > 0 Then ''Return 0 if NOT, >0 is the start Possition
       endPos = parseElement(startTagSibilingPos)
     Endif
@@ -778,7 +767,7 @@ Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As I
 End
 
 Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim endPos As Integer = 0, posCloseTag As Integer = 0, straux As String = ""
+  Dim endPos As Integer = 0, endPos1 As Integer = 0, posCloseTag As Integer = 0, straux As String = ""
   
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
@@ -786,40 +775,51 @@ Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integ
   
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
   
-  endPos = InStr($strHtml, "<", strPos)  'Open tag
-  ''endPos = parseInstr($strHtml, "<", ["/"], strPos)
+  endPos1 = InStr($strHtml, "<", strPos)  'Open tag
+  endPos = parseInstr("<", ["/"], strPos)
   If endPos > 0 Then straux = Mid$($strHtml, endPos, 10) ''Only to see what happens. Must delete this line after debugin
   
   ''TODO: parseHasTagChild: Is the new Tag really a children?. Is Close Tag?
   
   posCloseTag = parseFindCloseTag(tagName, strPos)
+  
   If posCloseTag > 0 Then 'If there is Close Tag ....
-  If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
-    Return endPos ''Return the initial possition of the Child Tag.
-  Endif
+    If endPos > 0 And If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
+      Return endPos ''Return the initial possition of the Child Tag.
+    Endif
   Endif
   
   Return 0 ''No ChildTag
 End
 
-Private Function parseInstr(str As String, strFind As String, notFollowedBy As String[], startPos As Integer) As Integer
-  Dim nAuxPos As Integer = 0, nTamStr As Integer = 0, auxPos As Integer = 0
-  Dim strChar As String = ""
+Private Function parseInstr(strFind As String, notFollowedBy As String[], startPos As Integer) As Integer
+  Dim i As Integer = 0, nAuxPos As Integer = 0, nTamStr As Integer = 0, auxPos As Integer = 0
+  Dim strChar As String = "", strChar2 As String = ""
   
-  nTamStr = Len(str)
+  nTamStr = Len($strHtml)
   auxPos = startPos
   
-  Do 
-    nAuxPos = InStr(str, strFind, auxPos)
-    If nAuxPos > 0 Then
-      strChar = Mid$(str, nAuxPos + 1, 1)
-      If notFollowedBy.Find(strChar) = -1 Then
-        Return nAuxPos
+  For i = startPos To nTamStr
+    strChar = Mid$($strHtml, i, 1)
+    If strChar = strFind Then
+      strChar2 = Mid$($strHtml, i + 1, 1)
+      If notFollowedBy.Find(strChar2) = -1 Then
+        Return i
       Endif
-      auxPos += nAuxPos
     Endif
-  Loop Until auxPos <= nTamStr And nAuxPos > 0
+  Next
   
+  ' Do 
+  '   nAuxPos = InStr($strHtml, strFind, auxPos)
+  '   If nAuxPos > 0 Then
+  '     strChar = Mid$($strHtml, nAuxPos + 1, 1)
+  '     If notFollowedBy.Find(strChar) = -1 Then
+  '       Return nAuxPos
+  '     Endif
+  '     auxPos += nAuxPos
+  '   Endif
+  ' Loop Until auxPos > nTamStr And nAuxPos > 0
+  ' 
   Return 0
 End
 
@@ -839,8 +839,11 @@ Private Function parseFindCloseTag(tagName As String, strPos As Integer) As Inte
   Return posCloseTag
 End
 
-Private Function parseHasTagSibiling(strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim endPos As Integer = 0
+Private Function parseHasTagSibiling(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+  Dim endPos As Integer = 0, posCloseTag As Integer
+  
+  posCloseTag = parseFindCloseTag(tagName, strPos)
+  
   
   Return endPos
 End
