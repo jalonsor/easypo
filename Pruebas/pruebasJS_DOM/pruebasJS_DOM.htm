@@ -2,66 +2,73 @@
 
 <html>
 <head>
-<title>Untitled</title>
+<title>Document - Element, Properties and Methods.</title>
+<style>
+	div.doc{
+		width: 45%;
+		height: 80%;
+		float: left;
+		border: solid 1px #0099ff;
+		overflow=auto;
+	}
+</style>
 </head>
 <body>
-			<h1>Prueba Cabecera</h1>
-			<p>Esto es un parrafo.</p>
-			<p id="0003">Esto es otro parrafo.<a href="localhost" id="000001">Texto del enlace.</a>
-			</p>
-
-<div id="00002"></div>
-<script language="JavaScript" type="text/javascript">
-<!--
-		var obDiv=document.getElementById('00002');
-		var opElement=document.getElementById('0003');
-		for(var el in document)
-		{
-			obDiv.innerHTML+= el + '<br />';
-		}
-//-->
-</script>
-
-<script language="JavaScript" type="text/javascript">
-<!--
-		var obDiv1=document.getElementById('00002');
-		var obElement1=document.getElementById('0003');
-/*		var methods = [];
-		for (var m in obElement1) 
-		{        
-			if (typeof obElement1[m] == "function" && obElement1.hasOwnProperty(m)) 
+	<h1>Prueba Cabecera</h1>
+	<p>Esto es un parrafo.</p>
+	<p id="0003">Esto es otro parrafo.<a href="localhost" id="000001">Texto del enlace.</a></p>
+			
+	<div class="doc" id="00002Document"><h1>Document</h1></div>
+	<div class="doc" id="00002Element"><h1>Element</h1></div>
+	<br /><br /><br />
+	<script language="JavaScript" type="text/javascript">
+	<!--
+			function getMethods(obj) 
 			{
-				methods.push(m);
-			}
-		}
-		alert(methods.join(","));
-*/		
-		function getMethods(obj) 
-		{
-			var result = [];
-			for (var id in obj) 
-			{
-				try 
+				var result = [];
+				for (var id in obj) 
 				{
-					if (typeof(obj[id]) == "function") 
+					try 
 					{
-						result.push(id + ": " + obj[id].toString());
+						if (typeof(obj[id]) == "function") 
+						{
+							result.push(id + ": " + obj[id].toString());
+						}
 					}
-				}
-				catch (err) 
-				{
-					result.push(id + ": inaccessible");
-				}
-			  }
-			  return result;
+					catch (err) 
+					{
+						result.push(id + ": inaccessible");
+					}
+				  }
+				  return result;
 			}
 			
-		//alert(getMethods(document).join("\n"));
-		//alert(getMethods(obElement1).join("\n"));
-		obDiv.innerHTML+= getMethods(document).join("<br />");
-		
-//-->
-</script>
-
+			var obDivDoc=document.getElementById('00002Document');
+			var obDivElm=document.getElementById('00002Element');
+			var obElm=document.getElementById('0003');
+			
+			//*** Document
+			obDivDoc.innerHTML+='<h3>Properties:</h3>'
+			for(var el in document)
+			{
+				obDivDoc.innerHTML+= el + '<br />';
+			}
+			obDivDoc.innerHTML+='<h3>Methods:</h3>'
+			obDivDoc.innerHTML+= getMethods(document).join("<br />");
+			obDivDoc.innerHTML+= '<br /><br /><br /><br />';
+			obDivDoc.style.overflow = 'auto';
+			
+			//*** Element
+			obDivElm.innerHTML+='<h3>Properties:</h3>'
+			for(var el in obElm)
+			{
+				obDivElm.innerHTML+= el + '<br />';
+			}
+			obDivElm.innerHTML+='<h3>Methods:</h3>'
+			obDivElm.innerHTML+= getMethods(obElm).join("<br />");
+			obDivElm.innerHTML+= '<br /><br /><br /><br />';
+			obDivElm.style.overflow = 'auto';
+	//-->
+	</script>
 </body>
 </html>
