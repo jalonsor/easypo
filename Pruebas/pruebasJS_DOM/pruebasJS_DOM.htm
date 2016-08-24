@@ -17,8 +17,49 @@
 		var opElement=document.getElementById('0003');
 		for(var el in document)
 		{
-		 				obDiv.innerHTML+= el + '<br />';
+			obDiv.innerHTML+= el + '<br />';
 		}
+//-->
+</script>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+		var obDiv1=document.getElementById('00002');
+		var obElement1=document.getElementById('0003');
+/*		var methods = [];
+		for (var m in obElement1) 
+		{        
+			if (typeof obElement1[m] == "function" && obElement1.hasOwnProperty(m)) 
+			{
+				methods.push(m);
+			}
+		}
+		alert(methods.join(","));
+*/		
+		function getMethods(obj) 
+		{
+			var result = [];
+			for (var id in obj) 
+			{
+				try 
+				{
+					if (typeof(obj[id]) == "function") 
+					{
+						result.push(id + ": " + obj[id].toString());
+					}
+				}
+				catch (err) 
+				{
+					result.push(id + ": inaccessible");
+				}
+			  }
+			  return result;
+			}
+			
+		//alert(getMethods(document).join("\n"));
+		//alert(getMethods(obElement1).join("\n"));
+		obDiv.innerHTML+= getMethods(obElement1).join("<br />");
+		
 //-->
 </script>
 
