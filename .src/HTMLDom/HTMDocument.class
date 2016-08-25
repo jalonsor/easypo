@@ -706,23 +706,6 @@ Private Function parseComment(strPos As Integer) As Integer
   actualElm.nodeType = Me.NODETYPE_COMMENT
   
   parsePutDOMReferences(actualElm)
-  ' If $stackElm.Count > 0 Then
-  '   actualElm.parentNode = $stackElm[$stackElm.Count - 1]
-  '   If actualElm.parentNode.firstChild = Null Then
-  '     actualElm.parentNode.firstChild = actualElm
-  '   Endif
-  '   actualElm.parentNode.lastChild = actualElm
-  ' 
-  '   actualElm.parentNode.childNodes.Add(actualElm)
-  ' 
-  '   actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
-  '   If actualElmIdx > 0 Then
-  '     actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-  '   Endif
-  '   If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-  '     actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-  '   Endif
-  ' Endif
 
   Return endPos
 End
@@ -773,7 +756,7 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
 
   auxStr = _HUtil.utilTrim(strEtiqueta, [" ", "\n", "<", ">"])
   arrAux = _HUtil.utilSplit(auxStr, " ", ["\"", "'"])
-
+  ''TODO: parseGetAttribs:  Wrong split in things like that:  attribute     =       value
   arrAux.Remove(0) ' Quitar el TagName
 
   For Each sAux1 In arrAux
@@ -880,6 +863,43 @@ Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integ
   Endif
   
   Return 0 ''No ChildTag
+End
+
+''TODO: parseHasChild Must Replace the two methods: parseHasTagChild and parseHasTextChild
+Private Functio parseHasChild(tagName As String, strStartPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+  Dim startChildPos As Integer = 0, posCharOpenTag as Integer=0, posCharCloseTag as Integer=0
+  Dim charIni as String=""
+
+  If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
+  If tagName = "script" Then Return 0 ''No TagChild cause is script
+  If tagName = "style" Then Return 0 ''No TagChild cause is style
+  
+  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
+  
+  charIni=Mid$($strHtml, strStartPos, 1)
+  if charIni <> "<" and if charIni <> ">" then 'If we are NOT dealing with a Tag ....
+    Return 0 ''It must be Text, style text o script text and have no  childs
+  Else If charIni = "<" then 'Start of the Tag
+    posCharCloseTag=InStr($strHtml, ">", strStartPos)  'Close tag ">"
+	posCharOpenTag=InStr($strHtml, "<", posCharCloseTagInStr+1)  'Open tag
+	
+	if (posCharCloseTag+1) < (posCharOpenTag -1) then 'Text between the Tags. NO Consecutive Tag
+	  Return (posCharCloseTag+1)
+	Else
+	
+	EndIf
+	
+  Else If charIni = ">" then 'End of the Tag
+    posCharOpenTag=InStr($strHtml, "<", strStartPos)  'Open tag
+	if strStartPos = (posCharOpenTag-1) then 'No text between the Tags. Consecutive Tag
+	  Return posCharOpenTag
+	else if strStartPos < (posCharOpenTag-1) then 'Text between the Tags. NO Consecutive Tag
+	  Return (strStartPos+1)
+	EndIf
+  EndIf
+
+  ''TODO: parseHasChild
+  Return startChildPos
 End
 
 Private Function parseInstr(strFind As String, notFollowedBy As String[], startPos As Integer) As Integer
