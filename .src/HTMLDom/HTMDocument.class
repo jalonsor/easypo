@@ -347,7 +347,7 @@ Public Function querySelectorAll(strCSSSelector As String) As HTMElement[]
   ''TODO: querySelectorAll
 End
 
-''**** PseudoXPath *****
+''**** INICIO PseudoXPath *****
 'Syntax:    http://www.w3schools.com/xsl/xpath_syntax.asp
 'Examples:  http://www.w3schools.com/xsl/xpath_examples.asp
 Public Function getByPseudoXPath(pseudoXPath As String) As HTMElement[] ''HTMLDOM (This)
@@ -361,10 +361,31 @@ End
 Public Function evaluate(pseudoXPath As String) As HTMElement[]  ''Firefox, Chrome, Opera and Safari
   Return getByPseudoXPath(pseudoXPath)
 End
+''**** FIN PseudoXPath *****
 
-'***Adding and Deleting HTMElements
+'***Manage Elements: Adding and Deleting HTMElements
 Public Function createElement(strTag As String) As HTMElement 	''Return Value: 	An Element object, which represents the created Element node
+  Dim obNew as new HTMElement(Me), arrAux as Collection
+  
+  If Instr(strTag, "<")>0 and if Instr(strTag, ">")>0 then
+	arrAux = parseGetAttribs(auxStr)
+    '' *** HTMElement Props.
+    obNew.tagName = auxStrTagName
+    obNew.id = arrAuxAttr["id"]
+    obNew.name = arrAuxAttr["name"]
+    obNew.class = arrAuxAttr["class"]
+    obNew.style = arrAuxAttr["style"]
+    obNew.type = arrAuxAttr["type"]
+    obNew.nodeType = parseGetElementType(obNew.tagName)
+    obNew.nodeValue = Null     ''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
+    obNew.attributes = arrAuxAttr.Copy()
+  Else
+	obNew.tagName=Lower(trim(strTag))
+	obNew.nodeType=parseGetElementType(obNew.tagName)
+  EndIf
+  
   ''TODO: createElement
+  Return obNew
 End
 
 Public Function createTextNode(str As String) As HTMElement 	''Return Value: 	A Text Node object with the created Text Node
