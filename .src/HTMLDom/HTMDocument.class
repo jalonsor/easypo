@@ -51,6 +51,7 @@ Private $classNames As New Collection '' HTMElement[][]
 
 Private $stackElm As New HTMElement[]     ''To keep nesting track
 Private $tmpArrElm As New HTMElement[]     ''To keep temporary creation of objects before insert them in DOM
+Private $removedArrElm As New HTMElement[]     ''To keep temporary deletion of objects
 
 Public document As HTMDocument = Me
 
@@ -229,8 +230,12 @@ Private Sub destroyDOM()
 
 	$stackElm.Clear
 	$stackElm = Null
+	$tmpArrElm.Clear
+	$tmpArrElm = Null
+	$removedArrElm.Clear
+	$removedArrElm = Null
+	
 	document = Null
-
 	root = Null
 	documentElement = Null
 	head = Null
@@ -365,7 +370,11 @@ End
 
 '***Manage Elements: Adding and Deleting HTMElements
 Public Function createElement(strTag As String) As HTMElement 	''Return Value: 	An Element object, which represents the created Element node
-  Dim obNew as new HTMElement(Me), arrAux as Collection
+  Dim obNew as HTMElement, arrAux as Collection
+  
+  $tmpArrElm.Add(Null)
+  $tmpArrElm[$tmpArrElm.Count - 1] = New HTMElement(Me)
+  obNew=$tmpArrElm[$tmpArrElm.Count - 1]
   
   If Instr(strTag, "<")>0 and if Instr(strTag, ">")>0 then
 	arrAux = parseGetAttribs(auxStr)
@@ -384,16 +393,76 @@ Public Function createElement(strTag As String) As HTMElement 	''Return Value: 	
 	obNew.nodeType=parseGetElementType(obNew.tagName)
   EndIf
   
-  ''TODO: createElement
+  ''TODO: createElement: See i Right.
   Return obNew
 End
 
 Public Function createTextNode(str As String) As HTMElement 	''Return Value: 	A Text Node object with the created Text Node
-  ''TODO: createTextNode
+  Dim obNew as HTMElement, arrAux as Collection
+  
+  $tmpArrElm.Add(Null)
+  $tmpArrElm[$tmpArrElm.Count - 1] = New HTMElement(Me)
+  obNew=$tmpArrElm[$tmpArrElm.Count - 1]
+  
+  obNew.nodeType=Me.NODETYPE_TEXT
+  obNew.nodeValue = str
+
+  ''TODO: createTextNode: See if Right.
+  Return obNew
 End
 
 Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
-  ''TODO: removeChild
+  Dim obRemoved as HTMElement, idxOnAllOb as Integer=0, idxOnParentChilds as Integer=0
+  
+  idxOnAllOb=$all.Find(obElm)
+  if idxOnAllOb < 0 then Return Null
+  
+  obRemoved=$all[idxOnAllOb]
+  domPutElementTreeOnREMOVED(idxOnAllOb) ''Extract $all[idxOnAllOb] Tree from $all (DOM)  and put it into $removedArrElm
+  
+  ''*** Now we must correct DOM References
+  if obRemoved.parentNode <> Null and if obRemoved.parentNode.childNodes.Count > 0 Then
+	idxOnParentChilds=obRemoved.parentNode.childNodes.Find(obRemoved)
+	
+	If obRemoved.previousSibling <> Null and if obRemoved.nextSibling <> Null Then	'If it is in the midle ...
+	  obRemoved.previousSibling.nextSibling=obRemoved.nextSibling
+	  obRemoved.nextSibling.previousSibling=obRemoved.previousSibling
+	Else If obRemoved.previousSibling <> Null and if obRemoved.nextSibling = Null Then 'If it is at The end ...
+	  obRemoved.previousSibling.nextSibling = Null
+	  obRemoved.parentNode.lastChild=obRemoved.previousSibling
+	Else If obRemoved.previousSibling = Null and if obRemoved.nextSibling <> Null Then 'If it is at The start ...
+	  obRemoved.nextSibling.previousSibling = Null
+	  obRemoved.parentNode.firstChild=obRemoved.nextSibling
+	If obRemoved.previousSibling = Null and if obRemoved.nextSibling = Null Then	'If it is in the only one ...
+	  obRemoved.parentNode.firstChild=Null
+	  obRemoved.parentNode.lastChild=Null
+	EndIf
+	parentNode.childNodes.Remove(idxOnParentChilds)
+  EndIf
+  
+  Return obRemoved
+End
+
+Private Function domPutElementTreeOnREMOVED(idxOnAllOb As Integer)  As HTMElement	''Extract $all[idxOnAllOb] tree from $all (DOM)  and put it into $removedArrElm
+  Dim obElm as HTMElement, i as Integer=0, idxChildOnAll as Integer=-1
+  
+  if idxOnAllOb < 0 Then Return Null
+  
+  $removedArrElm.Add($all[idxOnAllOb])
+  obElm=$all[idxOnAllOb]
+  $all.Remove(idxOnAllOb)
+  
+  if obElm <> Null and if obElm.childNodes.Count>0 then ''Remove Childs Tree from $all and put it into $removedArrElm
+    for i=0 to obElm.childNodes.Count -1
+	  idxChildOnAll=$all.Find(obElm.childNodes[i])
+	  if idxChildOnAll > -1 then
+		domPutElementTreeOnREMOVED(idxChildOnAll)
+	  EndIf
+	Next
+  EndIf
+  
+  ''TODO: domPutElementTreeOnREMOVED: See if Right.
+  Return obElm
 End
 
 Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node Object, representing the appended node
