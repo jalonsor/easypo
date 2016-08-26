@@ -485,7 +485,7 @@ Private Function domMoveElementTree(idxOnSource As Integer, source as String, de
 End
 
 Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node Object, representing the appended node
-  idxTmpObElm as Integer=0, idxRmObElm as Integer=0, idxAllObElm as Integer=0
+  Dim idxTmpObElm as Integer=0, idxRmObElm as Integer=0, idxAllObElm as Integer=0
   
   If Me.root <> Null Then
     ''TODO: appendChild: Extract obElm Tree from $removedArrElm or $tmpArrElm and put it into $all
@@ -522,18 +522,70 @@ Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 
 	
 	Return obElm
   EndIf
-  ''TODO: appendChild
+  
+  ''TODO: appendChild: See if Right
   Return Null
 End
 
 Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the replaced node
-  ''TODO: replaceChild
+  Dim idxTmpNewElm as Integer=0, idxRmNewElm as Integer=0, idxAllNewElm as Integer=0, idxOnParentChilds as Integer=-1
+  Dim idxOldElm as Integer=-1
   
+  idxOldElm=$all.Find(obOldElm)
+  
+  if idxOldElm < 0 Then Return Null ''No replacement can be done
+  
+  idxTmpNewElm=$tmpArrElm.Find(obElm)
+  if idxTmpNewElm<0 then idxRmNewElm=$removedArrElm.Find(obElm)
+  if idxRmNewElm<0 then idxAllNewElm=$all.Find(obElm)
+	
+  if idxTmpNewElm<0 and if idxRmNewElm<0 and if idxAllNewElm<0 then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
+	
+  If idxTmpNewElm > -1 Then
+	domMoveElementTree(idxTmpNewElm, "tmpArrElm", "all")
+  Else If idxRmNewElm > -1 Then
+	domMoveElementTree(idxRmNewElm, "removedArrElm", "all")
+  EndIf
+	
+  'Element References
+  obNewElm.parentNode=obOldElm.parentNode
+  obNewElm.firstChild=obOldElm.firstChild
+  obNewElm.lastChild=obOldElm.lastChild
+  obNewElm.nextSibling=obOldElm.nextSibling
+  obNewElm.previousSibling=obOldElm.previousSibling
+  obNewElm.childNodes=obOldElm.childNodes.Copy()	''TODO: replaceChild: Must Be?????????
+	
+  'Parent References
+  if obNewElm.parentNode.firstChild=obOldElm Then obNewElm.parentNode.firstChild=obNewElm
+  if obNewElm.parentNode.lastChild=obOldElm Then obNewElm.parentNode.lastChild=obNewElm
+  idxOnParentChilds=obNewElm.parentNode.childNodes.Find(obOldElm)
+  if idxOnParentChilds > -1 Then
+	obNewElm.parentNode.childNodes[idxOnParentChilds]=obNewElm
+  EndIf
+  
+  ''TODO: replaceChild: See if Right
   Return obOldElm
 End
 
-Public Function write(text As String) As Boolean
-  ''TODO: write
+''exp1,exp2,exp3,... 	Optional. What to write to the output stream. Multiple arguments can be listed and they will be appended to the document in order of occurrence
+Public Function write(...) As Boolean ''Using document.write() after an HTML document is fully loaded, will delete all existing HTML.
+  Dim prm as Variant, strNewHtml as String=""
+  
+  If Param.Count > 0 Then
+    For Each prm in Param.All
+	  If TypeOf(prm)=gb.String Then
+        strNewHtml &=CString(prm)
+	  EndIf
+	next
+	
+	if Len(strNewHtml)>0 Then
+		Me.innerHTML=strNewHtml ''Fires New DOM parsing
+		Return True
+	EndIf
+  EndIf
+	
+  ''TODO: write: See if Right.
+  Return False
 End
 
 Public Function appendText(text As String) As Boolean
