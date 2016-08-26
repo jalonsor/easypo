@@ -411,6 +411,10 @@ Public Function createTextNode(str As String) As HTMElement 	''Return Value: 	A 
   Return obNew
 End
 
+Public Function createCommentNode(str As String) As HTMElement 	''Return Value: 	A Comment Node object with the created Comment Node
+  ''TODO: createCommentNode: 
+End
+
 Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
   Dim obRemoved as HTMElement, idxOnAllOb as Integer=0, idxOnParentChilds as Integer=0
   
