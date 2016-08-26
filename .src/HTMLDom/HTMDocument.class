@@ -603,7 +603,17 @@ Public Function write(...) As Boolean ''Using document.write() after an HTML doc
 End
 
 Public Function appendText(text As String) As Boolean
-  ''TODO: appendText
+  Dim obNewTxt  As HTMElement
+  
+  obNewTxt=createTextNode(text)
+  
+  if obNewTxt = Null Then Return False
+  
+  if Me.appendChild(obNewTxt) = Null Then Return False
+
+  
+  ''TODO: appendText: See if right
+  Return True
 End
 
 
