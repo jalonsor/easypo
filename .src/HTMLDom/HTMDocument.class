@@ -412,7 +412,17 @@ Public Function createTextNode(str As String) As HTMElement 	''Return Value: 	A 
 End
 
 Public Function createCommentNode(str As String) As HTMElement 	''Return Value: 	A Comment Node object with the created Comment Node
-  ''TODO: createCommentNode: 
+  Dim obNew as HTMElement, arrAux as Collection
+  
+  $tmpArrElm.Add(Null)
+  $tmpArrElm[$tmpArrElm.Count - 1] = New HTMElement(Me)
+  obNew=$tmpArrElm[$tmpArrElm.Count - 1]
+  
+  obNew.nodeType=Me.NODETYPE_COMMENT
+  obNew.nodeValue = str
+
+  ''TODO: createCommentNode:  See if Right.
+  Return obNew
 End
 
 Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
