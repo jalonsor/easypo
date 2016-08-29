@@ -68,6 +68,7 @@ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)N
 Public anchors As New HTMElement[]      'Returns all < a > HTMElements that have a name attribute 1
 Public applets As New HTMElement[]      'Returns all < applet > HTMElements(Deprecated In HTML5)1
 Public embeds As New HTMElement[]      'Returns all < embed > HTMElements 3
+Public objects As New HTMElement[]      'Returns all < object > HTMElements 3
 Public forms As New HTMElement[]      'Returns all < form > HTMElements 1
 Public images As New HTMElement[]      'Returns all < img > HTMElements 1
 Public links As New HTMElement[]      'Returns all < area > And < a > HTMElements that have a href attribute 1
@@ -426,7 +427,7 @@ Public Function createCommentNode(str As String) As HTMElement 	''Return Value: 
 End
 
 Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
-  Dim obRemoved as HTMElement, idxOnAllOb as Integer=0, idxOnParentChilds as Integer=0
+  Dim obRemoved as HTMElement, idxOnAllOb as Integer=0, idxOnParentChilds as Integer=0, idxAux as Integer=0
   
   idxOnAllOb=$all.Find(obElm)
   if idxOnAllOb < 0 then Return Null
@@ -453,6 +454,78 @@ Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 
 	EndIf
 	parentNode.childNodes.Remove(idxOnParentChilds)
   EndIf
+  
+  ''*** Now we must Remove Shorcut References
+  if obRemoved.id then $ids.Remove(obRemoved.id)
+  idxAux=$tagNames[obRemoved.tagName].Find(obRemoved)
+  $tagNames[obRemoved.tagName].Remove(idxAux)
+  if obRemoved.name then 
+	idxAux=$names[obRemoved.name].Find(obRemoved)
+	$names[obRemoved.name].Remove(idxAux)
+  EndIf
+  if obRemoved.class then 
+	idxAux=$classNames[obRemoved.class].Find(obRemoved)
+	$classNames[obRemoved.class].Remove(idxAux)
+  EndIf
+  if Me.root=obRemoved Then Me.root=Null
+  if Me.documentElement=obRemoved Then Me.documentElement=Null
+  if Me.head=obRemoved Then Me.head=Null
+  if Me.title=obRemoved Then Me.title=Null
+  if Me.body=obRemoved Then Me.body=Null
+  if obRemoved.tagName="a" and if  obRemoved.name then 
+	idxAux=anchors.Find(obRemoved)
+	anchors.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="applet" then 
+	idxAux=applets.Find(obRemoved)
+	applets.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="embed" then 
+	idxAux=embeds.Find(obRemoved)
+	embeds.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="object" then 
+	idxAux=objects.Find(obRemoved)
+	objects.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="form" then 
+	idxAux=forms.Find(obRemoved)
+	forms.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="img" then 
+	idxAux=images.Find(obRemoved)
+	images.Remove(idxAux)
+  EndIf
+  if (obRemoved.tagName="a" or if obRemoved.tagName="area") and if obRemoved.attributes.Find("href")> -1 then 
+	idxAux=links.Find(obRemoved)
+	links.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="meta" then 
+	idxAux=metas.Find(obRemoved)
+	metas.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="link" then 
+	idxAux=linkRels.Find(obRemoved)
+	linkRels.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="script" then 
+	idxAux=scripts.Find(obRemoved)
+	scripts.Remove(idxAux)
+  EndIf
+  if obRemoved.nodeType=Me.NODETYPE_COMMENT then 
+	idxAux=comments.Find(obRemoved)
+	comments.Remove(idxAux)
+  EndIf
+  if obRemoved.nodeType=Me.NODETYPE_TEXT then 
+	idxAux=texts.Find(obRemoved)
+	texts.Remove(idxAux)
+  EndIf
+  if obRemoved.tagName="link" and if obRemoved.attributes.Find("rel")> -1 and if Instr(obRemoved.attributes.Find("rel"), "icon")>0 then 
+	favicon=Null
+  EndIf
+  
+  '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
+
   
   Return obRemoved
 End
@@ -755,6 +828,8 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
       Case "a"
         If actualElm.name Then Me.anchors.Add(actualElm)
         If actualElm.attributes["href"] Then Me.links.Add(actualElm)
+      Case "object"
+        Me.objects.Add(actualElm)
       Case "applet"
         Me.applets.Add(actualElm)
       Case "embed"
