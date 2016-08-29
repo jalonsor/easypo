@@ -941,25 +941,36 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
 
 
     ''**** If there are Childs ....
+    ' Do ''While has ChildTags
+    '   startChildPos = parseHasTextChild(actualElm.tagName, endPos)
+    '   If startChildPos > 0 Then
+    '     $stackElm.Add(actualElm)   ''To keep nesting track
+    '     endPos = parseText(startChildPos)   ''Returns where parsing ends, so we continue after
+    '     $stackElm.Remove($stackElm.Count - 1)
+    '   Endif
+    ' 
+    '   ''Do ''While has ChildTags
+    '   startChildPos = parseHasTagChild(actualElm.tagName, endPos)
+    '   If startChildPos > 0 Then
+    '     $stackElm.Add(actualElm)   ''To keep nesting track
+    '     endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
+    '     $stackElm.Remove($stackElm.Count - 1)
+    '   Endif
+    ' Loop Until startChildPos = 0  'No more Childrens TAGS
+    
     Do ''While has ChildTags
-      startChildPos = parseHasTextChild(actualElm.tagName, endPos)
-      If startChildPos > 0 Then
-        $stackElm.Add(actualElm)   ''To keep nesting track
-        endPos = parseText(startChildPos)   ''Returns where parsing ends, so we continue after
-        $stackElm.Remove($stackElm.Count - 1)
-      Endif
-
-      ''Do ''While has ChildTags
-      startChildPos = parseHasTagChild(actualElm.tagName, endPos)
+      startChildPos = parseHasChild(actualElm.tagName, endPos)
+      'startChildPos = parseHasTextChild(actualElm.tagName, endPos)
       If startChildPos > 0 Then
         $stackElm.Add(actualElm)   ''To keep nesting track
         endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
         $stackElm.Remove($stackElm.Count - 1)
       Endif
-    Loop Until startChildPos = 0  'No more Childrens TAGS
+    Loop Until startChildPos = 0  'No more Childrens TAGS    parseHasChild(tagName As String, strStartPos As Integer)
+    
   Endif
 
-  Return endPos
+  Return (endPos)
 
 End
 
@@ -1074,16 +1085,21 @@ Private Function parseGetEtiquetaCompleta(strPos As Integer, ByRef endPos As Int
 End
 
 Private Function parseGetTagName(strPos As Integer) As String
-
   Dim spcPos As Integer, closePos As Integer
+  Dim charIni As String = ""
 
-  spcPos = InStr($strHtml, " ", strPos + 1)
-  closePos = InStr($strHtml, ">", strPos + 1)
-  If closePos < spcPos Then
-    Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, ">", strPos + 1) - (strPos + 1))))
+  charIni = Mid$($strHtml, strPos, 1)
+  If charIni = "<" Then
+    spcPos = InStr($strHtml, " ", strPos)
+    closePos = InStr($strHtml, ">", strPos)
+    If closePos < spcPos Then
+      Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, ">", strPos + 1) - (strPos + 1))))
+    Else
+      Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, " ", strPos + 1) - (strPos + 1))))
+    Endif
   Endif
-  Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, " ", strPos + 1) - (strPos + 1))))
-
+  
+  Return ""
 End
 
 Private Function parseIsHtml(strTagName As String) As Boolean
@@ -1212,7 +1228,7 @@ Private Function parseHasChild(tagName As String, strStartPos As Integer) As Int
     If strStartPos = (posCharOpenTag - 1) Then 'No text between the Tags. Consecutive Tag
       Return posCharOpenTag
     Else If strStartPos < (posCharOpenTag - 1) Then 'Text between the Tags. NO Consecutive Tag
-      Return (strStartPos + 1)
+      Return strStartPos
     Endif
   Endif
 
