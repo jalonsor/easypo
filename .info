@@ -146,6 +146,10 @@ embeds
 v
 HTMElement[]
 
+objects
+v
+HTMElement[]
+
 forms
 v
 HTMElement[]
@@ -286,6 +290,10 @@ createTextNode
 m
 HTMElement
 (str)s
+createCommentNode
+m
+HTMElement
+(str)s
 removeChild
 m
 HTMElement
@@ -301,7 +309,7 @@ HTMElement
 write
 m
 b
-(text)s
+.
 appendText
 m
 b

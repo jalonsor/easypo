@@ -34,7 +34,7 @@ Public childNodes As New HTMElement[]
 
 ''Constructores y Propiedades
 Public Sub _new(obDocument As HTMDocument, Optional strHtmlElem As String = Null)
-  $obDocument=obDocument
+  $obDocument = obDocument
   
   If strHtmlElem = Null Or Len(strHtmlElem) = 0 Then Return
   $innerHTML = strHtmlElem

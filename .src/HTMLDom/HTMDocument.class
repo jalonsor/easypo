@@ -94,8 +94,9 @@ Public URL As String      'Returns the complete URL Of the document 1
 
 ''****** INICIO Constructores y Propiedades
 Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As Boolean = True)
+
   $removeBlankText = removeBlankText
-  
+
   If strHtml <> Null Then
     $swLoadedByFile = False
     $timeStartLoadString = Now
@@ -104,72 +105,107 @@ Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As B
     $timeEndLoadString = Now
     initDom
   Endif
+
 End
 
 Public Sub _free() ''***Se invoca al destruir el objeto
+
   destroyDOM  ''Liberar Objetos y Referencias
+
 End
 
 
 Private Function innerHTML_Read() As String
+
   Return $innerHTML
+
 End
 
 Private Sub innerHTML_Write(Value As String)
+
   $swLoadedByFile = False
   $timeStartLoadString = Now
   $innerHTML = Value
   $strHtml = Value
   $timeEndLoadString = Now
   initDom
+
 End
 
 Private Function text_Read() As String
+
   Return $Text
+
 End
 
 Private Sub text_Write(Value As String)
+
   $text = Value
   $innerHTML = Value
   $strHtml = Value
   initDom
+
 End
 
 Private Function removeBlankText_Read() As Boolean
+
   Return $removeBlankText
+
 End
 
 Private Sub removeBlankText_Write(Value As Boolean)
+
   $removeBlankText = Value
+
 End
 
 Private Function timeLoadString_Read() As Integer
+
   Return (DateDiff($timeStartLoadString, $timeEndLoadString, gb.Millisecond))
+
 End
+
 Private Function timeLoadFile_Read() As Integer
+
   Return (DateDiff($timeStartLoadFile, $timeEndLoadFile, gb.Millisecond))
+
 End
+
 Private Function timeBuildDOM_Read() As Integer
+
   Return (DateDiff($timeStartBuildDOM, $timeEndBuildDOM, gb.Millisecond))
+
 End
 
 Private Function classVersion_Read() As String
+
   Return $classVersion
+
 End
+
 Private Function classDescription_Read() As String
+
   Return $classDescription
+
 End
+
 Private Function className_Read() As String
+
   Return Object.Class(Me).Name
+
 End
+
 Private Function classVendor_Read() As String
+
   Return $classVendor
+
 End
 
 '**** Lo gordo de construir el DOM esta aqui ***
 Private Sub initDom()
+
   $timeStartBuildDOM = Now
-  
+
   If Me.readyState = True Then
     clearDom
     Me.readyState = False
@@ -177,96 +213,99 @@ Private Sub initDom()
 
   parseDocument
   Me.readyState = True
-  
+
   $timeEndBuildDOM = Now
+
 End
 
 Private Sub clearDom()
-  
+
 End
 
 Private Sub destroyDOM()
-	$classVersion = Null
-	$classDescription = Null
-	$classVendor = Null
-	
-	''*** INICIO Time Measurements
-	$timeStartLoadString = Null
-	$timeEndLoadString = Null
-	$timeStartLoadFile = Null
-	$timeEndLoadFile = Null
-	$timeStartBuildDOM = Null
-	$timeEndBuildDOM = Null
-	''*** FIN Time Measurements
 
-	
-	$innerHTML = Null
-	$text = Null
-	$strHtml = Null
+  $classVersion = Null
+  $classDescription = Null
+  $classVendor = Null
 
-	baseURI = Null
-	doctype = Null
-	documentMode = Null
-	documentURI = Null
-	domain = Null
-	domConfig = Null
-	implementation = Null
-	inputEncoding = Null
-	lastModified = Null
-	referrer = Null
-	URL = Null
+  ''*** INICIO Time Measurements
+  $timeStartLoadString = Null
+  $timeEndLoadString = Null
+  $timeStartLoadFile = Null
+  $timeEndLoadFile = Null
+  $timeStartBuildDOM = Null
+  $timeEndBuildDOM = Null
+  ''*** FIN Time Measurements
 
-	''**** INICIO Coleccion para busquedas
-	$all.Clear
-	$all = Null
-	$ids.Clear
-	$ids = Null
-	$tagNames.Clear
-	$tagNames = Null
-	$names.Clear
-	$names = Null
-	$classNames.Clear
-	$classNames = Null
-	''**** FIN Coleccion para busquedas
 
-	$stackElm.Clear
-	$stackElm = Null
-	$tmpArrElm.Clear
-	$tmpArrElm = Null
-	$removedArrElm.Clear
-	$removedArrElm = Null
-	
-	document = Null
-	root = Null
-	documentElement = Null
-	head = Null
-	favicon = Null
-	title = Null
-	body = Null
-	cookie.Clear
-	cookie = Null
-	anchors.Clear
-	anchors = Null
-	applets.Clear
-	applets = Null
-	embeds.Clear
-	embeds = Null
-	forms.Clear
-	forms = Null
-	images.Clear
-	images = Null
-	links.Clear
-	links = Null
-	metas.Clear
-	metas = Null
-	linkRels.Clear
-	linkRels = Null
-	scripts.Clear
-	scripts = Null
-	comments.Clear
-	comments = Null
-	texts.Clear
-	texts = Null
+  $innerHTML = Null
+  $text = Null
+  $strHtml = Null
+
+  baseURI = Null
+  doctype = Null
+  documentMode = Null
+  documentURI = Null
+  domain = Null
+  domConfig = Null
+  implementation = Null
+  inputEncoding = Null
+  lastModified = Null
+  referrer = Null
+  URL = Null
+
+  ''**** INICIO Coleccion para busquedas
+  $all.Clear
+  $all = Null
+  $ids.Clear
+  $ids = Null
+  $tagNames.Clear
+  $tagNames = Null
+  $names.Clear
+  $names = Null
+  $classNames.Clear
+  $classNames = Null
+  ''**** FIN Coleccion para busquedas
+
+  $stackElm.Clear
+  $stackElm = Null
+  $tmpArrElm.Clear
+  $tmpArrElm = Null
+  $removedArrElm.Clear
+  $removedArrElm = Null
+
+  document = Null
+  root = Null
+  documentElement = Null
+  head = Null
+  favicon = Null
+  title = Null
+  body = Null
+  cookie.Clear
+  cookie = Null
+  anchors.Clear
+  anchors = Null
+  applets.Clear
+  applets = Null
+  embeds.Clear
+  embeds = Null
+  forms.Clear
+  forms = Null
+  images.Clear
+  images = Null
+  links.Clear
+  links = Null
+  metas.Clear
+  metas = Null
+  linkRels.Clear
+  linkRels = Null
+  scripts.Clear
+  scripts = Null
+  comments.Clear
+  comments = Null
+  texts.Clear
+  texts = Null
+
 End
 
 ''****** FIN Constructores y Propiedades
@@ -274,6 +313,7 @@ End
 
 ''*** Metodos Publicos
 Public Sub fromString(strHtml As String, Optional removeBlankText As Boolean = True)
+
   $removeBlankText = removeBlankText
   $swLoadedByFile = False
   $timeStartLoadString = Now
@@ -281,19 +321,21 @@ Public Sub fromString(strHtml As String, Optional removeBlankText As Boolean = T
   $strHtml = strHtml
   $timeEndLoadString = Now
   initDom
+
 End
 
 Public Function fromFile(strFilepath As String, Optional removeBlankText As Boolean = True) As Boolean
+
   Dim pF As File
   Dim strLine As String
 
   $removeBlankText = removeBlankText
-  
+
   ''TODO: Missing "\n" whith Line Input. Must Repair. (***) Using LineEnds broke the DOM. Must Repair.
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
     $swLoadedByFile = True
     $timeStartLoadFile = Now
-  
+
     pF = Open strFilepath For Input
     While Not Eof(pF)
       Line Input #pF, strLine
@@ -307,17 +349,21 @@ Public Function fromFile(strFilepath As String, Optional removeBlankText As Bool
   Endif
 
   Return False
+
 End
 
 Public Function domTree(Optional printIt As Boolean = True) As String
+
   Dim strRet As String = ""
   ''TODO: domTree
   Return strRet
+
 End
 
 Public Function objectStats(Optional printIt As Boolean = True) As String
+
   Dim strRet As String = ""
-  
+
   strRet &= "**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
   If $swLoadedByFile = True Then
     strRet &= "\tTime to load File:\t" & (Me.timeLoadFile / 1000) & " Seconds.\n"
@@ -326,31 +372,41 @@ Public Function objectStats(Optional printIt As Boolean = True) As String
   Endif
   strRet &= "\tTime to Build DOM:\t" & (Me.timeBuildDOM / 1000) & " Seconds.\n"
   strRet &= "*************************************************************\n\n"
-  
+
   If printIt = True Then Print strRet
-  
+
   Return strRet
+
 End
 
 '***Finding HTML HTMElements
 Public Function getElementById(id As String) As HTMElement
+
   Return $ids[id]
+
 End
 
 Public Function getElementsByTagName(tagName As String) As HTMElement[]
+
   Return $tagNames[tagName]
+
 End
 
 Public Function getElementsByName(name As String) As HTMElement[]
+
   Return $names[name]
+
 End
 
 Public Function getElementsByClassName(className As String) As HTMElement[]
+
   Return $classNames[className]
+
 End
 
 Public Function querySelectorAll(strCSSSelector As String) As HTMElement[]
   ''TODO: querySelectorAll
+
 End
 
 ''**** INICIO PseudoXPath *****
@@ -358,340 +414,371 @@ End
 'Examples:  http://www.w3schools.com/xsl/xpath_examples.asp
 Public Function getByPseudoXPath(pseudoXPath As String) As HTMElement[] ''HTMLDOM (This)
   ''TODO: getByPseudoXPath
+
 End
 
 Public Function selectNodes(pseudoXPath As String) As HTMElement[]  ''MS - Internet Explorer
+
   Return getByPseudoXPath(pseudoXPath)
+
 End
 
 Public Function evaluate(pseudoXPath As String) As HTMElement[]  ''Firefox, Chrome, Opera and Safari
+
   Return getByPseudoXPath(pseudoXPath)
+
 End
 ''**** FIN PseudoXPath *****
 
 '***Manage Elements: Adding and Deleting HTMElements
 Public Function createElement(strTag As String) As HTMElement 	''Return Value: 	An Element object, which represents the created Element node
-  Dim obNew as HTMElement, arrAux as Collection
-  
+
+  Dim obNew As HTMElement, arrAux As Collection, arrAux1 As String[]
+
   $tmpArrElm.Add(Null)
   $tmpArrElm[$tmpArrElm.Count - 1] = New HTMElement(Me)
-  obNew=$tmpArrElm[$tmpArrElm.Count - 1]
-  
-  If Instr(strTag, "<")>0 and if Instr(strTag, ">")>0 then
-	arrAux = parseGetAttribs(auxStr)
+  obNew = $tmpArrElm[$tmpArrElm.Count - 1]
+
+  If InStr(strTag, "<") > 0 And If InStr(strTag, ">") > 0 Then
+    arrAux = parseGetAttribs(strTag)
     '' *** HTMElement Props.
-    obNew.tagName = auxStrTagName
-    obNew.id = arrAuxAttr["id"]
-    obNew.name = arrAuxAttr["name"]
-    obNew.class = arrAuxAttr["class"]
-    obNew.style = arrAuxAttr["style"]
-    obNew.type = arrAuxAttr["type"]
+    arrAux1 = Split(strTag, " ")
+    obNew.tagName = Mid$(arrAux1[0], 2, Len(arrAux1[0]) - 1)
+    obNew.id = arrAux["id"]
+    obNew.name = arrAux["name"]
+    obNew.class = arrAux["class"]
+    obNew.style = arrAux["style"]
+    obNew.type = arrAux["type"]
     obNew.nodeType = parseGetElementType(obNew.tagName)
     obNew.nodeValue = Null     ''for element nodes is undefined. or text nodes is the text itself. or attribute nodes is the attribute value.
-    obNew.attributes = arrAuxAttr.Copy()
+    obNew.attributes = arrAux.Copy()
   Else
-	obNew.tagName=Lower(trim(strTag))
-	obNew.nodeType=parseGetElementType(obNew.tagName)
-  EndIf
-  
+    obNew.tagName = Lower(Trim(strTag))
+    obNew.nodeType = parseGetElementType(obNew.tagName)
+  Endif
+
   ''TODO: createElement: See i Right.
   Return obNew
+
 End
 
 Public Function createTextNode(str As String) As HTMElement 	''Return Value: 	A Text Node object with the created Text Node
-  Dim obNew as HTMElement, arrAux as Collection
-  
+
+  Dim obNew As HTMElement, arrAux As Collection
+
   $tmpArrElm.Add(Null)
   $tmpArrElm[$tmpArrElm.Count - 1] = New HTMElement(Me)
-  obNew=$tmpArrElm[$tmpArrElm.Count - 1]
-  
-  obNew.nodeType=Me.NODETYPE_TEXT
+  obNew = $tmpArrElm[$tmpArrElm.Count - 1]
+
+  obNew.nodeType = Me.NODETYPE_TEXT
   obNew.nodeValue = str
 
   ''TODO: createTextNode: See if Right.
   Return obNew
+
 End
 
 Public Function createCommentNode(str As String) As HTMElement 	''Return Value: 	A Comment Node object with the created Comment Node
-  Dim obNew as HTMElement, arrAux as Collection
-  
+
+  Dim obNew As HTMElement, arrAux As Collection
+
   $tmpArrElm.Add(Null)
   $tmpArrElm[$tmpArrElm.Count - 1] = New HTMElement(Me)
-  obNew=$tmpArrElm[$tmpArrElm.Count - 1]
-  
-  obNew.nodeType=Me.NODETYPE_COMMENT
+  obNew = $tmpArrElm[$tmpArrElm.Count - 1]
+
+  obNew.nodeType = Me.NODETYPE_COMMENT
   obNew.nodeValue = str
 
   ''TODO: createCommentNode:  See if Right.
   Return obNew
+
 End
 
 Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the removed node, or null if the node does not exist
-  Dim obRemoved as HTMElement, idxOnAllOb as Integer=0, idxOnParentChilds as Integer=0, idxAux as Integer=0
-  
-  idxOnAllOb=$all.Find(obElm)
-  if idxOnAllOb < 0 then Return Null
-  
-  obRemoved=$all[idxOnAllOb]
-  domMoveElementTree(idxOnAllOb, "all", "removedArrElm")''Extract $all[idxOnAllOb] Tree from $all (DOM)  and put it into $removedArrElm
-  
+
+  Dim obRemoved As HTMElement, idxOnAllOb As Integer = 0, idxOnParentChilds As Integer = 0, idxAux As Integer = 0
+
+  idxOnAllOb = $all.Find(obElm)
+  If idxOnAllOb < 0 Then Return Null
+
+  obRemoved = $all[idxOnAllOb]
+  domMoveElementTree(idxOnAllOb, "all", "removedArrElm") ''Extract $all[idxOnAllOb] Tree from $all (DOM)  and put it into $removedArrElm
+
   ''*** Now we must correct DOM References
-  if obRemoved.parentNode <> Null and if obRemoved.parentNode.childNodes.Count > 0 Then
-	idxOnParentChilds=obRemoved.parentNode.childNodes.Find(obRemoved)
-	
-	If obRemoved.previousSibling <> Null and if obRemoved.nextSibling <> Null Then	'If it is in the midle ...
-	  obRemoved.previousSibling.nextSibling=obRemoved.nextSibling
-	  obRemoved.nextSibling.previousSibling=obRemoved.previousSibling
-	Else If obRemoved.previousSibling <> Null and if obRemoved.nextSibling = Null Then 'If it is at The end ...
-	  obRemoved.previousSibling.nextSibling = Null
-	  obRemoved.parentNode.lastChild=obRemoved.previousSibling
-	Else If obRemoved.previousSibling = Null and if obRemoved.nextSibling <> Null Then 'If it is at The start ...
-	  obRemoved.nextSibling.previousSibling = Null
-	  obRemoved.parentNode.firstChild=obRemoved.nextSibling
-	If obRemoved.previousSibling = Null and if obRemoved.nextSibling = Null Then	'If it is in the only one ...
-	  obRemoved.parentNode.firstChild=Null
-	  obRemoved.parentNode.lastChild=Null
-	EndIf
-	parentNode.childNodes.Remove(idxOnParentChilds)
-  EndIf
-  
+  If obRemoved.parentNode <> Null And If obRemoved.parentNode.childNodes.Count > 0 Then
+    idxOnParentChilds = obRemoved.parentNode.childNodes.Find(obRemoved)
+
+    If obRemoved.previousSibling <> Null And If obRemoved.nextSibling <> Null Then 	'If it is in the midle ...
+      obRemoved.previousSibling.nextSibling = obRemoved.nextSibling
+      obRemoved.nextSibling.previousSibling = obRemoved.previousSibling
+    Else If obRemoved.previousSibling <> Null And If obRemoved.nextSibling = Null Then 'If it is at The end ...
+      obRemoved.previousSibling.nextSibling = Null
+      obRemoved.parentNode.lastChild = obRemoved.previousSibling
+    Else If obRemoved.previousSibling = Null And If obRemoved.nextSibling <> Null Then 'If it is at The start ...
+      obRemoved.nextSibling.previousSibling = Null
+      obRemoved.parentNode.firstChild = obRemoved.nextSibling
+      If obRemoved.previousSibling = Null And If obRemoved.nextSibling = Null Then 	'If it is in the only one ...
+        obRemoved.parentNode.firstChild = Null
+        obRemoved.parentNode.lastChild = Null
+      Endif
+    Endif
+    obRemoved.parentNode.childNodes.Remove(idxOnParentChilds)
+  Endif
+
+
   ''*** Now we must Remove Shorcut References
-  if obRemoved.id then $ids.Remove(obRemoved.id)
-  idxAux=$tagNames[obRemoved.tagName].Find(obRemoved)
+  If obRemoved.id Then $ids.Remove(obRemoved.id)
+  idxAux = $tagNames[obRemoved.tagName].Find(obRemoved)
   $tagNames[obRemoved.tagName].Remove(idxAux)
-  if obRemoved.name then 
-	idxAux=$names[obRemoved.name].Find(obRemoved)
-	$names[obRemoved.name].Remove(idxAux)
-  EndIf
-  if obRemoved.class then 
-	idxAux=$classNames[obRemoved.class].Find(obRemoved)
-	$classNames[obRemoved.class].Remove(idxAux)
-  EndIf
-  if Me.root=obRemoved Then Me.root=Null
-  if Me.documentElement=obRemoved Then Me.documentElement=Null
-  if Me.head=obRemoved Then Me.head=Null
-  if Me.title=obRemoved Then Me.title=Null
-  if Me.body=obRemoved Then Me.body=Null
-  if obRemoved.tagName="a" and if  obRemoved.name then 
-	idxAux=anchors.Find(obRemoved)
-	anchors.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="applet" then 
-	idxAux=applets.Find(obRemoved)
-	applets.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="embed" then 
-	idxAux=embeds.Find(obRemoved)
-	embeds.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="object" then 
-	idxAux=objects.Find(obRemoved)
-	objects.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="form" then 
-	idxAux=forms.Find(obRemoved)
-	forms.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="img" then 
-	idxAux=images.Find(obRemoved)
-	images.Remove(idxAux)
-  EndIf
-  if (obRemoved.tagName="a" or if obRemoved.tagName="area") and if obRemoved.attributes.Find("href")> -1 then 
-	idxAux=links.Find(obRemoved)
-	links.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="meta" then 
-	idxAux=metas.Find(obRemoved)
-	metas.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="link" then 
-	idxAux=linkRels.Find(obRemoved)
-	linkRels.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="script" then 
-	idxAux=scripts.Find(obRemoved)
-	scripts.Remove(idxAux)
-  EndIf
-  if obRemoved.nodeType=Me.NODETYPE_COMMENT then 
-	idxAux=comments.Find(obRemoved)
-	comments.Remove(idxAux)
-  EndIf
-  if obRemoved.nodeType=Me.NODETYPE_TEXT then 
-	idxAux=texts.Find(obRemoved)
-	texts.Remove(idxAux)
-  EndIf
-  if obRemoved.tagName="link" and if obRemoved.attributes.Find("rel")> -1 and if Instr(obRemoved.attributes.Find("rel"), "icon")>0 then 
-	favicon=Null
-  EndIf
-  
+  If obRemoved.name Then
+    idxAux = $names[obRemoved.name].Find(obRemoved)
+    $names[obRemoved.name].Remove(idxAux)
+  Endif
+  If obRemoved.class Then
+    idxAux = $classNames[obRemoved.class].Find(obRemoved)
+    $classNames[obRemoved.class].Remove(idxAux)
+  Endif
+  If Me.root = obRemoved Then Me.root = Null
+  If Me.documentElement = obRemoved Then Me.documentElement = Null
+  If Me.head = obRemoved Then Me.head = Null
+  If Me.title = obRemoved Then Me.title = Null
+  If Me.body = obRemoved Then Me.body = Null
+  If obRemoved.tagName = "a" And If obRemoved.name Then
+    idxAux = anchors.Find(obRemoved)
+    anchors.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "applet" Then
+    idxAux = applets.Find(obRemoved)
+    applets.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "embed" Then
+    idxAux = embeds.Find(obRemoved)
+    embeds.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "object" Then
+    idxAux = objects.Find(obRemoved)
+    objects.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "form" Then
+    idxAux = forms.Find(obRemoved)
+    forms.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "img" Then
+    idxAux = images.Find(obRemoved)
+    images.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "a" Or If obRemoved.tagName = "area" Then
+    If obRemoved.attributes.Find("href") > -1 Then
+      idxAux = links.Find(obRemoved)
+      links.Remove(idxAux)
+    Endif
+  Endif
+  If obRemoved.tagName = "meta" Then
+    idxAux = metas.Find(obRemoved)
+    metas.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "link" Then
+    idxAux = linkRels.Find(obRemoved)
+    linkRels.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "script" Then
+    idxAux = scripts.Find(obRemoved)
+    scripts.Remove(idxAux)
+  Endif
+  If obRemoved.nodeType = Me.NODETYPE_COMMENT Then
+    idxAux = comments.Find(obRemoved)
+    comments.Remove(idxAux)
+  Endif
+  If obRemoved.nodeType = Me.NODETYPE_TEXT Then
+    idxAux = texts.Find(obRemoved)
+    texts.Remove(idxAux)
+  Endif
+  If obRemoved.tagName = "link" And If obRemoved.attributes.Find("rel") > -1 Then
+    If InStr(obRemoved.attributes.Find("rel"), "icon") > 0 Then
+      favicon = Null
+    Endif
+  Endif
+
   '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
 
-  
+
   Return obRemoved
+
 End
 
-Private Function domMoveElementTree(idxOnSource As Integer, source as String, destination as String)  As HTMElement	''Extract $all[idxOnAllOb] tree from $all (DOM)  and put it into $removedArrElm
-  Dim obElm as HTMElement, i as Integer=0, idxChildOnSource as Integer=-1
-  Dim arrSource As HTMElement[]=Null, arrDestination As HTMElement[]=Null
-  
-  if idxOnSource < 0 Then Return Null
+Private Function domMoveElementTree(idxOnSource As Integer, source As String, destination As String) As HTMElement 	''Extract $all[idxOnAllOb] tree from $all (DOM)  and put it into $removedArrElm
 
-  select source
-    case "all"
-	  arrSource=$all
-    case "removedArrElm"
-	  arrSource=$removedArrElm
-    case "tmpArrElm"
-	  arrSource=$tmpArrElm
+  Dim obElm As HTMElement, i As Integer = 0, idxChildOnSource As Integer = -1
+  Dim arrSource As HTMElement[] = Null, arrDestination As HTMElement[] = Null
+
+  If idxOnSource < 0 Then Return Null
+
+  Select source
+    Case "all"
+      arrSource = $all
+    Case "removedArrElm"
+      arrSource = $removedArrElm
+    Case "tmpArrElm"
+      arrSource = $tmpArrElm
   End Select
-  
-  select destination
-    case "all"
-	  arrDestination=$all
-    case "removedArrElm"
-	  arrDestination=$removedArrElm
-    case "tmpArrElm"
-	  arrDestination=$tmpArrElm
+
+  Select destination
+    Case "all"
+      arrDestination = $all
+    Case "removedArrElm"
+      arrDestination = $removedArrElm
+    Case "tmpArrElm"
+      arrDestination = $tmpArrElm
   End Select
-  
+
   arrDestination.Add($all[idxOnSource])
-  obElm=arrSource[idxOnSource]
+  obElm = arrSource[idxOnSource]
   arrSource.Remove(idxOnSource)
-  
-  if obElm <> Null and if obElm.childNodes.Count>0 then ''Remove Childs Tree from $all and put it into $removedArrElm
-    for i=0 to obElm.childNodes.Count -1
-	  idxChildOnSource=arrSource.Find(obElm.childNodes[i])
-	  if idxChildOnSource > -1 then
-		domMoveElementTree(idxChildOnSource, source, destination)
-	  EndIf
-	Next
-  EndIf
-  
+
+  If obElm <> Null And If obElm.childNodes.Count > 0 Then ''Remove Childs Tree from $all and put it into $removedArrElm
+    For i = 0 To obElm.childNodes.Count - 1
+      idxChildOnSource = arrSource.Find(obElm.childNodes[i])
+      If idxChildOnSource > -1 Then
+        domMoveElementTree(idxChildOnSource, source, destination)
+      Endif
+    Next
+  Endif
+
   ''TODO: domMoveElementTree: See if Right.
   Return obElm
+
 End
 
 Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node Object, representing the appended node
-  Dim idxTmpObElm as Integer=0, idxRmObElm as Integer=0, idxAllObElm as Integer=0
-  
+
+  Dim idxTmpObElm As Integer = 0, idxRmObElm As Integer = 0, idxAllObElm As Integer = 0
+
   If Me.root <> Null Then
     ''TODO: appendChild: Extract obElm Tree from $removedArrElm or $tmpArrElm and put it into $all
-	'domMoveElementTree(idxOnSource As Integer, source as String, destination as String)
-	
-	idxTmpObElm=$tmpArrElm.Find(obElm)
-	if idxTmpObElm<0 then idxRmObElm=$removedArrElm.Find(obElm)
-	if idxRmObElm<0 then idxAllObElm=$all.Find(obElm)
-	
-	if idxTmpObElm<0 and if idxRmObElm<0 and if idxAllObElm<0 then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
-	
-	If idxTmpObElm > -1 Then
-	  domMoveElementTree(idxTmpObElm, "tmpArrElm", "all")
-	Else If idxRmObElm > -1 Then
-	  domMoveElementTree(idxRmObElm, "removedArrElm", "all")
-	EndIf
-	
-	''if idxRmObElm > -1 ... Object in $all(DOM) .... Nothing to do with DOM Tree.
-  
+    'domMoveElementTree(idxOnSource As Integer, source as String, destination as String)
+
+    idxTmpObElm = $tmpArrElm.Find(obElm)
+    If idxTmpObElm < 0 Then idxRmObElm = $removedArrElm.Find(obElm)
+    If idxRmObElm < 0 Then idxAllObElm = $all.Find(obElm)
+
+    If idxTmpObElm < 0 And If idxRmObElm < 0 And If idxAllObElm < 0 Then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
+
+    If idxTmpObElm > -1 Then
+      domMoveElementTree(idxTmpObElm, "tmpArrElm", "all")
+    Else If idxRmObElm > -1 Then
+      domMoveElementTree(idxRmObElm, "removedArrElm", "all")
+    Endif
+
+    ''if idxRmObElm > -1 ... Object in $all(DOM) .... Nothing to do with DOM Tree.
+
     Me.root.childNodes.Add(obElm)
-	Me.root.lastChild = Me.root.childNodes[Me.root.childNodes.Count-1]
-	Me.root.lastChild.parentNode = Me.root
-	Me.root.lastChild.nextSibling = Null
-	
-	if Me.root.firstChild = Null Then
-	  Me.root.firstChild = Me.root.childNodes[Me.root.childNodes.Count-1]
-	EndIf
-	if Me.root.childNodes.Count=1 then
-	  Me.root.lastChild.previousSibling = Null
-	Else If Me.root.childNodes.Count > 1 Then
-	  Me.root.lastChild.previousSibling = Me.root.childNodes[Me.root.childNodes.Count-2]
-	  Me.root.lastChild.previousSibling.nextSibling = Me.root.lastChild
-	EndIf
-	
-	Return obElm
-  EndIf
-  
+    Me.root.lastChild = Me.root.childNodes[Me.root.childNodes.Count - 1]
+    Me.root.lastChild.parentNode = Me.root
+    Me.root.lastChild.nextSibling = Null
+
+    If Me.root.firstChild = Null Then
+      Me.root.firstChild = Me.root.childNodes[Me.root.childNodes.Count - 1]
+    Endif
+    If Me.root.childNodes.Count = 1 Then
+      Me.root.lastChild.previousSibling = Null
+    Else If Me.root.childNodes.Count > 1 Then
+      Me.root.lastChild.previousSibling = Me.root.childNodes[Me.root.childNodes.Count - 2]
+      Me.root.lastChild.previousSibling.nextSibling = Me.root.lastChild
+    Endif
+
+    Return obElm
+  Endif
+
   ''TODO: appendChild: See if Right
   Return Null
+
 End
 
 Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the replaced node
-  Dim idxTmpNewElm as Integer=0, idxRmNewElm as Integer=0, idxAllNewElm as Integer=0, idxOnParentChilds as Integer=-1
-  Dim idxOldElm as Integer=-1
-  
-  idxOldElm=$all.Find(obOldElm)
-  
-  if idxOldElm < 0 Then Return Null ''No replacement can be done
-  
-  idxTmpNewElm=$tmpArrElm.Find(obElm)
-  if idxTmpNewElm<0 then idxRmNewElm=$removedArrElm.Find(obElm)
-  if idxRmNewElm<0 then idxAllNewElm=$all.Find(obElm)
-	
-  if idxTmpNewElm<0 and if idxRmNewElm<0 and if idxAllNewElm<0 then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
-	
+
+  Dim idxTmpNewElm As Integer = 0, idxRmNewElm As Integer = 0, idxAllNewElm As Integer = 0, idxOnParentChilds As Integer = -1
+  Dim idxOldElm As Integer = -1
+
+  idxOldElm = $all.Find(obOldElm)
+
+  If idxOldElm < 0 Then Return Null ''No replacement can be done
+
+  idxTmpNewElm = $tmpArrElm.Find(obNewElm)
+  If idxTmpNewElm < 0 Then idxRmNewElm = $removedArrElm.Find(obNewElm)
+  If idxRmNewElm < 0 Then idxAllNewElm = $all.Find(obNewElm)
+
+  If idxTmpNewElm < 0 And If idxRmNewElm < 0 And If idxAllNewElm < 0 Then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
+
   If idxTmpNewElm > -1 Then
-	domMoveElementTree(idxTmpNewElm, "tmpArrElm", "all")
+    domMoveElementTree(idxTmpNewElm, "tmpArrElm", "all")
   Else If idxRmNewElm > -1 Then
-	domMoveElementTree(idxRmNewElm, "removedArrElm", "all")
-  EndIf
-	
+    domMoveElementTree(idxRmNewElm, "removedArrElm", "all")
+  Endif
+
   'Element References
-  obNewElm.parentNode=obOldElm.parentNode
-  obNewElm.firstChild=obOldElm.firstChild
-  obNewElm.lastChild=obOldElm.lastChild
-  obNewElm.nextSibling=obOldElm.nextSibling
-  obNewElm.previousSibling=obOldElm.previousSibling
-  obNewElm.childNodes=obOldElm.childNodes.Copy()	''TODO: replaceChild: Must Be?????????
-	
+  obNewElm.parentNode = obOldElm.parentNode
+  obNewElm.firstChild = obOldElm.firstChild
+  obNewElm.lastChild = obOldElm.lastChild
+  obNewElm.nextSibling = obOldElm.nextSibling
+  obNewElm.previousSibling = obOldElm.previousSibling
+  obNewElm.childNodes = obOldElm.childNodes.Copy() 	''TODO: replaceChild: Must Be?????????
+
   'Parent References
-  if obNewElm.parentNode.firstChild=obOldElm Then obNewElm.parentNode.firstChild=obNewElm
-  if obNewElm.parentNode.lastChild=obOldElm Then obNewElm.parentNode.lastChild=obNewElm
-  idxOnParentChilds=obNewElm.parentNode.childNodes.Find(obOldElm)
-  if idxOnParentChilds > -1 Then
-	obNewElm.parentNode.childNodes[idxOnParentChilds]=obNewElm
-  EndIf
-  
+  If obNewElm.parentNode.firstChild = obOldElm Then obNewElm.parentNode.firstChild = obNewElm
+  If obNewElm.parentNode.lastChild = obOldElm Then obNewElm.parentNode.lastChild = obNewElm
+  idxOnParentChilds = obNewElm.parentNode.childNodes.Find(obOldElm)
+  If idxOnParentChilds > -1 Then
+    obNewElm.parentNode.childNodes[idxOnParentChilds] = obNewElm
+  Endif
+
   ''TODO: replaceChild: See if Right
   Return obOldElm
+
 End
 
 ''exp1,exp2,exp3,... 	Optional. What to write to the output stream. Multiple arguments can be listed and they will be appended to the document in order of occurrence
 Public Function write(...) As Boolean ''Using document.write() after an HTML document is fully loaded, will delete all existing HTML.
-  Dim prm as Variant, strNewHtml as String=""
-  
+
+  Dim prm As Variant, strNewHtml As String = ""
+
   If Param.Count > 0 Then
-    For Each prm in Param.All
-	  If TypeOf(prm)=gb.String Then
-        strNewHtml &=CString(prm)
-	  EndIf
-	next
-	
-	if Len(strNewHtml)>0 Then
-		Me.innerHTML=strNewHtml ''Fires New DOM parsing
-		Return True
-	EndIf
-  EndIf
-	
+    For Each prm In Param.All
+      If TypeOf(prm) = gb.String Then
+        strNewHtml &= CString(prm)
+      Endif
+    Next
+
+    If Len(strNewHtml) > 0 Then
+      Me.innerHTML = strNewHtml ''Fires New DOM parsing
+      Return True
+    Endif
+  Endif
+
   ''TODO: write: See if Right.
   Return False
+
 End
 
 Public Function appendText(text As String) As Boolean
-  Dim obNewTxt  As HTMElement
-  
-  obNewTxt=createTextNode(text)
-  
-  if obNewTxt = Null Then Return False
-  
-  if Me.appendChild(obNewTxt) = Null Then Return False
 
-  
+  Dim obNewTxt As HTMElement
+
+  obNewTxt = createTextNode(text)
+
+  If obNewTxt = Null Then Return False
+
+  If Me.appendChild(obNewTxt) = Null Then Return False
+
+
   ''TODO: appendText: See if right
   Return True
+
 End
 
 
 ''*********** INICIO PARSERS ****************
 Private Sub parseDocument()
+
   Dim i As Integer = 0, j As Integer = 0, nTotTam As Integer = 0, currentPos As Integer = 0, auxPos1 As Integer = 0, auxPos2 As Integer = 0
   Dim auxStr As String, auxStrTagName As String
   Dim swStartParse As Boolean = False
@@ -716,9 +803,11 @@ Private Sub parseDocument()
       Endif
     Endif
   Next
+
 End
 
 Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
+
   Dim endPos As Integer = 0, startChildPos As Integer = 0
   Dim i As Integer, j As Integer
   Dim auxStr As String, auxStrTagName As String, arrAuxAttr As Collection
@@ -727,11 +816,11 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
   Dim arrAuxElems As HTMElement[]
 
   auxStrTagName = parseGetTagName(strPos)
-  
+
   If Left$(auxStrTagName, 1) = "/" Then ''Ignore Close Tag
     Return (InStr($strHtml, ">", strPos) + 1)
   Endif
-  
+
   If parseIsComment(auxStrTagName) = True Then
     endPos = parseComment(strPos)     ''Returns where parsing ends, so we continue after
   Else If parseIsText(auxStrTagName) = True Then
@@ -811,12 +900,12 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
       actualElm.parentNode = Null
       actualElm.nextSibling = Null
       actualElm.previousSibling = Null
-  
-    ''REMOVED: It is not necesary at this point. $stackElm.Add(actualElm)  ''First Parent of the DOM
+
+      ''REMOVED: It is not necesary at this point. $stackElm.Add(actualElm)  ''First Parent of the DOM
     Endif
-    
+
     parsePutDOMReferences(actualElm)
-    
+
     ''Collection References
     Select actualElm.tagName
       Case "head"
@@ -853,14 +942,14 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
 
     ''**** If there are Childs ....
     Do ''While has ChildTags
-    startChildPos = parseHasTextChild(actualElm.tagName, endPos)
-    If startChildPos > 0 Then
-      $stackElm.Add(actualElm)   ''To keep nesting track
-      endPos = parseText(startChildPos)   ''Returns where parsing ends, so we continue after
-      $stackElm.Remove($stackElm.Count - 1)
-    Endif
-    
-    ''Do ''While has ChildTags
+      startChildPos = parseHasTextChild(actualElm.tagName, endPos)
+      If startChildPos > 0 Then
+        $stackElm.Add(actualElm)   ''To keep nesting track
+        endPos = parseText(startChildPos)   ''Returns where parsing ends, so we continue after
+        $stackElm.Remove($stackElm.Count - 1)
+      Endif
+
+      ''Do ''While has ChildTags
       startChildPos = parseHasTagChild(actualElm.tagName, endPos)
       If startChildPos > 0 Then
         $stackElm.Add(actualElm)   ''To keep nesting track
@@ -871,47 +960,53 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
   Endif
 
   Return endPos
+
 End
 
 Private Function parseDocType(strPos As Integer) As Integer
+
   Dim endPos As Integer = 0
   ''TODO: parseDocType
   Me.doctype = parseGetEtiquetaCompleta(strPos, ByRef endPos)
 
   Return endPos ''(**OJO**) Is returned by parseGetEtiquetaCompleta ByRef
+
 End
 
 Private Function parseComment(strPos As Integer) As Integer
+
   Dim endPos As Integer = 0
   Dim lenStartTag As Integer = 4  ''Len("<!--")
   Dim actualElm As HTMElement
   Dim actualElmIdx As Integer
-  
+
   '<!--...-->
   endPos = InStr($strHtml, "-->", strPos)
-  
+
   $all.Add(Null)
   $all[$all.Count - 1] = New HTMElement(Me)
   actualElm = $all[$all.Count - 1]
   Me.comments.Add(actualElm)
-  
+
   actualElm.nodeValue = Mid$($strHtml, strPos + lenStartTag, (endPos - strPos - lenStartTag))
   actualElm.nodeType = Me.NODETYPE_COMMENT
-  
+
   parsePutDOMReferences(actualElm)
 
   Return endPos
+
 End
 
 Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
+
   Dim endPos As Integer = 0, startTagSibilingPos As Integer = 0
   Dim actualElm As HTMElement
   Dim actualElmIdx As Integer
-  
+
   $all.Add(Null)
   $all[$all.Count - 1] = New HTMElement(Me)
   actualElm = $all[$all.Count - 1]
-  
+
   parsePutDOMReferences(actualElm)
 
   If actualElm.parentNode.tagName = "script" Then
@@ -929,29 +1024,31 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
     actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
     Me.texts.Add(actualElm)
   Endif
-  
+
   actualElm.nodeType = Me.NODETYPE_TEXT
-  
+
   If actualElm.parentNode.tagName <> "script" And If actualElm.parentNode.tagName <> "style" Then
     startTagSibilingPos = parseHasTagSibiling(actualElm.parentNode.tagName, endPos)
     If startTagSibilingPos > 0 Then ''Return 0 if NOT, >0 is the start Possition
       endPos = parseElement(startTagSibilingPos)
     Endif
   Endif
-  
+
   ''TODO: parseText --> Parser for TEXT, SCRIPTS  and STYLE content. See if Right
   Return endPos
+
 End
 
 Private Function parseGetAttribs(strEtiqueta As String) As Collection
+
   Dim ntam As Integer = 0
   Dim auxStr As String, sAux1 As String, arrAux As String[], auxArrKeyVal As String[], arrRet As New Collection
 
   auxStr = _HUtil.utilTrim(strEtiqueta, [" ", "\n", "<", ">"])
   arrAux = _HUtil.utilSplit(auxStr, " ", ["\"", "'"])
-  
+
   ''TODO: parseGetAttribs:  Wrong split in things like that:  attribute     =       value
-  
+
   arrAux.Remove(0) ' Quitar el TagName
 
   For Each sAux1 In arrAux
@@ -966,14 +1063,18 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
   Next
 
   Return arrRet
+
 End
 
 Private Function parseGetEtiquetaCompleta(strPos As Integer, ByRef endPos As Integer) As String
+
   endPos = InStr($strHtml, ">", strPos)
-  Return Mid$($strHtml, strPos, (endPos - (strPos))+1) ''TODO: Added +1. See if Right.
+  Return Mid$($strHtml, strPos, (endPos - (strPos)) + 1) ''TODO: Added +1. See if Right.
+
 End
 
 Private Function parseGetTagName(strPos As Integer) As String
+
   Dim spcPos As Integer, closePos As Integer
 
   spcPos = InStr($strHtml, " ", strPos + 1)
@@ -982,35 +1083,45 @@ Private Function parseGetTagName(strPos As Integer) As String
     Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, ">", strPos + 1) - (strPos + 1))))
   Endif
   Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, " ", strPos + 1) - (strPos + 1))))
+
 End
 
 Private Function parseIsHtml(strTagName As String) As Boolean
+
   If LCase$(strTagName) = "html" Then Return True
   Return False
+
 End
 
 Private Function parseIsDoctype(strTagName As String) As Boolean
+
   If LCase$(strTagName) = "!doctype" Then Return True
   Return False
+
 End
 
 Private Function parseIsComment(strTagName As String) As Boolean
+
   If Left$(strTagName, 3) = "!--" Then Return True
   Return False
-End 
+
+End
 
 Private Function parseIsText(strTagName As String) As Boolean
   ''TODO: parseIsText. See if Correct.
+
   If Len(Trim(strTagName)) = 0 Then Return True
   Return False
+
 End
 
 Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+
   Dim iniNewTagPos As Integer = 0, nTamAux As Integer = 0, strAux As String = ""
   Dim actualElm As HTMElement
-  
+
   ''TODO: parseHasTextChild: Need Logic Revision.
-  
+
   If tagName = "script" Then
     iniNewTagPos = InStr($strHtml, "</script>", endTagPos, gb.IgnoreCase)  'Open tag
     If iniNewTagPos > 0 Then iniNewTagPos += 9 ''Len("</script>")
@@ -1020,107 +1131,113 @@ Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As I
   Else
     iniNewTagPos = InStr($strHtml, "<", endTagPos)  'Open tag
   Endif
-  
+
   If iniNewTagPos > (endTagPos + 1) Then ''There is Text Child
-	If $removeBlankText = True Then
-		'nTamAux as Integer=0, strAux as String=""
-		strAux = _HUtil.utilTrim(Mid$($strHtml, (endTagPos + 1), iniNewTagPos - (endTagPos + 1)), [" ", "\t", "\n", "\r", "\v", "\f", "\e"])
-		If Len(strAux) > 0 Then ''If there is no blank Text ...
-			Return (endTagPos + 1)
-		Endif
-	Endif
+    If $removeBlankText = True Then
+      'nTamAux as Integer=0, strAux as String=""
+      strAux = _HUtil.utilTrim(Mid$($strHtml, (endTagPos + 1), iniNewTagPos - (endTagPos + 1)), [" ", "\t", "\n", "\r", "\v", "\f", "\e"])
+      If Len(strAux) > 0 Then ''If there is no blank Text ...
+        Return (endTagPos + 1)
+      Endif
+    Endif
   Endif
-  
+
   Return 0 ''No Text Child
+
 End
 
 Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+
   Dim endPos As Integer = 0, endPos1 As Integer = 0, posCloseTag As Integer = 0, straux As String = ""
-  
+
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
   If tagName = "style" Then Return 0 ''No TagChild cause is style
-  
+
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
-  
+
   endPos1 = InStr($strHtml, "<", strPos)  'Open tag
   endPos = parseInstr("<", ["/"], strPos)
   If endPos > 0 Then straux = Mid$($strHtml, endPos, 10) ''Only to see what happens. Must delete this line after debugin
-  
+
   ''TODO: parseHasTagChild: Is the new Tag really a children?. Is Close Tag?
-  
+
   posCloseTag = parseFindCloseTag(tagName, strPos)
-  
+
   If posCloseTag > 0 Then 'If there is Close Tag ....
     If endPos > 0 And If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
       Return endPos ''Return the initial possition of the Child Tag.
     Endif
   Endif
-  
+
   Return 0 ''No ChildTag
+
 End
 
 ''TODO: parseHasChild Must Replace the two methods: parseHasTagChild and parseHasTextChild. It must be very inteligent.
 Private Function parseHasChild(tagName As String, strStartPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-  Dim startChildPos As Integer = 0, posCharOpenTag as Integer=0, posCharCloseTag as Integer=0
-  Dim charIni as String="", charAux As String=""
+
+  Dim startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
+  Dim charIni As String = "", charAux As String = ""
 
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
   If tagName = "style" Then Return 0 ''No TagChild cause is style
-  
+
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild, Text nor Tag ...
-  
-  charIni=Mid$($strHtml, strStartPos, 1)
-  if charIni <> "<" and if charIni <> ">" then 'If we are NOT dealing with a Tag ....
+
+  charIni = Mid$($strHtml, strStartPos, 1)
+  If charIni <> "<" And If charIni <> ">" Then 'If we are NOT dealing with a Tag ....
     Return 0 ''It must be Text, style text o script text and have no  childs
-  Else If charIni = "<" then 'Start of the Tag
-    posCharCloseTag=InStr($strHtml, ">", strStartPos)  'Close tag ">"
-	
-	charAux=Mid$($strHtml, posCharCloseTag-1, 1)
-	if charAux="/" then 'If it is an autoclosed Tag ...
-	  Return 0 ''No TagChild
-	EndIf
-	
-	posCharOpenTag=parseInstr("<", ["/"], posCharCloseTag+1)  'Open tag, but Not </....
-	
-	if (posCharCloseTag+1) <= (posCharOpenTag -1) then 'Text between the Tags. NO Consecutive Tag
-	  Return (posCharCloseTag+1)
-	EndIf
-  Else If charIni = ">" then 'End of the Tag
-	charAux=Mid$($strHtml, strStartPos-1, 1)
-	if charAux="/" then 'If it is an autoclosed Tag ...
-	  Return 0 ''No TagChild
-	EndIf  
-  
-    posCharOpenTag=parseInstr("<", ["/"], strStartPos+1)  'Open tag, but Not </.... 
-	if strStartPos = (posCharOpenTag-1) then 'No text between the Tags. Consecutive Tag
-	  Return posCharOpenTag
-	else if strStartPos < (posCharOpenTag-1) then 'Text between the Tags. NO Consecutive Tag
-	  Return (strStartPos+1)
-	EndIf
-  EndIf
+  Else If charIni = "<" Then 'Start of the Tag
+    posCharCloseTag = InStr($strHtml, ">", strStartPos)  'Close tag ">"
+
+    charAux = Mid$($strHtml, posCharCloseTag - 1, 1)
+    If charAux = "/" Then 'If it is an autoclosed Tag ...
+      Return 0 ''No TagChild
+    Endif
+
+    posCharOpenTag = parseInstr("<", ["/"], posCharCloseTag + 1)  'Open tag, but Not </....
+
+    If (posCharCloseTag + 1) <= (posCharOpenTag - 1) Then 'Text between the Tags. NO Consecutive Tag
+      Return (posCharCloseTag + 1)
+    Endif
+  Else If charIni = ">" Then 'End of the Tag
+    charAux = Mid$($strHtml, strStartPos - 1, 1)
+    If charAux = "/" Then 'If it is an autoclosed Tag ...
+      Return 0 ''No TagChild
+    Endif
+
+    posCharOpenTag = parseInstr("<", ["/"], strStartPos + 1)  'Open tag, but Not </....
+    If strStartPos = (posCharOpenTag - 1) Then 'No text between the Tags. Consecutive Tag
+      Return posCharOpenTag
+    Else If strStartPos < (posCharOpenTag - 1) Then 'Text between the Tags. NO Consecutive Tag
+      Return (strStartPos + 1)
+    Endif
+  Endif
 
   ''TODO: parseHasChild
-  
+
   '~ posCloseTag = parseFindCloseTag(tagName, strPos)
   '~ If posCloseTag > 0 Then 'If there is Close Tag ....
-    '~ If endPos > 0 And If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
-      '~ Return endPos ''Return the initial possition of the Child Tag.
-    '~ Endif
+  '~ If endPos > 0 And If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
+  '~ Return endPos ''Return the initial possition of the Child Tag.
+  '~ Endif
   '~ Endif
 
-  
+
   Return startChildPos
+
 End
 
 Private Function parseInstr(strFind As String, notFollowedBy As String[], startPos As Integer) As Integer
+
   Dim i As Integer = 0, nAuxPos As Integer = 0, nTamStr As Integer = 0, auxPos As Integer = 0
   Dim strChar As String = "", strChar2 As String = ""
-  
+
   nTamStr = Len($strHtml)
   auxPos = startPos
-  
+
   For i = startPos To nTamStr
     strChar = Mid$($strHtml, i, 1)
     If strChar = strFind Then
@@ -1130,8 +1247,8 @@ Private Function parseInstr(strFind As String, notFollowedBy As String[], startP
       Endif
     Endif
   Next
-  
-  ' Do 
+
+  ' Do
   '   nAuxPos = InStr($strHtml, strFind, auxPos)
   '   If nAuxPos > 0 Then
   '     strChar = Mid$($strHtml, nAuxPos + 1, 1)
@@ -1141,54 +1258,62 @@ Private Function parseInstr(strFind As String, notFollowedBy As String[], startP
   '     auxPos += nAuxPos
   '   Endif
   ' Loop Until auxPos > nTamStr And nAuxPos > 0
-  ' 
+  '
   Return 0
+
 End
 
 
 Private Function parseFindCloseTag(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the START Possition of the Close Tag
+
   Dim strCloseTag As String
   Dim posCloseTag As Integer = 0, nTamCloaseTag As Integer = 0
-  
+
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
-  
+
   strCloseTag = "</" & tagName & ">"
   nTamCloaseTag = Len(strCloseTag)
   posCloseTag = InStr($strHtml, strCloseTag, strPos, gb.IgnoreCase)  'Close tag
-  
+
   ''TODO: parseFindCloseTag: See if Right.
-  
+
   Return posCloseTag
+
 End
 
 Private Function parseHasTagSibiling(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+
   Dim endPos As Integer = 0, posCloseTag As Integer
-  
+
   posCloseTag = parseFindCloseTag(tagName, strPos)
-  
-  
+
+
   Return endPos
+
 End
 
 Private Sub parsePutDOMReferences(actualElm As HTMElement)
-  Dim actualElmIdx As Integer
-    If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
-      actualElm.parentNode = $stackElm[$stackElm.Count - 1]
-      If actualElm.parentNode.firstChild = Null Then
-        actualElm.parentNode.firstChild = actualElm
-      Endif
-      actualElm.parentNode.lastChild = actualElm
 
-      actualElm.parentNode.childNodes.Add(actualElm)
-      actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
-      If actualElmIdx > 0 Then
-        actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
-        actualElm.previousSibling.nextSibling = actualElm ''Inform the nextSibiling from the previousSibling.
-      Endif
-      '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
-        '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
-      '~ Endif
+  Dim actualElmIdx As Integer
+
+  If $stackElm.Count > 0 And actualElm.tagName <> "html" Then
+    actualElm.parentNode = $stackElm[$stackElm.Count - 1]
+    If actualElm.parentNode.firstChild = Null Then
+      actualElm.parentNode.firstChild = actualElm
     Endif
+    actualElm.parentNode.lastChild = actualElm
+
+    actualElm.parentNode.childNodes.Add(actualElm)
+    actualElmIdx = actualElm.parentNode.childNodes.Find(actualElm)
+    If actualElmIdx > 0 Then
+      actualElm.previousSibling = actualElm.parentNode.childNodes[actualElmIdx - 1]
+      actualElm.previousSibling.nextSibling = actualElm ''Inform the nextSibiling from the previousSibling.
+    Endif
+    '~ If actualElmIdx < (actualElm.parentNode.childNodes.Count - 1) Then
+    '~ actualElm.nextSibling = actualElm.parentNode.childNodes[actualElmIdx + 1]
+    '~ Endif
+  Endif
+
 End
 
 Private Function parseGetElementType(strTagName As String) As Byte
@@ -1202,6 +1327,7 @@ Private Function parseGetElementType(strTagName As String) As Byte
   ''TODO: parseGetElementType
 
   Return 1
+
 End
 
 ''*********** FIN PARSERS ****************
