@@ -538,6 +538,207 @@ Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 
 
 End
 
+Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node Object, representing the appended node
+
+  Dim idxTmpObElm As Integer = 0, idxRmObElm As Integer = 0, idxAllObElm As Integer = 0
+
+  If Me.root <> Null Then
+    ''TODO: appendChild: Extract obElm Tree from $removedArrElm or $tmpArrElm and put it into $all
+    'domMoveElementTree(idxOnSource As Integer, source as String, destination as String)
+
+    idxTmpObElm = $tmpArrElm.Find(obElm)
+    If idxTmpObElm < 0 Then idxRmObElm = $removedArrElm.Find(obElm)
+    If idxRmObElm < 0 Then idxAllObElm = $all.Find(obElm)
+
+    If idxTmpObElm < 0 And If idxRmObElm < 0 And If idxAllObElm < 0 Then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
+
+    If idxTmpObElm > -1 Then
+      domMoveElementTree(idxTmpObElm, "tmpArrElm", "all")
+    Else If idxRmObElm > -1 Then
+      domMoveElementTree(idxRmObElm, "removedArrElm", "all")
+    Endif
+
+    ''if idxRmObElm > -1 ... Object in $all(DOM) .... Nothing to do with DOM Tree.
+
+    Me.root.childNodes.Add(obElm)
+    Me.root.lastChild = Me.root.childNodes[Me.root.childNodes.Count - 1]
+    Me.root.lastChild.parentNode = Me.root
+    Me.root.lastChild.nextSibling = Null
+
+    If Me.root.firstChild = Null Then
+      Me.root.firstChild = Me.root.childNodes[Me.root.childNodes.Count - 1]
+    Endif
+    If Me.root.childNodes.Count = 1 Then
+      Me.root.lastChild.previousSibling = Null
+    Else If Me.root.childNodes.Count > 1 Then
+      Me.root.lastChild.previousSibling = Me.root.childNodes[Me.root.childNodes.Count - 2]
+      Me.root.lastChild.previousSibling.nextSibling = Me.root.lastChild
+    Endif
+	
+	domPutShortCutsReferences(obElm) ''Put all Shorcut References
+
+    Return obElm
+  Endif
+
+  ''TODO: appendChild: See if Right
+  Return Null
+
+End
+
+Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the replaced node
+
+  Dim idxTmpNewElm As Integer = 0, idxRmNewElm As Integer = 0, idxAllNewElm As Integer = 0, idxOnParentChilds As Integer = -1
+  Dim idxOldElm As Integer = -1
+
+  idxOldElm = $all.Find(obOldElm)
+
+  If idxOldElm < 0 Then Return Null ''No replacement can be done
+
+  idxTmpNewElm = $tmpArrElm.Find(obNewElm)
+  If idxTmpNewElm < 0 Then idxRmNewElm = $removedArrElm.Find(obNewElm)
+  If idxRmNewElm < 0 Then idxAllNewElm = $all.Find(obNewElm)
+
+  If idxTmpNewElm < 0 And If idxRmNewElm < 0 And If idxAllNewElm < 0 Then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
+
+  If idxTmpNewElm > -1 Then
+    domMoveElementTree(idxTmpNewElm, "tmpArrElm", "all")
+  Else If idxRmNewElm > -1 Then
+    domMoveElementTree(idxRmNewElm, "removedArrElm", "all")
+  Endif
+
+  'Element References
+  obNewElm.parentNode = obOldElm.parentNode
+  obNewElm.firstChild = obOldElm.firstChild
+  obNewElm.lastChild = obOldElm.lastChild
+  obNewElm.nextSibling = obOldElm.nextSibling
+  obNewElm.previousSibling = obOldElm.previousSibling
+  obNewElm.childNodes = obOldElm.childNodes.Copy() 	''TODO: replaceChild: Must Be?????????
+
+  'Parent References
+  If obNewElm.parentNode.firstChild = obOldElm Then obNewElm.parentNode.firstChild = obNewElm
+  If obNewElm.parentNode.lastChild = obOldElm Then obNewElm.parentNode.lastChild = obNewElm
+  idxOnParentChilds = obNewElm.parentNode.childNodes.Find(obOldElm)
+  If idxOnParentChilds > -1 Then
+    obNewElm.parentNode.childNodes[idxOnParentChilds] = obNewElm
+  Endif
+  
+  domRemoveShortCutsReferences(obOldElm) ''Remove all Shorcut References
+  domPutShortCutsReferences(obNewElm) ''Put all Shorcut References
+
+  ''TODO: replaceChild: See if Right
+  Return obOldElm
+
+End
+
+''exp1,exp2,exp3,... 	Optional. What to write to the output stream. Multiple arguments can be listed and they will be appended to the document in order of occurrence
+Public Function write(...) As Boolean ''Using document.write() after an HTML document is fully loaded, will delete all existing HTML.
+
+  Dim prm As Variant, strNewHtml As String = ""
+
+  If Param.Count > 0 Then
+    For Each prm In Param.All
+      If TypeOf(prm) = gb.String Then
+        strNewHtml &= CString(prm)
+      Endif
+    Next
+
+    If Len(strNewHtml) > 0 Then
+      Me.innerHTML = strNewHtml ''Fires New DOM parsing
+      Return True
+    Endif
+  Endif
+
+  ''TODO: write: See if Right.
+  Return False
+
+End
+
+Public Function appendText(text As String) As Boolean
+
+  Dim obNewTxt As HTMElement
+
+  obNewTxt = createTextNode(text)
+
+  If obNewTxt = Null Then Return False
+
+  If Me.appendChild(obNewTxt) = Null Then Return False
+
+
+  ''TODO: appendText: See if right
+  Return True
+
+End
+
+Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	''Put all Shorcut References
+  Dim idxAux As Integer = 0, arrAuxElems As HTMElement[]
+  
+  If obElm=Null Then Return Null
+  
+  if $tagNames.Exist(obElm.tagName)=False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $tagNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.tagName)
+  Else
+    $tagNames[obElm.tagName].Add(obElm)  
+  EndIf
+  
+  If obElm.id Then 
+	If $ids.Exist(obElm.id) = False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $ids.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.id)
+	Else
+      $ids[obElm.id].Add(obElm)
+	Endif
+  EndIf
+  
+  If obElm.name Then
+	If $names.Exist(obElm.name) = False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $names.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.name)
+	Else
+      $names[obElm.name].Add(obElm)
+	Endif
+  Endif
+  
+  If obElm.class Then
+	If $classNames.Exist(obElm.class) = False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $classNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.class)
+	Else
+      $classNames[obElm.class].Add(obElm)
+	Endif
+  Endif
+  
+  If obElm.tagName="html" Then 
+    Me.root = obElm
+	Me.documentElement = obElm
+  EndIf
+  
+  If obElm.tagName="head" Then Me.head = obElm
+  If obElm.tagName="title" Then Me.title = obElm
+  If obElm.tagName="body" Then Me.body = obElm
+  
+  If obElm.tagName = "a" And If obElm.name Then anchors.Add(obElm)
+  If obElm.tagName = "applet" Then applets.Add(obElm)
+  If obElm.tagName = "embed" Then embeds.Add(obElm)
+  If obElm.tagName = "object" Then objects.Add(obElm)
+  If obElm.tagName = "form" Then forms.Add(obElm)
+  If obElm.tagName = "img" Then images.Add(obElm)
+  If obElm.tagName = "a" Or If obElm.tagName = "area" And If obElm.attributes.Find("href") > -1 Then links.Add(obElm)
+  If obElm.tagName = "meta" Then metas.Add(obElm)
+  If obElm.tagName = "link" Then linkRels.Add(obElm)
+  If obElm.tagName = "script" Then scripts.Add(obElm)
+  If obElm.nodeType = Me.NODETYPE_COMMENT Then comments.Add(obElm)
+  If obElm.nodeType = Me.NODETYPE_TEXT Then texts.Add(obElm)
+  If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then favicon=obElm
+
+  '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
+  Return obElm
+End
+
 Private Function domRemoveShortCutsReferences(obElm As HTMElement) As HTMElement 	''Remove all Shorcut References
   Dim idxAux As Integer = 0
   
@@ -659,207 +860,6 @@ Private Function domMoveElementTree(idxOnSource As Integer, source As String, de
 
   ''TODO: domMoveElementTree: See if Right.
   Return obElm
-
-End
-
-Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 	A Node Object, representing the appended node
-
-  Dim idxTmpObElm As Integer = 0, idxRmObElm As Integer = 0, idxAllObElm As Integer = 0
-
-  If Me.root <> Null Then
-    ''TODO: appendChild: Extract obElm Tree from $removedArrElm or $tmpArrElm and put it into $all
-    'domMoveElementTree(idxOnSource As Integer, source as String, destination as String)
-
-    idxTmpObElm = $tmpArrElm.Find(obElm)
-    If idxTmpObElm < 0 Then idxRmObElm = $removedArrElm.Find(obElm)
-    If idxRmObElm < 0 Then idxAllObElm = $all.Find(obElm)
-
-    If idxTmpObElm < 0 And If idxRmObElm < 0 And If idxAllObElm < 0 Then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
-
-    If idxTmpObElm > -1 Then
-      domMoveElementTree(idxTmpObElm, "tmpArrElm", "all")
-    Else If idxRmObElm > -1 Then
-      domMoveElementTree(idxRmObElm, "removedArrElm", "all")
-    Endif
-
-    ''if idxRmObElm > -1 ... Object in $all(DOM) .... Nothing to do with DOM Tree.
-
-    Me.root.childNodes.Add(obElm)
-    Me.root.lastChild = Me.root.childNodes[Me.root.childNodes.Count - 1]
-    Me.root.lastChild.parentNode = Me.root
-    Me.root.lastChild.nextSibling = Null
-
-    If Me.root.firstChild = Null Then
-      Me.root.firstChild = Me.root.childNodes[Me.root.childNodes.Count - 1]
-    Endif
-    If Me.root.childNodes.Count = 1 Then
-      Me.root.lastChild.previousSibling = Null
-    Else If Me.root.childNodes.Count > 1 Then
-      Me.root.lastChild.previousSibling = Me.root.childNodes[Me.root.childNodes.Count - 2]
-      Me.root.lastChild.previousSibling.nextSibling = Me.root.lastChild
-    Endif
-	
-	domPutShortCutsReferences(obElm) ''Put all Shorcut References
-
-    Return obElm
-  Endif
-
-  ''TODO: appendChild: See if Right
-  Return Null
-
-End
-
-Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	''Put all Shorcut References
-  Dim idxAux As Integer = 0, arrAuxElems As HTMElement[]
-  
-  If obElm=Null Then Return Null
-  
-  if $tagNames.Exist(obElm.tagName)=False Then
-      arrAuxElems = New HTMElement[]
-      arrAuxElems.Add(obElm)
-      $tagNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.tagName)
-  Else
-    $tagNames[obElm.tagName].Add(obElm)  
-  EndIf
-  
-  If obElm.id Then 
-	If $ids.Exist(obElm.id) = False Then
-      arrAuxElems = New HTMElement[]
-      arrAuxElems.Add(obElm)
-      $ids.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.id)
-	Else
-      $ids[obElm.id].Add(obElm)
-	Endif
-  EndIf
-  
-  If obElm.name Then
-	If $names.Exist(obElm.name) = False Then
-      arrAuxElems = New HTMElement[]
-      arrAuxElems.Add(obElm)
-      $names.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.name)
-	Else
-      $names[obElm.name].Add(obElm)
-	Endif
-  Endif
-  
-  If obElm.class Then
-	If $classNames.Exist(obElm.class) = False Then
-      arrAuxElems = New HTMElement[]
-      arrAuxElems.Add(obElm)
-      $classNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.class)
-	Else
-      $classNames[obElm.class].Add(obElm)
-	Endif
-  Endif
-  
-  If obElm.tagName="html" Then 
-    Me.root = obElm
-	Me.documentElement = obElm
-  EndIf
-  
-  If obElm.tagName="head" Then Me.head = obElm
-  If obElm.tagName="title" Then Me.title = obElm
-  If obElm.tagName="body" Then Me.body = obElm
-  
-  If obElm.tagName = "a" And If obElm.name Then anchors.Add(obElm)
-  If obElm.tagName = "applet" Then applets.Add(obElm)
-  If obElm.tagName = "embed" Then embeds.Add(obElm)
-  If obElm.tagName = "object" Then objects.Add(obElm)
-  If obElm.tagName = "form" Then forms.Add(obElm)
-  If obElm.tagName = "img" Then images.Add(obElm)
-  If obElm.tagName = "a" Or If obElm.tagName = "area" And If obElm.attributes.Find("href") > -1 Then links.Add(obElm)
-  If obElm.tagName = "meta" Then metas.Add(obElm)
-  If obElm.tagName = "link" Then linkRels.Add(obElm)
-  If obElm.tagName = "script" Then scripts.Add(obElm)
-  If obElm.nodeType = Me.NODETYPE_COMMENT Then comments.Add(obElm)
-  If obElm.nodeType = Me.NODETYPE_TEXT Then texts.Add(obElm)
-  If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then favicon=obElm
-
-  '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
-  Return obElm
-End
-
-Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the replaced node
-
-  Dim idxTmpNewElm As Integer = 0, idxRmNewElm As Integer = 0, idxAllNewElm As Integer = 0, idxOnParentChilds As Integer = -1
-  Dim idxOldElm As Integer = -1
-
-  idxOldElm = $all.Find(obOldElm)
-
-  If idxOldElm < 0 Then Return Null ''No replacement can be done
-
-  idxTmpNewElm = $tmpArrElm.Find(obNewElm)
-  If idxTmpNewElm < 0 Then idxRmNewElm = $removedArrElm.Find(obNewElm)
-  If idxRmNewElm < 0 Then idxAllNewElm = $all.Find(obNewElm)
-
-  If idxTmpNewElm < 0 And If idxRmNewElm < 0 And If idxAllNewElm < 0 Then Return Null ''This Element is  not created in our temporary containers. It should not be possible.
-
-  If idxTmpNewElm > -1 Then
-    domMoveElementTree(idxTmpNewElm, "tmpArrElm", "all")
-  Else If idxRmNewElm > -1 Then
-    domMoveElementTree(idxRmNewElm, "removedArrElm", "all")
-  Endif
-
-  'Element References
-  obNewElm.parentNode = obOldElm.parentNode
-  obNewElm.firstChild = obOldElm.firstChild
-  obNewElm.lastChild = obOldElm.lastChild
-  obNewElm.nextSibling = obOldElm.nextSibling
-  obNewElm.previousSibling = obOldElm.previousSibling
-  obNewElm.childNodes = obOldElm.childNodes.Copy() 	''TODO: replaceChild: Must Be?????????
-
-  'Parent References
-  If obNewElm.parentNode.firstChild = obOldElm Then obNewElm.parentNode.firstChild = obNewElm
-  If obNewElm.parentNode.lastChild = obOldElm Then obNewElm.parentNode.lastChild = obNewElm
-  idxOnParentChilds = obNewElm.parentNode.childNodes.Find(obOldElm)
-  If idxOnParentChilds > -1 Then
-    obNewElm.parentNode.childNodes[idxOnParentChilds] = obNewElm
-  Endif
-  
-  domRemoveShortCutsReferences(obOldElm) ''Remove all Shorcut References
-  domPutShortCutsReferences(obNewElm) ''Put all Shorcut References
-
-  ''TODO: replaceChild: See if Right
-  Return obOldElm
-
-End
-
-''exp1,exp2,exp3,... 	Optional. What to write to the output stream. Multiple arguments can be listed and they will be appended to the document in order of occurrence
-Public Function write(...) As Boolean ''Using document.write() after an HTML document is fully loaded, will delete all existing HTML.
-
-  Dim prm As Variant, strNewHtml As String = ""
-
-  If Param.Count > 0 Then
-    For Each prm In Param.All
-      If TypeOf(prm) = gb.String Then
-        strNewHtml &= CString(prm)
-      Endif
-    Next
-
-    If Len(strNewHtml) > 0 Then
-      Me.innerHTML = strNewHtml ''Fires New DOM parsing
-      Return True
-    Endif
-  Endif
-
-  ''TODO: write: See if Right.
-  Return False
-
-End
-
-Public Function appendText(text As String) As Boolean
-
-  Dim obNewTxt As HTMElement
-
-  obNewTxt = createTextNode(text)
-
-  If obNewTxt = Null Then Return False
-
-  If Me.appendChild(obNewTxt) = Null Then Return False
-
-
-  ''TODO: appendText: See if right
-  Return True
 
 End
 
