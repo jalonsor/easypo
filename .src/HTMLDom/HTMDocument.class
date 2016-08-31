@@ -117,7 +117,7 @@ Public Sub _free() ''***Se invoca al destruir el objeto
 
 End
 
-Private Function All_Read() As  As HTMElement[]
+Private Function All_Read() As HTMElement[]
   Return $all
 End
 
@@ -672,15 +672,15 @@ End
 Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	''Put all Shorcut References
   Dim idxAux As Integer = 0, arrAuxElems As HTMElement[]
   
-  If obElm=Null Then Return Null
+  If obElm = Null Then Return Null
   
-  if $tagNames.Exist(obElm.tagName)=False Then
+  If $tagNames.Exist(obElm.tagName) = False Then
       arrAuxElems = New HTMElement[]
       arrAuxElems.Add(obElm)
       $tagNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.tagName)
   Else
     $tagNames[obElm.tagName].Add(obElm)  
-  EndIf
+  Endif
   
   If obElm.id Then 
 	If $ids.Exist(obElm.id) = False Then
@@ -690,7 +690,7 @@ Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	'
 	Else
       $ids[obElm.id].Add(obElm)
 	Endif
-  EndIf
+  Endif
   
   If obElm.name Then
 	If $names.Exist(obElm.name) = False Then
@@ -712,14 +712,14 @@ Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	'
 	Endif
   Endif
   
-  If obElm.tagName="html" Then 
+  If obElm.tagName = "html" Then 
     Me.root = obElm
 	Me.documentElement = obElm
-  EndIf
+  Endif
   
-  If obElm.tagName="head" Then Me.head = obElm
-  If obElm.tagName="title" Then Me.title = obElm
-  If obElm.tagName="body" Then Me.body = obElm
+  If obElm.tagName = "head" Then Me.head = obElm
+  If obElm.tagName = "title" Then Me.title = obElm
+  If obElm.tagName = "body" Then Me.body = obElm
   
   If obElm.tagName = "a" And If obElm.name Then anchors.Add(obElm)
   If obElm.tagName = "applet" Then applets.Add(obElm)
@@ -727,13 +727,15 @@ Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	'
   If obElm.tagName = "object" Then objects.Add(obElm)
   If obElm.tagName = "form" Then forms.Add(obElm)
   If obElm.tagName = "img" Then images.Add(obElm)
-  If obElm.tagName = "a" Or If obElm.tagName = "area" And If obElm.attributes.Find("href") > -1 Then links.Add(obElm)
+  If obElm.tagName = "a" Or If obElm.tagName = "area" Then
+    If obElm.attributes.Find("href") > -1 Then links.Add(obElm)
+  Endif
   If obElm.tagName = "meta" Then metas.Add(obElm)
   If obElm.tagName = "link" Then linkRels.Add(obElm)
   If obElm.tagName = "script" Then scripts.Add(obElm)
   If obElm.nodeType = Me.NODETYPE_COMMENT Then comments.Add(obElm)
   If obElm.nodeType = Me.NODETYPE_TEXT Then texts.Add(obElm)
-  If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then favicon=obElm
+  If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 And If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then favicon = obElm
 
   '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
   Return obElm
@@ -742,7 +744,7 @@ End
 Private Function domRemoveShortCutsReferences(obElm As HTMElement) As HTMElement 	''Remove all Shorcut References
   Dim idxAux As Integer = 0
   
-  If obElm=Null Then Return Null
+  If obElm = Null Then Return Null
   
   If obElm.id Then $ids.Remove(obElm.id)
   idxAux = $tagNames[obElm.tagName].Find(obElm)
@@ -907,6 +909,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
 
   If Left$(auxStrTagName, 1) = "/" Then ''Ignore Close Tag
     Return (InStr($strHtml, ">", strPos) + 1)
+    ''endPos += (InStr($strHtml, ">", strPos) + 1)
   Endif
 
   If parseIsComment(auxStrTagName) = True Then
@@ -1080,14 +1083,14 @@ Private Function parseComment(strPos As Integer) As Integer
   Dim actualElmIdx As Integer
 
   '<!--...-->
-  endPos = InStr($strHtml, "-->", strPos)
+  endPos = InStr($strHtml, "-->", strPos) + 2 '2=Len("-->")-1
 
   $all.Add(Null)
   $all[$all.Count - 1] = New HTMElement(Me)
   actualElm = $all[$all.Count - 1]
   Me.comments.Add(actualElm)
 
-  actualElm.nodeValue = Mid$($strHtml, strPos + lenStartTag, (endPos - strPos - lenStartTag))
+  actualElm.nodeValue = Mid$($strHtml, strPos + lenStartTag, (endPos - strPos - lenStartTag) - 2)
   actualElm.nodeType = Me.NODETYPE_COMMENT
 
   parsePutDOMReferences(actualElm)
@@ -1119,8 +1122,8 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
     Me.scripts.Add(actualElm)
     endPos += 7 ''Len("</style>") -1
   Else
-    endPos = InStr($strHtml, "<", strPos)
-    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+    endPos = InStr($strHtml, "<", strPos) - 1
+    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos) + 1)
     Me.texts.Add(actualElm)
   Endif
 
@@ -1281,9 +1284,11 @@ End
 ''TODO: parseHasChild Must Replace the two methods: parseHasTagChild and parseHasTextChild. It must be very inteligent.
 Private Function parseHasChild(tagName As String, strStartPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
 
-  Dim startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
-  Dim posTagClose as Integer=0
+  Dim posIni As Integer = 0, startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
+  Dim posTagClose As Integer = 0
   Dim charIni As String = "", charAux As String = ""
+
+  posIni = strStartPos
 
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
@@ -1291,11 +1296,43 @@ Private Function parseHasChild(tagName As String, strStartPos As Integer) As Int
 
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild, Text nor Tag ...
 
-  charIni = Mid$($strHtml, strStartPos, 1)
-  If charIni <> "<" And If charIni <> ">" Then 'If we are NOT dealing with a Tag ....
+  posTagClose = parseFindCloseTag(tagName, posIni + 1) 'Where this tagName is closed "</tagName>"
+  
+  charIni = Mid$($strHtml, posIni, 1)
+
+  If posTagClose = posIni Then
+    Return 0 ''This is the end of the tag and has no childs.
+  Endif
+  
+
+  If charIni <> "<" And If charIni <> ">" Then 'If we are NOT dealing with a Tag .... We must find the next Open or Close Tag Char ...
+    posCharOpenTag = InStr($strHtml, "<", posIni) 'Open tag <... or </....
+    charIni = Mid$($strHtml, posCharOpenTag, 1)
+    charAux = Mid$($strHtml, posCharOpenTag + 1, 1)
+      
+    If charIni = "<" And If charAux = "/" Then ''Its a close tag "</tagName>", but not the actual tagName, wee must search after it.
+      posCharCloseTag = InStr($strHtml, ">", posIni)
+      charAux = Mid$($strHtml, posCharCloseTag + 1, 1)
+      If charAux <> "<" Then ''There is Text after the close tag char
+        Return (posCharCloseTag + 1)
+      Endif
+    Endif
+      
+    posTagClose = parseFindCloseTag(tagName, posCharCloseTag + 1) 'Where this tagName is closed "</tagName>"
+    
+   	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
+   	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
+   	    Return posCharOpenTag
+   	  Else 	'If there is NO new OpenTag before the close tag ...
+   		Return 0
+   	  Endif
+   	Else 	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
+   	  Return posCharOpenTag 	'Next Tag is Child of This
+   	Endif
+    
     Return 0 ''It must be Text, Style text o Script text and have no  childs
   Else If charIni = "<" Then 'Start of This Tag
-    posCharCloseTag = InStr($strHtml, ">", strStartPos)  'Close Tag Char ">"
+    posCharCloseTag = InStr($strHtml, ">", posIni)  'Close Tag Char ">"
 
     charAux = Mid$($strHtml, posCharCloseTag - 1, 1)
     If charAux = "/" Then 'If This is an autoclosed Tag "<tagName ... />" ...
@@ -1307,41 +1344,41 @@ Private Function parseHasChild(tagName As String, strStartPos As Integer) As Int
       Return posCharCloseTag + 1 'Return first possition of the Text
     Endif
 
-	posTagClose = parseFindCloseTag(tagName, posCharCloseTag+1) 'Where this tagName is closed "</tagName>"
+    posTagClose = parseFindCloseTag(tagName, posCharCloseTag + 1) 'Where this tagName is closed "</tagName>"
     posCharOpenTag = parseInstr("<", ["/"], posCharCloseTag + 1)  'Open tag, but Not </....
 
-	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
-	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
-	    Return posCharOpenTag
-	  Else	'If there is NO new OpenTag before the close tag ...
-		Return 0
-	  EndIf
-	Else	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
-	  Return posCharOpenTag	'Next Tag is Child of This
-	EndIf
+   	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
+   	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
+   	    Return posCharOpenTag
+   	  Else 	'If there is NO new OpenTag before the close tag ...
+   		  Return 0
+   	  Endif
+   	Else 	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
+   	  Return posCharOpenTag 	'Next Tag is Child of This
+   	Endif
   Else If charIni = ">" Then 'End of This Tag
-    charAux = Mid$($strHtml, strStartPos - 1, 1)
+    charAux = Mid$($strHtml, posIni - 1, 1)
     If charAux = "/" Then 'If it is an autoclosed Tag ...
       Return 0 ''No TagChild
     Endif
 
-    charAux = Mid$($strHtml, strStartPos + 1, 1)
+    charAux = Mid$($strHtml, posIni + 1, 1)
     If charAux <> "<" Then 'If there is Text between two tags ....
-      Return strStartPos + 1 'Return first possition of the Text
+      Return posIni + 1 'Return first possition of the Text
     Endif
 
-	posTagClose = parseFindCloseTag(tagName, strStartPos) 'Where this tagName is closed "</tagName>"
-	posCharOpenTag = parseInstr("<", ["/"], strStartPos + 1)  'Open tag, but Not </....
-	
-	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
-	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
-	    Return posCharOpenTag
-	  Else	'If there is NO new OpenTag before the close tag ...
-		Return 0
-	  EndIf
-	Else	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
-	  Return posCharOpenTag	'Next Tag is Child of This
-	EndIf
+   	posTagClose = parseFindCloseTag(tagName, posIni) 'Where this tagName is closed "</tagName>"
+   	posCharOpenTag = parseInstr("<", ["/"], posIni + 1)  'Open tag, but Not </....
+   	
+   	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
+   	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
+   	    Return posCharOpenTag
+   	  Else 	'If there is NO new OpenTag before the close tag ...
+   		Return 0
+   	  Endif
+   	Else 	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
+   	  Return posCharOpenTag 	'Next Tag is Child of This
+   	Endif
   Endif
 
   ''TODO: parseHasChild: Mus be done logic revision.

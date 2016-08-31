@@ -94,6 +94,10 @@ timeBuildDOM
 r
 i
 
+All
+r
+HTMElement[]
+
 document
 v
 HTMDocument
