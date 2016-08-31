@@ -525,85 +525,92 @@ Public Function removeChild(obElm As HTMElement) As HTMElement 	''Return Value: 
     obRemoved.parentNode.childNodes.Remove(idxOnParentChilds)
   Endif
 
-
   ''*** Now we must Remove Shorcut References
-  If obRemoved.id Then $ids.Remove(obRemoved.id)
-  idxAux = $tagNames[obRemoved.tagName].Find(obRemoved)
-  $tagNames[obRemoved.tagName].Remove(idxAux)
-  If obRemoved.name Then
-    idxAux = $names[obRemoved.name].Find(obRemoved)
-    $names[obRemoved.name].Remove(idxAux)
+  domRemoveShortCutsReferences(obRemoved)
+
+  Return obRemoved
+
+End
+
+Private Function domRemoveShortCutsReferences(obElm As HTMElement) As HTMElement 	''Remove all Shorcut References
+  Dim idxAux As Integer = 0
+  
+  If obElm=Null Then Return Null
+  
+  If obElm.id Then $ids.Remove(obElm.id)
+  idxAux = $tagNames[obElm.tagName].Find(obElm)
+  $tagNames[obElm.tagName].Remove(idxAux)
+  If obElm.name Then
+    idxAux = $names[obElm.name].Find(obElm)
+    $names[obElm.name].Remove(idxAux)
   Endif
-  If obRemoved.class Then
-    idxAux = $classNames[obRemoved.class].Find(obRemoved)
-    $classNames[obRemoved.class].Remove(idxAux)
+  If obElm.class Then
+    idxAux = $classNames[obElm.class].Find(obElm)
+    $classNames[obElm.class].Remove(idxAux)
   Endif
-  If Me.root = obRemoved Then Me.root = Null
-  If Me.documentElement = obRemoved Then Me.documentElement = Null
-  If Me.head = obRemoved Then Me.head = Null
-  If Me.title = obRemoved Then Me.title = Null
-  If Me.body = obRemoved Then Me.body = Null
-  If obRemoved.tagName = "a" And If obRemoved.name Then
-    idxAux = anchors.Find(obRemoved)
+  If Me.root = obElm Then Me.root = Null
+  If Me.documentElement = obElm Then Me.documentElement = Null
+  If Me.head = obElm Then Me.head = Null
+  If Me.title = obElm Then Me.title = Null
+  If Me.body = obElm Then Me.body = Null
+  If obElm.tagName = "a" And If obElm.name Then
+    idxAux = anchors.Find(obElm)
     anchors.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "applet" Then
-    idxAux = applets.Find(obRemoved)
+  If obElm.tagName = "applet" Then
+    idxAux = applets.Find(obElm)
     applets.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "embed" Then
-    idxAux = embeds.Find(obRemoved)
+  If obElm.tagName = "embed" Then
+    idxAux = embeds.Find(obElm)
     embeds.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "object" Then
-    idxAux = objects.Find(obRemoved)
+  If obElm.tagName = "object" Then
+    idxAux = objects.Find(obElm)
     objects.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "form" Then
-    idxAux = forms.Find(obRemoved)
+  If obElm.tagName = "form" Then
+    idxAux = forms.Find(obElm)
     forms.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "img" Then
-    idxAux = images.Find(obRemoved)
+  If obElm.tagName = "img" Then
+    idxAux = images.Find(obElm)
     images.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "a" Or If obRemoved.tagName = "area" Then
-    If obRemoved.attributes.Find("href") > -1 Then
-      idxAux = links.Find(obRemoved)
+  If obElm.tagName = "a" Or If obElm.tagName = "area" Then
+    If obElm.attributes.Find("href") > -1 Then
+      idxAux = links.Find(obElm)
       links.Remove(idxAux)
     Endif
   Endif
-  If obRemoved.tagName = "meta" Then
-    idxAux = metas.Find(obRemoved)
+  If obElm.tagName = "meta" Then
+    idxAux = metas.Find(obElm)
     metas.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "link" Then
-    idxAux = linkRels.Find(obRemoved)
+  If obElm.tagName = "link" Then
+    idxAux = linkRels.Find(obElm)
     linkRels.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "script" Then
-    idxAux = scripts.Find(obRemoved)
+  If obElm.tagName = "script" Then
+    idxAux = scripts.Find(obElm)
     scripts.Remove(idxAux)
   Endif
-  If obRemoved.nodeType = Me.NODETYPE_COMMENT Then
-    idxAux = comments.Find(obRemoved)
+  If obElm.nodeType = Me.NODETYPE_COMMENT Then
+    idxAux = comments.Find(obElm)
     comments.Remove(idxAux)
   Endif
-  If obRemoved.nodeType = Me.NODETYPE_TEXT Then
-    idxAux = texts.Find(obRemoved)
+  If obElm.nodeType = Me.NODETYPE_TEXT Then
+    idxAux = texts.Find(obElm)
     texts.Remove(idxAux)
   Endif
-  If obRemoved.tagName = "link" And If obRemoved.attributes.Find("rel") > -1 Then
-    If InStr(obRemoved.attributes.Find("rel"), "icon") > 0 Then
+  If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 Then
+    If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then
       favicon = Null
     Endif
   Endif
 
   '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
-
-
-  Return obRemoved
-
+  Return obElm
 End
 
 Private Function domMoveElementTree(idxOnSource As Integer, source As String, destination As String) As HTMElement 	''Extract $all[idxOnAllOb] tree from $all (DOM)  and put it into $removedArrElm
