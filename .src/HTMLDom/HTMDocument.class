@@ -7,6 +7,8 @@ Export
 
 ''http://www.w3schools.com/js/js_htmldom.asp
 
+''TODO: Internal DOM management must be cleaned: Remove the use of $tmpArrElm and $removedArrElm
+
 ''Propiedades publicas
 '****Info del Objeto
 Property Read className As String
