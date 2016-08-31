@@ -44,6 +44,7 @@ Property Read timeBuildDOM As Integer
 ''*** FIN Time Measurements
 
 ''**** INICIO Coleccion para busquedas
+Property Read All As HTMElement[]
 Private $all As New HTMElement[]
 Private $ids As New Collection '' HTMElement[]
 Private $tagNames As New Collection '' HTMElement[][]
@@ -116,6 +117,9 @@ Public Sub _free() ''***Se invoca al destruir el objeto
 
 End
 
+Private Function All_Read() As  As HTMElement[]
+  Return $all
+End
 
 Private Function innerHTML_Read() As String
 
