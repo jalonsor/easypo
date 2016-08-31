@@ -698,6 +698,8 @@ Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 
       Me.root.lastChild.previousSibling = Me.root.childNodes[Me.root.childNodes.Count - 2]
       Me.root.lastChild.previousSibling.nextSibling = Me.root.lastChild
     Endif
+	
+	domPutShortCutsReferences(obElm) ''Put all Shorcut References
 
     Return obElm
   Endif
@@ -705,6 +707,76 @@ Public Function appendChild(obElm As HTMElement) As HTMElement 	''Return Value: 
   ''TODO: appendChild: See if Right
   Return Null
 
+End
+
+Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	''Put all Shorcut References
+  Dim idxAux As Integer = 0, arrAuxElems As HTMElement[]
+  
+  If obElm=Null Then Return Null
+  
+  if $tagNames.Exist(obElm.tagName)=False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $tagNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.tagName)
+  Else
+    $tagNames[obElm.tagName].Add(obElm)  
+  EndIf
+  
+  If obElm.id Then 
+	If $ids.Exist(obElm.id) = False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $ids.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.id)
+	Else
+      $ids[obElm.id].Add(obElm)
+	Endif
+  EndIf
+  
+  If obElm.name Then
+	If $names.Exist(obElm.name) = False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $names.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.name)
+	Else
+      $names[obElm.name].Add(obElm)
+	Endif
+  Endif
+  
+  If obElm.class Then
+	If $classNames.Exist(obElm.class) = False Then
+      arrAuxElems = New HTMElement[]
+      arrAuxElems.Add(obElm)
+      $classNames.Add(arrAuxElems.Copy(0, arrAuxElems.Count), obElm.class)
+	Else
+      $classNames[obElm.class].Add(obElm)
+	Endif
+  Endif
+  
+  If obElm.tagName="html" Then 
+    Me.root = obElm
+	Me.documentElement = obElm
+  EndIf
+  
+  If obElm.tagName="head" Then Me.head = obElm
+  If obElm.tagName="title" Then Me.title = obElm
+  If obElm.tagName="body" Then Me.body = obElm
+  
+  If obElm.tagName = "a" And If obElm.name Then anchors.Add(obElm)
+  If obElm.tagName = "applet" Then applets.Add(obElm)
+  If obElm.tagName = "embed" Then embeds.Add(obElm)
+  If obElm.tagName = "object" Then objects.Add(obElm)
+  If obElm.tagName = "form" Then forms.Add(obElm)
+  If obElm.tagName = "img" Then images.Add(obElm)
+  If obElm.tagName = "a" Or If obElm.tagName = "area" And If obElm.attributes.Find("href") > -1 Then links.Add(obElm)
+  If obElm.tagName = "meta" Then metas.Add(obElm)
+  If obElm.tagName = "link" Then linkRels.Add(obElm)
+  If obElm.tagName = "script" Then scripts.Add(obElm)
+  If obElm.nodeType = Me.NODETYPE_COMMENT Then comments.Add(obElm)
+  If obElm.nodeType = Me.NODETYPE_TEXT Then texts.Add(obElm)
+  If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then favicon=obElm
+
+  '~ Public cookie As New HTMElement[]      'Returns the document 's cookie   1 (**)NOT IMPLEMENTED as JavaScript is not implemente in this DOM tree.
+  Return obElm
 End
 
 Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As HTMElement 	''Return Value: 	A Node object, representing the replaced node
@@ -743,6 +815,9 @@ Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As 
   If idxOnParentChilds > -1 Then
     obNewElm.parentNode.childNodes[idxOnParentChilds] = obNewElm
   Endif
+  
+  domRemoveShortCutsReferences(obOldElm) ''Remove all Shorcut References
+  domPutShortCutsReferences(obNewElm) ''Put all Shorcut References
 
   ''TODO: replaceChild: See if Right
   Return obOldElm
