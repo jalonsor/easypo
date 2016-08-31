@@ -1201,6 +1201,7 @@ End
 Private Function parseHasChild(tagName As String, strStartPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
 
   Dim startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
+  Dim posTagClose as Integer=0
   Dim charIni As String = "", charAux As String = ""
 
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
@@ -1211,43 +1212,58 @@ Private Function parseHasChild(tagName As String, strStartPos As Integer) As Int
 
   charIni = Mid$($strHtml, strStartPos, 1)
   If charIni <> "<" And If charIni <> ">" Then 'If we are NOT dealing with a Tag ....
-    Return 0 ''It must be Text, style text o script text and have no  childs
-  Else If charIni = "<" Then 'Start of the Tag
-    posCharCloseTag = InStr($strHtml, ">", strStartPos)  'Close tag ">"
+    Return 0 ''It must be Text, Style text o Script text and have no  childs
+  Else If charIni = "<" Then 'Start of This Tag
+    posCharCloseTag = InStr($strHtml, ">", strStartPos)  'Close Tag Char ">"
 
     charAux = Mid$($strHtml, posCharCloseTag - 1, 1)
-    If charAux = "/" Then 'If it is an autoclosed Tag ...
+    If charAux = "/" Then 'If This is an autoclosed Tag "<tagName ... />" ...
       Return 0 ''No TagChild
     Endif
+	
+    charAux = Mid$($strHtml, posCharCloseTag + 1, 1)
+    If charAux <> "<" Then 'If there is Text between two tags ....
+      Return posCharCloseTag + 1 'Return first possition of the Text
+    Endif
 
+	posTagClose = parseFindCloseTag(tagName, posCharCloseTag+1) 'Where this tagName is closed "</tagName>"
     posCharOpenTag = parseInstr("<", ["/"], posCharCloseTag + 1)  'Open tag, but Not </....
 
-    If (posCharCloseTag + 1) <= (posCharOpenTag - 1) Then 'Text between the Tags. NO Consecutive Tag
-      Return (posCharCloseTag + 1)
-    Endif
-  Else If charIni = ">" Then 'End of the Tag
+	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
+	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
+	    Return posCharOpenTag
+	  Else	'If there is NO new OpenTag before the close tag ...
+		Return 0
+	  EndIf
+	Else	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
+	  Return posCharOpenTag	'Next Tag is Child of This
+	EndIf
+  Else If charIni = ">" Then 'End of This Tag
     charAux = Mid$($strHtml, strStartPos - 1, 1)
     If charAux = "/" Then 'If it is an autoclosed Tag ...
       Return 0 ''No TagChild
     Endif
 
-    posCharOpenTag = parseInstr("<", ["/"], strStartPos + 1)  'Open tag, but Not </....
-    If strStartPos = (posCharOpenTag - 1) Then 'No text between the Tags. Consecutive Tag
-      Return posCharOpenTag
-    Else If strStartPos < (posCharOpenTag - 1) Then 'Text between the Tags. NO Consecutive Tag
-      Return strStartPos
+    charAux = Mid$($strHtml, strStartPos + 1, 1)
+    If charAux <> "<" Then 'If there is Text between two tags ....
+      Return strStartPos + 1 'Return first possition of the Text
     Endif
+
+	posTagClose = parseFindCloseTag(tagName, strStartPos) 'Where this tagName is closed "</tagName>"
+	posCharOpenTag = parseInstr("<", ["/"], strStartPos + 1)  'Open tag, but Not </....
+	
+	If posTagClose > 0 Then 'If there is Close Tag "</tagName>" ....
+	  If posTagClose > posCharOpenTag Then 'If there is a new OpenTag before the close tag ...
+	    Return posCharOpenTag
+	  Else	'If there is NO new OpenTag before the close tag ...
+		Return 0
+	  EndIf
+	Else	 'If there is NO Close Tag "</tagName>" .... (Must be an ERROR in Html Nesting)
+	  Return posCharOpenTag	'Next Tag is Child of This
+	EndIf
   Endif
 
-  ''TODO: parseHasChild
-
-  '~ posCloseTag = parseFindCloseTag(tagName, strPos)
-  '~ If posCloseTag > 0 Then 'If there is Close Tag ....
-  '~ If endPos > 0 And If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
-  '~ Return endPos ''Return the initial possition of the Child Tag.
-  '~ Endif
-  '~ Endif
-
+  ''TODO: parseHasChild: Mus be done logic revision.
 
   Return startChildPos
 
