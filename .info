@@ -186,6 +186,10 @@ texts
 v
 HTMElement[]
 
+styles
+v
+HTMElement[]
+
 baseURI
 v
 s

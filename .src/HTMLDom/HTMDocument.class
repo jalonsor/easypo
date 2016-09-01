@@ -312,7 +312,7 @@ Private Sub destroyDOM()
   texts.Clear
   texts = Null
   styles.Clear
-  styles=Null
+  styles = Null
 
 End
 
@@ -877,15 +877,16 @@ End
 Private Sub parseDocument()
 
   Dim i As Integer = 0, j As Integer = 0, nTotTam As Integer = 0, currentPos As Integer = 0, auxPos1 As Integer = 0, auxPos2 As Integer = 0
-  Dim auxStr As String, auxStrTagName As String
+  Dim auxStr As String, auxStrTagName As String, charIni As String = ""
   Dim swStartParse As Boolean = False
 
   nTotTam = Len($strHtml)
 
-  currentPos = InStr($strHtml, "<", 1)  'Drops dirty chars before the first tag.
+  i = InStr($strHtml, "<", 1)  'Drops dirty chars before the first tag.
 
-  For i = currentPos To nTotTam
-    If Mid$($strHtml, i, 1) = "<" Then  ''TODO: parseDocument: Must Find '<', but not inside scripts or styles blocks.
+  While i <= nTotTam
+    charIni = Mid$($strHtml, i, 1)
+    If charIni = "<" Then  ''TODO: parseDocument: Must Find '<', but not inside scripts or styles blocks.
       auxStrTagName = parseGetTagName(i)
       If parseIsDoctype(auxStrTagName) = True Then
         i = parseDocType(i)     ''Returns where parsing ends +1, so we start parsing here again
@@ -896,10 +897,10 @@ Private Sub parseDocument()
       Else
         i = parseElement(i)   ''Returns where parsing ends +1, so we start parsing here again
       Endif
-	Else If parseIsText(auxStrTagName) = True Then
+    Else If parseIsText(auxStrTagName) = True Then
         i = parseText(i)       ''Returns where parsing ends +1, so we start parsing here again
     Endif
-  Next
+  Wend
 
 End
 
@@ -915,7 +916,7 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
   auxStrTagName = parseGetTagName(startPos)
 
   If Left$(auxStrTagName, 1) = "/" Then ''Ignore Close Tag
-    endPos=InStr($strHtml, ">", startPos) + 1
+    endPos = InStr($strHtml, ">", startPos) + 1
     Return endPos
     ''endPos += (InStr($strHtml, ">", startPos) + 1)
   Endif
@@ -1046,8 +1047,9 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
         $stackElm.Add(actualElm)   ''To keep nesting track
         endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
         $stackElm.Remove($stackElm.Count - 1)
-	  Else If startChildPos < 0 Then ''We find a Close Tag and must continue after it.
-	    endPos=Abs(startChildPos)
+      Else If startChildPos < 0 Then ''We find a Close Tag and must continue after it.
+        endPos = Abs(startChildPos)
+        startChildPos = 0
       Endif
     Loop Until startChildPos = 0  'No more Childrens TAGS    parseHasChild(tagName As String, strStartPos As Integer)
   Endif
@@ -1105,21 +1107,21 @@ Private Function parseText(startPos As Integer) As Integer ''Parser for TEXT and
     endPos = InStr($strHtml, "</script>", startPos, gb.IgnoreCase)
     actualElm.nodeValue = Mid$($strHtml, startPos, (endPos - startPos))
     Me.scripts.Add(actualElm)
-    endPos += 9 ''Len("</script>")
+    'endPos += 9 ''Len("</script>")
   Else If actualElm.parentNode.tagName = "style" Then
     endPos = InStr($strHtml, "</style>", startPos, gb.IgnoreCase)
     actualElm.nodeValue = Mid$($strHtml, startPos, (endPos - startPos))
     Me.styles.Add(actualElm)
-    endPos += 8 ''Len("</style>")
+    'endPos += 8 ''Len("</style>")
   Else
     endPos = InStr($strHtml, "<", startPos)
     actualElm.nodeValue = Mid$($strHtml, startPos, (endPos - startPos))
     Me.texts.Add(actualElm)
-	if Mid$($strHtml, endPos + 1, 1) ="/" Then
-	  endPos=InStr($strHtml, ">", endPos) + 1
-	Else
-	  endPos-=1
-	EndIf
+    ' If Mid$($strHtml, endPos + 1, 1) = "/" Then
+    '   endPos = InStr($strHtml, ">", endPos) + 1
+    ' Else
+    '   endPos -= 1
+    ' Endif
   Endif
 
   actualElm.nodeType = Me.NODETYPE_TEXT
@@ -1156,11 +1158,11 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
 End
 
 Private Function parseGetEtiquetaCompleta(startPos As Integer, ByRef endPos As Integer) As String
-  Dim strRet as String=""
+  Dim strRet As String = ""
   
   endPos = InStr($strHtml, ">", startPos)
-  strRet=Mid$($strHtml, startPos, (endPos - (startPos)) + 1) ''TODO: Added +1. See if Right.
-  endPos +=1
+  strRet = Mid$($strHtml, startPos, (endPos - (startPos)) + 1) ''TODO: Added +1. See if Right.
+  endPos += 1
   Return strRet 
 
 End
@@ -1220,32 +1222,32 @@ Private Function parseHasChild(tagName As String, startPos As Integer) As Intege
   Dim charIni As String = "", charAux As String = ""
 
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
-  If tagName = "script" Then Return 0 ''No TagChild cause is script
-  If tagName = "style" Then Return 0 ''No TagChild cause is style
+  ' If tagName = "script" Then Return 0 ''No TagChild cause is script
+  ' If tagName = "style" Then Return 0 ''No TagChild cause is style
   
   ''*** See if autoclosed ***
-  if Mid$($strHtml, startPos-2, 1) ="/" Then ''It is autoclosed
-	Return 0	''No TagChild cause is autoclosed
-  EndIf
+  If Mid$($strHtml, startPos - 2, 1) = "/" Then ''It is autoclosed
+    Return 0 	''No TagChild cause is autoclosed
+  Endif
 
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild, Text nor Tag ...
   
   posTagClose = parseFindCloseTag(tagName, startPos) 'Where this tagName is closed "</tagName>". 0= NO Close Tag. Must be Nesting Error.
   If posTagClose = startPos Then
-    startChildPos=InStr($strHtml, ">", posTagClose)+1
-    Return -(startChildPos) ''This is the end of the tag and has no childs, But must forward to the end of the close tag.
+    startChildPos = InStr($strHtml, ">", posTagClose) + 1
+    Return - (startChildPos) ''This is the end of the tag and has no childs, But must forward to the end of the close tag.
   Endif
   
   
   charIni = Mid$($strHtml, startPos, 1)
   If charIni = "<" Then 'Start of The Child Tag
-    startChildPos=startPos
+    startChildPos = startPos
     Return startChildPos
     'posCharCloseTag = InStr($strHtml, ">", startPos)  'Close Child Tag Char ">"
   Else If charIni <> "<" And If charIni <> ">" Then 'If we are NOT dealing with a Tag .... We must find the next Open or Close Tag Char ...
-    startChildPos=startPos
+    startChildPos = startPos
     Return startChildPos
-  EndIf
+  Endif
   
   
   Return startChildPos
