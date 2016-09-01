@@ -80,7 +80,7 @@ Public linkRels As New HTMElement[]      'Returns all < link > HTMElements
 Public scripts As New HTMElement[]      'Returns all < script > HTMElements 3
 Public comments As New HTMElement[]      'Returns all <!-- .. --> HTMElements 3
 Public texts As New HTMElement[]      'Returns all Texts HTMElements 3
-
+Public styles As New HTMElement[]      'Returns all < style > HTMElements 3
 
 Public baseURI As String      'Returns the absolute base URI Of the document 3
 Public doctype As String      'Returns the document 's doctype   3
@@ -311,6 +311,8 @@ Private Sub destroyDOM()
   comments = Null
   texts.Clear
   texts = Null
+  styles.Clear
+  styles=Null
 
 End
 
@@ -733,6 +735,8 @@ Private Function domPutShortCutsReferences(obElm As HTMElement) As HTMElement 	'
   If obElm.tagName = "meta" Then metas.Add(obElm)
   If obElm.tagName = "link" Then linkRels.Add(obElm)
   If obElm.tagName = "script" Then scripts.Add(obElm)
+  If obElm.tagName = "style" Then styles.Add(obElm)
+  
   If obElm.nodeType = Me.NODETYPE_COMMENT Then comments.Add(obElm)
   If obElm.nodeType = Me.NODETYPE_TEXT Then texts.Add(obElm)
   If obElm.tagName = "link" And If obElm.attributes.Find("rel") > -1 And If InStr(obElm.attributes.Find("rel"), "icon") > 0 Then favicon = obElm
@@ -804,6 +808,10 @@ Private Function domRemoveShortCutsReferences(obElm As HTMElement) As HTMElement
     idxAux = scripts.Find(obElm)
     scripts.Remove(idxAux)
   Endif
+  If obElm.tagName = "style" Then
+    idxAux = styles.Find(obElm)
+    styles.Remove(idxAux)
+  Endif  
   If obElm.nodeType = Me.NODETYPE_COMMENT Then
     idxAux = comments.Find(obElm)
     comments.Remove(idxAux)
@@ -881,22 +889,22 @@ Private Sub parseDocument()
     If Mid$($strHtml, i, 1) = "<" Then  ''TODO: parseDocument: Must Find '<', but not inside scripts or styles blocks.
       auxStrTagName = parseGetTagName(i)
       If parseIsDoctype(auxStrTagName) = True Then
-        i = parseDocType(i)     ''Returns where parsing ends, so we continue after
+        i = parseDocType(i)     ''Returns where parsing ends +1, so we start parsing here again
       Else If parseIsComment(auxStrTagName) = True Then
-        i = parseComment(i)   ''Returns where parsing ends, so we continue after
-      Else If parseIsText(auxStrTagName) = True Then
-        i = parseText(i)       ''Returns where parsing ends, so we continue after
+        i = parseComment(i)   ''Returns where parsing ends +1, so we start parsing here again
       Else If parseIsHtml(auxStrTagName) Then
-        i = parseElement(i, True)   ''Returns where parsing ends, so we continue after
+        i = parseElement(i, True)   ''Returns where parsing ends +1, so we start parsing here again
       Else
-        i = parseElement(i)   ''Returns where parsing ends, so we continue after
+        i = parseElement(i)   ''Returns where parsing ends +1, so we start parsing here again
       Endif
+	Else If parseIsText(auxStrTagName) = True Then
+        i = parseText(i)       ''Returns where parsing ends +1, so we start parsing here again
     Endif
   Next
 
 End
 
-Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = False) As Integer
+Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = False) As Integer
 
   Dim endPos As Integer = 0, startChildPos As Integer = 0
   Dim i As Integer, j As Integer
@@ -905,19 +913,20 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
 
   Dim arrAuxElems As HTMElement[]
 
-  auxStrTagName = parseGetTagName(strPos)
+  auxStrTagName = parseGetTagName(startPos)
 
   If Left$(auxStrTagName, 1) = "/" Then ''Ignore Close Tag
-    Return (InStr($strHtml, ">", strPos) + 1)
-    ''endPos += (InStr($strHtml, ">", strPos) + 1)
+    endPos=InStr($strHtml, ">", startPos) + 1
+    Return endPos
+    ''endPos += (InStr($strHtml, ">", startPos) + 1)
   Endif
 
   If parseIsComment(auxStrTagName) = True Then
-    endPos = parseComment(strPos)     ''Returns where parsing ends, so we continue after
+    endPos = parseComment(startPos)     ''Returns where parsing ends +1, so we start parsing here again
   Else If parseIsText(auxStrTagName) = True Then
-    endPos = parseText(strPos)       ''Returns where parsing ends, so we continue after
+    endPos = parseText(startPos)       ''Returns where parsing ends +1, so we start parsing here again
   Else   '' Here we arrive when dealing wtih common tags.
-    auxStr = parseGetEtiquetaCompleta(strPos, ByRef endPos) ''Returns Byref the endPos(End Posittion) of the Tag.
+    auxStr = parseGetEtiquetaCompleta(startPos, ByRef endPos) ''Returns Byref the endPos(End Posittion) of the Tag + 1, so we start parsing here again.
     arrAuxAttr = parseGetAttribs(auxStr)
 
     $all.Add(Null)
@@ -1030,25 +1039,7 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
     End Select
     ''**** FIN Element DOM References
 
-
     ''**** If there are Childs ....
-    ' Do ''While has ChildTags
-    '   startChildPos = parseHasTextChild(actualElm.tagName, endPos)
-    '   If startChildPos > 0 Then
-    '     $stackElm.Add(actualElm)   ''To keep nesting track
-    '     endPos = parseText(startChildPos)   ''Returns where parsing ends, so we continue after
-    '     $stackElm.Remove($stackElm.Count - 1)
-    '   Endif
-    ' 
-    '   ''Do ''While has ChildTags
-    '   startChildPos = parseHasTagChild(actualElm.tagName, endPos)
-    '   If startChildPos > 0 Then
-    '     $stackElm.Add(actualElm)   ''To keep nesting track
-    '     endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
-    '     $stackElm.Remove($stackElm.Count - 1)
-    '   Endif
-    ' Loop Until startChildPos = 0  'No more Childrens TAGS
-    
     Do ''While has ChildTags
       startChildPos = parseHasChild(actualElm.tagName, endPos)
       'startChildPos = parseHasTextChild(actualElm.tagName, endPos)
@@ -1056,26 +1047,27 @@ Private Function parseElement(strPos As Integer, Optional isRoot As Boolean = Fa
         $stackElm.Add(actualElm)   ''To keep nesting track
         endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
         $stackElm.Remove($stackElm.Count - 1)
+	  Else If startChildPos < 0 Then ''We find a Close Tag and must continue after it.
+	    endPos=Abs(startChildPos)
       Endif
     Loop Until startChildPos = 0  'No more Childrens TAGS    parseHasChild(tagName As String, strStartPos As Integer)
-    
   Endif
 
-  Return (endPos)
+  Return endPos
 
 End
 
-Private Function parseDocType(strPos As Integer) As Integer
+Private Function parseDocType(startPos As Integer) As Integer
 
   Dim endPos As Integer = 0
-  ''TODO: parseDocType
-  Me.doctype = parseGetEtiquetaCompleta(strPos, ByRef endPos)
+  ''TODO: parseDocType: Must be implemented: http://www.w3schools.com/tags/tag_doctype.asp
+  Me.doctype = parseGetEtiquetaCompleta(startPos, ByRef endPos)
 
   Return endPos ''(**OJO**) Is returned by parseGetEtiquetaCompleta ByRef
 
 End
 
-Private Function parseComment(strPos As Integer) As Integer
+Private Function parseComment(startPos As Integer) As Integer
 
   Dim endPos As Integer = 0
   Dim lenStartTag As Integer = 4  ''Len("<!--")
@@ -1083,14 +1075,14 @@ Private Function parseComment(strPos As Integer) As Integer
   Dim actualElmIdx As Integer
 
   '<!--...-->
-  endPos = InStr($strHtml, "-->", strPos) + 2 '2=Len("-->")-1
+  endPos = InStr($strHtml, "-->", startPos) + 3 '3=Len("-->")
 
   $all.Add(Null)
   $all[$all.Count - 1] = New HTMElement(Me)
   actualElm = $all[$all.Count - 1]
   Me.comments.Add(actualElm)
 
-  actualElm.nodeValue = Mid$($strHtml, strPos + lenStartTag, (endPos - strPos - lenStartTag) - 2)
+  actualElm.nodeValue = Mid$($strHtml, startPos + lenStartTag, (endPos - startPos - lenStartTag) - 3)
   actualElm.nodeType = Me.NODETYPE_COMMENT
 
   parsePutDOMReferences(actualElm)
@@ -1099,8 +1091,7 @@ Private Function parseComment(strPos As Integer) As Integer
 
 End
 
-Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
-
+Private Function parseText(startPos As Integer) As Integer ''Parser for TEXT and SCRIPTS content.
   Dim endPos As Integer = 0, startTagSibilingPos As Integer = 0
   Dim actualElm As HTMElement
   Dim actualElmIdx As Integer
@@ -1112,33 +1103,30 @@ Private Function parseText(strPos As Integer) As Integer ''Parser for TEXT and S
   parsePutDOMReferences(actualElm)
 
   If actualElm.parentNode.tagName = "script" Then
-    endPos = InStr($strHtml, "</script>", strPos, gb.IgnoreCase)
-    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
+    endPos = InStr($strHtml, "</script>", startPos, gb.IgnoreCase)
+    actualElm.nodeValue = Mid$($strHtml, startPos, (endPos - startPos))
     Me.scripts.Add(actualElm)
-    endPos += 8 ''Len("</script>") - 1
+    endPos += 9 ''Len("</script>")
   Else If actualElm.parentNode.tagName = "style" Then
-    endPos = InStr($strHtml, "</style>", strPos, gb.IgnoreCase)
-    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos))
-    Me.scripts.Add(actualElm)
-    endPos += 7 ''Len("</style>") -1
+    endPos = InStr($strHtml, "</style>", startPos, gb.IgnoreCase)
+    actualElm.nodeValue = Mid$($strHtml, startPos, (endPos - startPos))
+    Me.styles.Add(actualElm)
+    endPos += 8 ''Len("</style>")
   Else
-    endPos = InStr($strHtml, "<", strPos) - 1
-    actualElm.nodeValue = Mid$($strHtml, strPos, (endPos - strPos) + 1)
+    endPos = InStr($strHtml, "<", startPos)
+    actualElm.nodeValue = Mid$($strHtml, startPos, (endPos - startPos))
     Me.texts.Add(actualElm)
+	if Mid$($strHtml, endPos + 1, 1) ="/" Then
+	  endPos=InStr($strHtml, ">", endPos) + 1
+	Else
+	  endPos-=1
+	EndIf
   Endif
 
   actualElm.nodeType = Me.NODETYPE_TEXT
 
-  If actualElm.parentNode.tagName <> "script" And If actualElm.parentNode.tagName <> "style" Then
-    startTagSibilingPos = parseHasTagSibiling(actualElm.parentNode.tagName, endPos)
-    If startTagSibilingPos > 0 Then ''Return 0 if NOT, >0 is the start Possition
-      endPos = parseElement(startTagSibilingPos)
-    Endif
-  Endif
-
   ''TODO: parseText --> Parser for TEXT, SCRIPTS  and STYLE content. See if Right
   Return endPos
-
 End
 
 Private Function parseGetAttribs(strEtiqueta As String) As Collection
@@ -1168,25 +1156,28 @@ Private Function parseGetAttribs(strEtiqueta As String) As Collection
 
 End
 
-Private Function parseGetEtiquetaCompleta(strPos As Integer, ByRef endPos As Integer) As String
-
-  endPos = InStr($strHtml, ">", strPos)
-  Return Mid$($strHtml, strPos, (endPos - (strPos)) + 1) ''TODO: Added +1. See if Right.
+Private Function parseGetEtiquetaCompleta(startPos As Integer, ByRef endPos As Integer) As String
+  Dim strRet as String=""
+  
+  endPos = InStr($strHtml, ">", startPos)
+  strRet=Mid$($strHtml, startPos, (endPos - (startPos)) + 1) ''TODO: Added +1. See if Right.
+  endPos +=1
+  Return strRet 
 
 End
 
-Private Function parseGetTagName(strPos As Integer) As String
+Private Function parseGetTagName(startPos As Integer) As String
   Dim spcPos As Integer, closePos As Integer
   Dim charIni As String = ""
 
-  charIni = Mid$($strHtml, strPos, 1)
+  charIni = Mid$($strHtml, startPos, 1)
   If charIni = "<" Then
-    spcPos = InStr($strHtml, " ", strPos)
-    closePos = InStr($strHtml, ">", strPos)
+    spcPos = InStr($strHtml, " ", startPos)
+    closePos = InStr($strHtml, ">", startPos)
     If closePos < spcPos Then
-      Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, ">", strPos + 1) - (strPos + 1))))
+      Return LCase$(Mid$($strHtml, startPos + 1, (InStr($strHtml, ">", startPos + 1) - (startPos + 1))))
     Else
-      Return LCase$(Mid$($strHtml, strPos + 1, (InStr($strHtml, " ", strPos + 1) - (strPos + 1))))
+      Return LCase$(Mid$($strHtml, startPos + 1, (InStr($strHtml, " ", startPos + 1) - (startPos + 1))))
     Endif
   Endif
   
@@ -1222,73 +1213,15 @@ Private Function parseIsText(strTagName As String) As Boolean
 
 End
 
-Private Function parseHasTextChild(tagName As String, endTagPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-
-  Dim iniNewTagPos As Integer = 0, nTamAux As Integer = 0, strAux As String = ""
-  Dim actualElm As HTMElement
-
-  ''TODO: parseHasTextChild: Need Logic Revision.
-
-  If tagName = "script" Then
-    iniNewTagPos = InStr($strHtml, "</script>", endTagPos, gb.IgnoreCase)  'Open tag
-    If iniNewTagPos > 0 Then iniNewTagPos += 9 ''Len("</script>")
-  Else If tagName = "style" Then
-    iniNewTagPos = InStr($strHtml, "</style>", endTagPos, gb.IgnoreCase)  'Open tag
-    If iniNewTagPos > 0 Then iniNewTagPos += 8 ''Len("</style>")
-  Else
-    iniNewTagPos = InStr($strHtml, "<", endTagPos)  'Open tag
-  Endif
-
-  If iniNewTagPos > (endTagPos + 1) Then ''There is Text Child
-    If $removeBlankText = True Then
-      'nTamAux as Integer=0, strAux as String=""
-      strAux = _HUtil.utilTrim(Mid$($strHtml, (endTagPos + 1), iniNewTagPos - (endTagPos + 1)), [" ", "\t", "\n", "\r", "\v", "\f", "\e"])
-      If Len(strAux) > 0 Then ''If there is no blank Text ...
-        Return (endTagPos + 1)
-      Endif
-    Endif
-  Endif
-
-  Return 0 ''No Text Child
-
-End
-
-Private Function parseHasTagChild(tagName As String, strPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
-
-  Dim endPos As Integer = 0, endPos1 As Integer = 0, posCloseTag As Integer = 0, straux As String = ""
-
-  If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
-  If tagName = "script" Then Return 0 ''No TagChild cause is script
-  If tagName = "style" Then Return 0 ''No TagChild cause is style
-
-  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild ...
-
-  endPos1 = InStr($strHtml, "<", strPos)  'Open tag
-  endPos = parseInstr("<", ["/"], strPos)
-  If endPos > 0 Then straux = Mid$($strHtml, endPos, 10) ''Only to see what happens. Must delete this line after debugin
-
-  ''TODO: parseHasTagChild: Is the new Tag really a children?. Is Close Tag?
-
-  posCloseTag = parseFindCloseTag(tagName, strPos)
-
-  If posCloseTag > 0 Then 'If there is Close Tag ....
-    If endPos > 0 And If endPos < posCloseTag - 1 Then  'If there is a new OpenTag before the close tag ...
-      Return endPos ''Return the initial possition of the Child Tag.
-    Endif
-  Endif
-
-  Return 0 ''No ChildTag
-
-End
 
 ''TODO: parseHasChild Must Replace the two methods: parseHasTagChild and parseHasTextChild. It must be very inteligent.
-Private Function parseHasChild(tagName As String, strStartPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition
+Private Function parseHasChild(tagName As String, startPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition of the Child. <0 NO Child but next possition to parse
 
   Dim posIni As Integer = 0, startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
   Dim posTagClose As Integer = 0
   Dim charIni As String = "", charAux As String = ""
 
-  posIni = strStartPos
+  posIni = startPos
 
   If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
   If tagName = "script" Then Return 0 ''No TagChild cause is script
@@ -1384,8 +1317,8 @@ Private Function parseHasChild(tagName As String, strStartPos As Integer) As Int
   ''TODO: parseHasChild: Mus be done logic revision.
 
   Return startChildPos
-
 End
+
 
 Private Function parseInstr(strFind As String, notFollowedBy As String[], startPos As Integer) As Integer
 
