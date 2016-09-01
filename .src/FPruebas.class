@@ -11,11 +11,11 @@ Private http As HttpForm
 Private arrSourceLang As String[]
 Private arrTargetLang As String[]
 
-
+Private htDoc As HTMDocument
 
 
 Public Sub Form_Open()
-  Dim htDoc As HTMDocument
+
   
   ' http = New HttpForm
   ' 
@@ -34,8 +34,8 @@ Public Sub Form_Open()
   ' http.Submit
   
     htDoc = New HTMDocument
-    'htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.html")
-    htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/pruPeque.html")
+    htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.html")
+    'htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/pruPeque.html")
     htDoc.objectStats(True)
   
   
@@ -77,3 +77,4 @@ End
 ' Public Sub http_Read()
 '   
 ' End
+

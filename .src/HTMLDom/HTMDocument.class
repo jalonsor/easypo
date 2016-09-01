@@ -112,7 +112,7 @@ Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As B
 End
 
 Public Sub _free() ''***Se invoca al destruir el objeto
-
+''***TODO: Why not called when HTDocument=Null???
   destroyDOM  ''Liberar Objetos y Referencias
 
 End
@@ -886,7 +886,7 @@ Private Sub parseDocument()
 
   While i <= nTotTam
     charIni = Mid$($strHtml, i, 1)
-    If charIni = "<" Then  ''TODO: parseDocument: Must Find '<', but not inside scripts or styles blocks.
+    If charIni = "<" Then
       auxStrTagName = parseGetTagName(i)
       If parseIsDoctype(auxStrTagName) = True Then
         i = parseDocType(i)     ''Returns where parsing ends +1, so we start parsing here again
@@ -901,7 +901,7 @@ Private Sub parseDocument()
         i = parseText(i)       ''Returns where parsing ends +1, so we start parsing here again
     Endif
   Wend
-
+  i = 0 ''*** TODO: parseDocument: Only to stop here the debugger. Remove it.
 End
 
 Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = False) As Integer
@@ -1040,6 +1040,7 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
     ''**** FIN Element DOM References
 
     ''**** If there are Childs ....
+    ''TODO: parseElement: Revise the autoclose tags. Seem like broke the nesting
     Do ''While has ChildTags
       startChildPos = parseHasChild(actualElm.tagName, endPos)
       'startChildPos = parseHasTextChild(actualElm.tagName, endPos)
