@@ -357,7 +357,6 @@ Public Function fromFile(strFilepath As String, Optional removeBlankText As Bool
   Endif
 
   Return False
-
 End
 
 Public Function domTree(Optional printIt As Boolean = True) As String
@@ -1214,9 +1213,47 @@ Private Function parseIsText(strTagName As String) As Boolean
 End
 
 
-''TODO: parseHasChild Must Replace the two methods: parseHasTagChild and parseHasTextChild. It must be very inteligent.
+''TODO: parseHasChild:  By Now we assume that startPos is the first possition after the '>' tag. First possition of the child?
 Private Function parseHasChild(tagName As String, startPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition of the Child. <0 NO Child but next possition to parse
+  Dim posIni As Integer = 0, startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
+  Dim posTagClose As Integer = 0
+  Dim charIni As String = "", charAux As String = ""
 
+  If Len(Trim(tagName)) = 0 Then Return 0 ''No TagChild cause is text
+  If tagName = "script" Then Return 0 ''No TagChild cause is script
+  If tagName = "style" Then Return 0 ''No TagChild cause is style
+  
+  ''*** See if autoclosed ***
+  if Mid$($strHtml, startPos-2, 1) ="/" Then ''It is autoclosed
+	Return 0	''No TagChild cause is autoclosed
+  EndIf
+
+  If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild, Text nor Tag ...
+  
+  posTagClose = parseFindCloseTag(tagName, startPos) 'Where this tagName is closed "</tagName>". 0= NO Close Tag. Must be Nesting Error.
+  If posTagClose = startPos Then
+    startChildPos=InStr($strHtml, ">", posTagClose)+1
+    Return -(startChildPos) ''This is the end of the tag and has no childs, But must forward to the end of the close tag.
+  Endif
+  
+  
+  charIni = Mid$($strHtml, startPos, 1)
+  If charIni = "<" Then 'Start of The Child Tag
+    startChildPos=startPos
+    Return startChildPos
+    'posCharCloseTag = InStr($strHtml, ">", startPos)  'Close Child Tag Char ">"
+  Else If charIni <> "<" And If charIni <> ">" Then 'If we are NOT dealing with a Tag .... We must find the next Open or Close Tag Char ...
+    startChildPos=startPos
+    Return startChildPos
+  EndIf
+  
+  
+  Return startChildPos
+End
+
+
+''TODO: parseHasChild Must Replace the two methods: parseHasTagChild and parseHasTextChild. It must be very inteligent.
+Private Function parseHasChild_OLD(tagName As String, startPos As Integer) As Integer ''Return 0 if NOT, >0 is the start Possition of the Child. <0 NO Child but next possition to parse
   Dim posIni As Integer = 0, startChildPos As Integer = 0, posCharOpenTag As Integer = 0, posCharCloseTag As Integer = 0
   Dim posTagClose As Integer = 0
   Dim charIni As String = "", charAux As String = ""
