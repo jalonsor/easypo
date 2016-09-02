@@ -1,6 +1,7 @@
 ' Gambas class file
 
 
+
 Static Private userAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
 Static Private strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
 Static Private strIniUrl As String = "https://translate.google.com/"

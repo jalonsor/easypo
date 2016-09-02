@@ -1,5 +1,6 @@
 ' Gambas class file
 
+
 ''http://ascii.cl/es/codigos-html.htm
 
 Public Const IDX_SYMBOL As Integer = 0
