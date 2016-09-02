@@ -404,12 +404,38 @@ Public Function objectStats(Optional printIt As Boolean = True) As String
   Dim strRet As String = ""
 
   strRet &= "**************** " & Object.Class(Me).Name & " Time Statistics ****************\n"
+  strRet &= "\tVersion:\t" & Me.classVersion & "\n"
+  strRet &= "\tDescription:\t" & Me.classDescription & "\n"
+  strRet &= "\tVendor:\t" & Me.classVendor & "\n\n"
+
   If $swLoadedByFile = True Then
     strRet &= "\tTime to load File:\t" & (Me.timeLoadFile / 1000) & " Seconds.\n"
   Else
     strRet &= "\tTime to load String:\t" & (Me.timeLoadString / 1000) & " Seconds.\n"
   Endif
   strRet &= "\tTime to Build DOM:\t" & (Me.timeBuildDOM / 1000) & " Seconds.\n"
+  
+  strRet &= "\n\tHTML Size:\t" & (Len($strHtml) / 1024) & " KB.\n\n"
+  
+  strRet &= "\tNumber of Elements:\t" & $all.Count & "\n"
+  strRet &= "\tNumber of different IDs:\t" & $ids.Count & "\n"
+  strRet &= "\tNumber of different TagNames:\t" & $tagNames.Count & "\n"
+  strRet &= "\tNumber of different Names:\t" & $names.Count & "\n"
+  strRet &= "\tNumber of different ClassNames:\t" & $classNames.Count & "\n"
+  strRet &= "\tNumber of Anchors:\t\t" & anchors.Count & "\n"
+  strRet &= "\tNumber of Applets:\t\t" & applets.Count & "\n"
+  strRet &= "\tNumber of Embeds:\t\t" & embeds.Count & "\n"
+  strRet &= "\tNumber of Objects:\t\t" & objects.Count & "\n"
+  strRet &= "\tNumber of Forms:\t\t" & forms.Count & "\n"
+  strRet &= "\tNumber of Images:\t\t" & images.Count & "\n"
+  strRet &= "\tNumber of Links:\t\t" & links.Count & "\n"
+  strRet &= "\tNumber of Metas:\t\t" & metas.Count & "\n"
+  strRet &= "\tNumber of LinkRels:\t\t" & linkRels.Count & "\n"
+  strRet &= "\tNumber of Scripts:\t\t" & scripts.Count & "\n" 
+  strRet &= "\tNumber of Comments:\t\t" & comments.Count & "\n" 
+  strRet &= "\tNumber of Texts:\t\t" & texts.Count & "\n"
+  strRet &= "\tNumber of Styles:\t\t" & styles.Count & "\n"
+
   strRet &= "*************************************************************\n\n"
 
   If printIt = True Then Print strRet
@@ -875,10 +901,10 @@ Private Sub parseDocument()
 
   nTotTam = Len($strHtml)
 
-  currentPos = InStr($strHtml, "<", 1)  'Drops dirty chars before the first tag.
+  i = InStr($strHtml, "<", 1)  'Drops dirty chars before the first tag.
 
-  ''While i <= nTotTam
-  For i = currentPos To nTotTam ''We need increment the value of "i" outside the parsing methods, cause if DOM is broken (bad html nesting) its value is never increased and bucle hangs.
+  While i <= nTotTam
+  ''For i = currentPos To nTotTam ''We need increment the value of "i" outside the parsing methods, cause if DOM is broken (bad html nesting) its value is never increased and bucle hangs.
     charIni = Mid$($strHtml, i, 1)
     If charIni = "<" Then
       auxStrTagName = parseGetTagName(i)
@@ -894,8 +920,8 @@ Private Sub parseDocument()
     Else If parseIsText(auxStrTagName) = True Then
         i = parseText(i)       ''Returns where parsing ends +1, so we start parsing here again
     Endif
-  Next
-  ''Wend
+  ''Next
+  Wend
   
   
   i = 0 ''*** TODO: parseDocument: Only to stop here the debugger. Remove it.
@@ -905,7 +931,7 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
 
   Dim endPos As Integer = 0, startChildPos As Integer = 0
   Dim i As Integer, j As Integer
-  Dim auxStr As String, auxStrTagName As String, arrAuxAttr As Collection
+  Dim strEtiquetaCompleta As String, auxStrTagName As String, arrAuxAttr As Collection
   Dim actualElm As HTMElement, actualElmIdx As Integer = 0
 
   Dim arrAuxElems As HTMElement[]
@@ -923,8 +949,8 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
   Else If parseIsText(auxStrTagName) = True Then
     endPos = parseText(startPos)       ''Returns where parsing ends +1, so we start parsing here again
   Else   '' Here we arrive when dealing wtih common tags.
-    auxStr = parseGetEtiquetaCompleta(startPos, ByRef endPos) ''Returns Byref the endPos(End Posittion) of the Tag + 1, so we start parsing here again.
-    arrAuxAttr = parseGetAttribs(auxStr)
+    strEtiquetaCompleta = parseGetEtiquetaCompleta(startPos, ByRef endPos) ''Returns Byref the endPos(End Posittion) of the Tag + 1, so we start parsing here again.
+    arrAuxAttr = parseGetAttribs(strEtiquetaCompleta)
 
     $all.Add(Null)
     $all[$all.Count - 1] = New HTMElement(Me)
@@ -1038,8 +1064,13 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
 
     ''**** If there are Childs ....
     ''TODO: parseElement: Revise the autoclose tags. Seem like they break the DOM nesting 
+    
     Do ''While has ChildTags
-      startChildPos = parseHasChild(actualElm.tagName, endPos)
+      If Right$(Trim(strEtiquetaCompleta), 2) <> "/>" Then ''If NOT autoclose tag ... TODO: parseElement: See If Right
+        startChildPos = parseHasChild(actualElm.tagName, endPos)
+      Else
+        startChildPos = 0
+      Endif
       If startChildPos > 0 Then
         $stackElm.Add(actualElm)   ''To keep nesting track
         endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
@@ -1210,10 +1241,10 @@ Private Function parseHasChild(tagName As String, startPos As Integer) As Intege
   ' If tagName = "script" Then Return 0 ''No TagChild cause is script
   ' If tagName = "style" Then Return 0 ''No TagChild cause is style
   
-  ''*** See if autoclosed ***
-  If Mid$($strHtml, startPos - 2, 1) = "/" Then ''It is autoclosed
-    Return 0 	''No TagChild cause is autoclosed
-  Endif
+  ' ''*** See if autoclosed ***
+  ' If Mid$($strHtml, startPos - 2, 1) = "/" Then ''It is autoclosed
+  '   Return 0 	''No TagChild cause is autoclosed
+  ' Endif
 
   If Me.tagCanHaveChild(tagName) = False Then Return 0 ''Can not have tagChild, Text nor Tag ...
   
