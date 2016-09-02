@@ -384,11 +384,19 @@ Public Function fromFile(strFilepath As String, Optional removeBlankText As Bool
 End
 
 Private Function getFileContent(strFilepath As String)
-	''TODO: getFileContent: Must be Implemented.
+  Dim pF As File, pFI as FileInfo
+  
+  ''TODO: getFileContent: See if Right
+  pFI=Stat(strFilepath , True)
+  
+  if pFI.Size > 0 Then
+	  pF = Open strFilepath For Input 
+	  $strHtml = READ #pF,  pFI.Size 
+	  Close #pF
+  EndIf  
 End
 
 Public Function domTree(Optional printIt As Boolean = True) As String
-
   Dim strRet As String = ""
   ''TODO: domTree
   Return strRet
