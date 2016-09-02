@@ -17,27 +17,30 @@ Private htDoc As HTMDocument
 Public Sub Form_Open()
 
   
-  ' http = New HttpForm
-  ' 
-  ' Object.Attach(http, Me, "http")
-  ' 
-  ' http.CookiesFile = "/tmp/" & Application.Name & Application.Id & ".cookies"
-  ' http.UpdateCookies = True
-  ' http.Debug = True
-  ' http.URL = strIniUrl
-  ' http.Timeout = tOut
-  ' 
-  ' 
-  ' 
-  ' http.Add("text", "Juanma: Traduce esto!")
-  ' 
-  ' http.Submit
+  http = New HttpForm
   
-    htDoc = New HTMDocument
-    htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.html")
-    'htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/pruPeque.html")
-    htDoc.objectStats(True)
+  Object.Attach(http, Me, "http")
   
+  http.CookiesFile = "/tmp/" & Application.Name & Application.Id & ".cookies"
+  http.UpdateCookies = True
+  http.Debug = True
+  http.URL = strIniUrl
+  http.Timeout = tOut
+  
+  
+  
+  http.Add("text", "Juanma: Traduce esto!")
+  
+  http.Submit
+  
+  
+  
+  
+    ' htDoc = New HTMDocument
+    ' htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.html")
+    ' 'htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/pruPeque.html")
+    ' htDoc.objectStats(True)
+    ' 
   
 End
 
@@ -45,7 +48,7 @@ End
 Public Sub http_Finished()
 
   Dim sline As String = "", sTotLines As String = ""
-  Dim htDoc As HTMDocument
+  Dim htDoc As HTMDocument, htElm As HTMElement, arrHtElm As HTMElement[]
   
   
   If http.code = 200 Then
@@ -56,6 +59,36 @@ Public Sub http_Finished()
     ''Print "======================>" & sTotLines
     htDoc = New HTMDocument(sTotLines)
     htDoc.objectStats(True)
+    
+    
+    'TextArea1.Text = "SOURCE LANGUAGES (gt-sl):\n"
+    htElm = htDoc.getElementById("gt-sl")
+    If htElm <> Null Then
+      arrHtElm = htElm.childNodes
+      For Each htElm In arrHtElm
+        If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
+          'TextArea1.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
+          ComboBox1.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
+        Endif
+      Next
+    Endif
+    
+    'TextArea2.Text = "TARGET LANGUAGES (gt-tl):\n"
+    htElm = htDoc.getElementById("gt-tl")
+    If htElm <> Null Then
+      arrHtElm = htElm.childNodes
+      For Each htElm In arrHtElm
+        If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
+          'TextArea2.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
+          ComboBox2.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
+        Endif
+      Next
+    Endif
+    
+    htDoc = Null
+    htElm = Null
+    arrHtElm.Clear
+    arrHtElm = Null
     
   Else
       Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
@@ -78,3 +111,8 @@ End
 '   
 ' End
 
+
+Public Sub Form_Close()
+  ' htDoc.destroyDOM()
+  ' htDoc = Null
+End

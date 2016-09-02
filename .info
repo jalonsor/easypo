@@ -246,6 +246,10 @@ _free
 m
 
 
+destroyDOM
+m
+
+
 fromString
 m
 

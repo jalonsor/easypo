@@ -2,6 +2,18 @@
 
 
 Static Private userAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+Static Private strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+Static Private strIniUrl As String = "https://translate.google.com/"
+Static Private strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
+Static Private tOut As Integer = 5
+
+Private http As HttpForm
+Private htDoc As HTMDocument
+
+
+Public Sub _new()
+  
+End
 
 
 Public Function getSourceLanguages() As String[]

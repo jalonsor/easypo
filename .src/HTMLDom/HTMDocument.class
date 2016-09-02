@@ -241,7 +241,7 @@ Private Sub clearDom()
 
 End
 
-Private Sub destroyDOM()
+Public Sub destroyDOM()
 
   $classVersion = Null
   $classDescription = Null
@@ -445,7 +445,11 @@ End
 
 '***Finding HTML HTMElements
 Public Function getElementById(id As String) As HTMElement
-  Return $ids[id]
+  If $ids.Exist(id) = True And If $ids[id].Count > 0 Then 
+    Return $ids[id][$ids[id].Count - 1] ''Return the last with the same ID
+  Endif
+  
+  Return Null
 End
 
 Public Function getElementsByTagName(tagName As String) As HTMElement[]

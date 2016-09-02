@@ -1,9 +1,5 @@
 [Breakpoints]
-Count=4
-Breakpoint[1]="HTMDocument.887"
-Breakpoint[2]="HTMDocument.903"
-Breakpoint[3]="HTMDocument.917"
-Breakpoint[4]="HTMDocument.1044"
+Count=0
 
 [DebugWindow]
 Count=0
@@ -13,6 +9,12 @@ Geometry=[167,133,1106,607]
 
 [DebugWindow/$all[0]]
 Geometry=[181,147,1106,607]
+
+[DebugWindow/$all[0].childNodes]
+Geometry=[195,161,1106,607]
+
+[DebugWindow/$all[0].childNodes[0]]
+Geometry=[209,175,1106,607]
 
 [DebugWindow/$all[13]]
 Geometry=[181,147,1106,607]
@@ -151,6 +153,15 @@ Geometry=[209,175,1106,607]
 
 [DebugWindow/$all[659].parentNode.parentNode.parentNode]
 Geometry=[223,189,1106,607]
+
+[DebugWindow/$all[667]]
+Geometry=[181,147,1106,607]
+
+[DebugWindow/$all[668]]
+Geometry=[181,147,1106,607]
+
+[DebugWindow/$all[668].childNodes]
+Geometry=[195,161,1106,607]
 
 [DebugWindow/$all[6]]
 Geometry=[181,147,1106,607]
@@ -332,14 +343,26 @@ Geometry=[39,42,423,499]
 [DebugWindow/Me.body.childNodes[2]]
 Geometry=[25,28,423,499]
 
+[DebugWindow/Me.body.childNodes[2].nextSibling]
+Geometry=[39,42,423,499]
+
+[DebugWindow/Me.body.childNodes[2].previousSibling]
+Geometry=[39,42,423,499]
+
 [DebugWindow/Me.body.childNodes[3]]
 Geometry=[25,28,423,499]
+
+[DebugWindow/Me.body.childNodes[3].attributes]
+Geometry=[39,42,423,499]
 
 [DebugWindow/Me.body.childNodes[3].childNodes]
 Geometry=[39,42,423,499]
 
 [DebugWindow/Me.body.childNodes[3].childNodes[0]]
 Geometry=[53,56,423,499]
+
+[DebugWindow/Me.body.childNodes[3].childNodes[0].attributes]
+Geometry=[67,70,423,499]
 
 [DebugWindow/Me.body.childNodes[4]]
 Geometry=[25,28,423,499]
@@ -783,14 +806,13 @@ Geometry=[-3,0,224,280]
 Geometry=[-3,0,367,470]
 
 [OpenFile]
-Active=2
+Active=5
 File[1]=".src/HTMLDom/_HUtil.class:11.72"
-File[2]=".src/HTMLDom/HTMDocument.class:26.1042"
-File[3]=".src/HTMLDom/HTMElement.class:0.38"
-Count=6
+File[2]=".src/HTMLDom/HTMDocument.class:0.447"
+File[3]=".src/HTMLDom/HTMElement.class:8.76"
+Count=5
 File[4]=".src/FPruebas.form"
-File[5]=".src/FPruebas.class:4.36"
-File[6]=".src/HTMLDom/_HTMCONSTS.class:6.51"
+File[5]=".src/FPruebas.class:30.66"
 
 [Watches]
 Count=4
