@@ -209,7 +209,7 @@ FILENAME !="" && swInfoFilename==0{
 }
 
 #~ # *** Public or Private Methods
-/^[ \t]*(static)? *public +(function|sub|procedure) /{
+/^[ \t]*(static)? *(public|private) +(function|sub|procedure) /{
 	#Static Public Function utilSplit(str As String, strSep As String, Optional notEnclosedIn As String[] = Null) As String[] ''Return Value: 	An Element object, which represents the created Element node
 	
 	strDec="";
