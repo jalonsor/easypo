@@ -1,0 +1,6 @@
+BEGIN{
+	IGNORECASE=1;
+}
+END{
+	
+}
