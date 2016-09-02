@@ -82,6 +82,10 @@ removeBlankText
 p
 b
 
+removeEOL
+p
+b
+
 timeLoadString
 r
 i
@@ -237,7 +241,7 @@ s
 _new
 m
 
-[(strHtml)s(removeBlankText)b]
+[(strHtml)s(removeBlankText)b(removeEndOfLine)b]
 _free
 m
 
@@ -245,11 +249,11 @@ m
 fromString
 m
 
-(strHtml)s[(removeBlankText)b]
+(strHtml)s[(removeBlankText)b(removeEndOfLine)b]
 fromFile
 m
 b
-(strFilepath)s[(removeBlankText)b]
+(strFilepath)s[(removeBlankText)b(removeEndOfLine)b]
 domTree
 m
 s

@@ -102,18 +102,18 @@ Public URL As String      'Returns the complete URL Of the document 1
 Public Sub _new(Optional strHtml As String = Null, Optional removeBlankText As Boolean = True, Optional removeEndOfLine As Boolean = True)
 
   $removeBlankText = removeBlankText
-  $removeEOL=removeEndOfLine
+  $removeEOL = removeEndOfLine
   
   If strHtml <> Null Then
     $swLoadedByFile = False
     $timeStartLoadString = Now
-	if $removeEOL = True Then 
+	If $removeEOL = True Then 
 		$innerHTML = Replace$(strHtml, "\n", "")
 		$strHtml = $innerHTML
-	else
+	Else
 		$innerHTML = strHtml
-		$strHtml = strHtml	
-	EndIf
+		$strHtml = strHtml
+	Endif
 
     $timeEndLoadString = Now
     initDom
@@ -140,13 +140,13 @@ End
 Private Sub innerHTML_Write(Value As String)
   $swLoadedByFile = False
   $timeStartLoadString = Now
-  if $removeEOL = True Then 
+  If $removeEOL = True Then 
 	$innerHTML = Replace$(Value, "\n", "")
 	$strHtml = $innerHTML
-  else
+  Else
 	  $innerHTML = Value
 	  $strHtml = Value
-  EndIf  
+  Endif  
   $timeEndLoadString = Now
   initDom
 End
@@ -336,16 +336,16 @@ End
 Public Sub fromString(strHtml As String, Optional removeBlankText As Boolean = True, Optional removeEndOfLine As Boolean = True)
 
   $removeBlankText = removeBlankText
-  $removeEOL=removeEndOfLine
+  $removeEOL = removeEndOfLine
   $swLoadedByFile = False
   $timeStartLoadString = Now
-  if $removeEOL = True Then 
+  If $removeEOL = True Then 
 	$innerHTML = Replace$(strHtml, "\n", "")
 	$strHtml = $innerHTML
-  else
+  Else
 	$innerHTML = strHtml
-	$strHtml = strHtml	
-  EndIf
+	$strHtml = strHtml
+  Endif
   $timeEndLoadString = Now
   initDom
 
@@ -356,7 +356,7 @@ Public Function fromFile(strFilepath As String, Optional removeBlankText As Bool
   Dim strLine As String
 
   $removeBlankText = removeBlankText
-  $removeEOL=removeEndOfLine
+  $removeEOL = removeEndOfLine
 
   If Exist(strFilepath) And Access(strFilepath, gb.Read) = True Then
     $swLoadedByFile = True
@@ -370,8 +370,8 @@ Public Function fromFile(strFilepath As String, Optional removeBlankText As Bool
 		Wend
 		Close #pF
     Else
-		getFileContent(strFilepath)	'Reads EOL too.
-    EndIf
+		getFileContent(strFilepath) 	'Reads EOL too.
+    Endif
 
     $timeEndLoadFile = Now
     initDom
@@ -382,16 +382,16 @@ Public Function fromFile(strFilepath As String, Optional removeBlankText As Bool
 End
 
 Private Function getFileContent(strFilepath As String)
-  Dim pF As File, pFI as FileInfo
-  
+  Dim pF As File
+  Dim pFTam As Long = 0
   ''TODO: getFileContent: See if Right
-  pFI=Stat(strFilepath , True)
+  pFTam = Stat(strFilepath, True).Size
   
-  if pFI.Size > 0 Then
+  If pFTam > 0 Then
 	  pF = Open strFilepath For Input 
-	  $strHtml = READ #pF,  pFI.Size 
+	  $strHtml = Read #pF, pFTam 
 	  Close #pF
-  EndIf  
+  Endif  
 End
 
 Public Function domTree(Optional printIt As Boolean = True) As String
@@ -878,7 +878,7 @@ Private Sub parseDocument()
   currentPos = InStr($strHtml, "<", 1)  'Drops dirty chars before the first tag.
 
   ''While i <= nTotTam
-  for i = currentPos to nTotTam ''We need increment the value of "i" outside the parsing methods, cause if DOM is broken (bad html nesting) its value is never increased and bucle hangs.
+  For i = currentPos To nTotTam ''We need increment the value of "i" outside the parsing methods, cause if DOM is broken (bad html nesting) its value is never increased and bucle hangs.
     charIni = Mid$($strHtml, i, 1)
     If charIni = "<" Then
       auxStrTagName = parseGetTagName(i)
@@ -1040,7 +1040,6 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
     ''TODO: parseElement: Revise the autoclose tags. Seem like they break the DOM nesting 
     Do ''While has ChildTags
       startChildPos = parseHasChild(actualElm.tagName, endPos)
-      'startChildPos = parseHasTextChild(actualElm.tagName, endPos)
       If startChildPos > 0 Then
         $stackElm.Add(actualElm)   ''To keep nesting track
         endPos = parseElement(startChildPos)   ''Returns where parsing ends, so we continue after
@@ -1057,9 +1056,9 @@ Private Function parseElement(startPos As Integer, Optional isRoot As Boolean = 
 End
 
 Private Function parseDocType(startPos As Integer) As Integer
-  Dim endPos As Integer = 0, strEtiquetaCompleta as String=""
+  Dim endPos As Integer = 0, strEtiquetaCompleta As String = ""
   ''TODO: parseDocType: Must be implemented: http://www.w3schools.com/tags/tag_doctype.asp
-  strEtiquetaCompleta=parseGetEtiquetaCompleta(startPos, ByRef endPos)
+  strEtiquetaCompleta = parseGetEtiquetaCompleta(startPos, ByRef endPos)
   
   Me.doctype = strEtiquetaCompleta
 
