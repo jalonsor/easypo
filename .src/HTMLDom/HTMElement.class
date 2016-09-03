@@ -47,6 +47,30 @@ Public Sub _free() ''***Se invoca al destruir el objeto
 End
 
 Private Function innerHTML_Read() As String
+  Dim i As Integer = 0
+  
+  $innerHTML = ""
+  
+  If Me.nodeType = Me.NODETYPE_ELEMENT Then
+    $innerHTML &= "<" & Me.tagName & elementGetAttAsString & ">"
+  Else If Me.nodeType = Me.NODETYPE_COMMENT Then
+    $innerHTML &= "<!--" & Me.nodeValue & "-->"
+  Else If Me.nodeType = Me.NODETYPE_TEXT Then
+    $innerHTML &= Me.nodeValue
+  Endif
+  
+  
+  If Me.childNodes.Count > 0 Then
+    For i = 0 To Me.childNodes.Count - 1
+      If Len(Me.childNodes[i].innerHTML) > 0 Then $innerHTML &= Me.childNodes[i].innerHTML
+    Next
+  Endif
+
+  If Me.nodeType = Me.NODETYPE_ELEMENT And If Me.tagCanHaveChild(Me.tagName) = True Then
+    $innerHTML &= "</" & Me.tagName & ">"
+  Endif
+
+
   Return $innerHTML
 End
 
@@ -56,6 +80,18 @@ Private Sub innerHTML_Write(Value As String)
 End
 
 Private Function innerTEXT_Read() As String
+  Dim i As Integer = 0
+  
+  ''TODO: Must replace HTML Codes and see if we must put LF for some tags.
+  $innerTEXT = ""
+  If Len(Me.nodeValue) > 0 Then $innerTEXT &= Me.nodeValue
+  
+  If Me.childNodes.Count > 0 Then
+    For i = 0 To Me.childNodes.Count - 1
+      If Len(Me.childNodes[i].innerTEXT) > 0 Then $innerTEXT &= Me.childNodes[i].innerTEXT
+    Next
+  Endif
+
   Return $innerTEXT
 End
 
@@ -145,5 +181,10 @@ Public Function replaceChild(obNewElm As HTMElement, obOldElm As HTMElement) As 
 End
 
 
+Private Function elementGetAttAsString() As String
+  
+  
+  
+End
 
 
