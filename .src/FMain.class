@@ -1,8 +1,35 @@
 ' Gambas class file
 
 
+
 Public Sub Form_Open()
+  frmInitSettings
+End
 
+Public Sub Form_Close()
+  frmSaveSettings
+End
+
+Private Sub frmInitSettings()
+  Me.title = Application.Title & " - V. " & Application.Version
   
+  Me.Maximized = Settings["Window/Maximized"]
+  Me.Top = Settings["Window/Top", 10] 
+  Me.Left = Settings["Window/Left", 10] 
+  Me.Height = Settings["Window/Height", 480] 
+  Me.Width = Settings["Window/Width", 640] 
+  
+  HSplit1.Layout = Settings["Window/Hsplit", [140, 600]] 
+  VSplit1.Layout = Settings["Window/Vsplit", [300, 200]] 
+End
 
+Private Sub frmSaveSettings()
+  Settings["Window/Maximized"] = Me.Maximized
+  Settings["Window/Top"] = Me.Top
+  Settings["Window/Left"] = Me.Left
+  Settings["Window/Height"] = Me.Height
+  Settings["Window/Width"] = Me.Width
+  
+  Settings["Window/Hsplit"] = HSplit1.Layout
+  Settings["Window/Vsplit"] = VSplit1.Layout
 End

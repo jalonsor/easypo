@@ -1,5 +1,95 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,86,64)
+  MoveScaled(0,0,109,71)
+  Arrangement = Arrange.Vertical
+  { mFile Menu
+    Text = Shortcut(("File"), "F")
+  }
+  { HBox1 HBox
+    MoveScaled(0,0,101,5)
+    { ToolButton1 ToolButton
+      MoveScaled(1,0,5,5)
+      Text = ("T1")
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(7,0,5,5)
+      Text = ("T2")
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(13,0,5,5)
+      Text = ("T3")
+    }
+  }
+  { HSplit1 HSplit
+    MoveScaled(1,6,107,57)
+    Expand = True
+    { HBox2 HBox
+      MoveScaled(1,1,19,55)
+      { TreeView1 TreeView
+        MoveScaled(1,1,16,53)
+        Expand = True
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(21,1,85,55)
+      { VSplit1 VSplit
+        MoveScaled(1,1,83,53)
+        Expand = True
+        { VBox1 VBox
+          MoveScaled(1,1,81,28)
+          { DataBrowser1 DataBrowser
+            MoveScaled(1,1,79,26)
+            Expand = True
+          }
+        }
+        { VBox2 HBox
+          MoveScaled(1,30,81,22)
+          { Panel2 Panel
+            MoveScaled(1,1,68,20)
+            Expand = True
+            Arrangement = Arrange.Vertical
+            { TextArea1 TextArea
+              MoveScaled(3,1,63,9)
+              Mouse = Mouse.Arrow
+              Expand = True
+              Text = ("Original String to translate")
+              ReadOnly = True
+            }
+            { TextEditor1 TextEditor
+              MoveScaled(1,11,63,8)
+              Expand = True
+              ShowLineNumber = True
+              ShowModified = True
+            }
+          }
+          { Panel3 Panel
+            MoveScaled(73,1,7,20)
+            Border = Border.Raised
+            { ToggleButton1 ToggleButton
+              MoveScaled(1,1,5,4)
+              Text = ("B1")
+            }
+            { ToggleButton2 ToggleButton
+              MoveScaled(1,8,5,4)
+              Text = ("B2")
+            }
+            { ToggleButton3 ToggleButton
+              MoveScaled(1,15,5,4)
+              Text = ("B3")
+            }
+          }
+        }
+      }
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(0,64,108,3)
+    Background = Color.Gray
+    Border = Border.Raised
+    { Label1 Label
+      MoveScaled(1,0,13,3)
+      Text = ("Status Bar:")
+    }
+  }
 }
