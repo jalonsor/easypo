@@ -2,111 +2,179 @@
 
 
 
-Private $userAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
-Private $cookiesFile As String=""
+Private $cookiesFile As String = ""
 
-Private $strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+Private $proxyUrl As String = ""
+Private $proxyPort As String = ""
+Private $proxyUser As String = ""
+Private $proxyPass As String = ""
+
+Private $strUserAgent As String = "Lynx/2.8.9dev.6 libwww-FM/2.14 SSL-MM/1.4.1 OpenSSL/1.0.2h-fips"
+'Private $strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
 Private $strIniUrl As String = "https://translate.google.com/"
-Private $strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
+Private $strTranslateUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
 Private $tOut As Integer = 5
 
-Private http As HttpForm As "GoogleHttp"
-Private swHttpON as Boolean=False
-Private htDoc As HTMDocument
+
+
+Private $http As HttpForm ''As "GoogleHttp"
+Private $swHttpON As Boolean = False
+Private $htDoc As HTMDocument
+
+Property Read sourceLang As String[]
+Private $sourceLang As String[]
+Property Read targetLang As String[]
+Private $targetLang As String[]
+
 
 
 Public Sub _new()
-    ''Object.Attach(http, Me, "GoogleHttp")
-	''/tmp/gambas.[id Usuario]*/*[id Proceso]*/*[Nombre].tmp
-	$cookiesFile=Temp$("cookies")
-	
+  ''/tmp/gambas.[id Usuario]*/*[id Proceso]*/*[Nombre].tmp
+  $cookiesFile = Temp$("cookies")
+
+  loadSettings
+End
+
+Public Sub _free() ''***Se invoca al destruir el objeto
+  saveSettings
+  
+  $htDoc = Null
+  $http = Null
+End
+
+Private Function sourceLang_Read() As String[]
+  If $sourceLang = Null Or If $sourceLang.Count < 1 Then
+    updateGoogleData
+    While $swHttpON = True
+      Wait 0.1
+    Wend
+  Endif
+  
+  Return $sourceLang
+End
+
+Private Function targetLang_Read() As String[]
+  If $targetLang = Null Or If $targetLang.Count < 1 Then
+    updateGoogleData
+    ' While $swHttpON = True
+    '   Wait 0.1
+    ' Wend
+  Endif
+  
+  Return $targetLang
+End
+
+Private Sub loadSettings()
+  $proxyUrl = Settings["Translators/Google/proxyUrl", ""]
+  $proxyPort = Settings["Translators/Google/$proxyPort", ""]
+  $proxyUser = Settings["Translators/Google/$proxyUser", ""]
+  $proxyPass = Settings["Translators/Google/$proxyPass", ""]
+  
+  $tOut = Settings["Translators/Google/connectionTout", 5]
+  $strUserAgent = Settings["Translators/Google/userAgent", "Lynx/2.8.9dev.6 libwww-FM/2.14 SSL-MM/1.4.1 OpenSSL/1.0.2h-fips"]
+  $strIniUrl = Settings["Translators/Google/urlIni", "https://translate.google.com/"]
+  $strTranslateUrl = Settings["Translators/Google/urlTranslate", "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."]
+  
+  $sourceLang = Settings["Translators/Google/sourceLanguages", []]
+  $targetLang = Settings["Translators/Google/targetLanguages", []]
 End
 
 
-Public Function getSourceLanguages() As String[]
+Public Sub saveSettings()
+   Settings["Translators/Google/proxyUrl"] = $proxyUrl
+   Settings["Translators/Google/$proxyPort"] = $proxyPort
+   Settings["Translators/Google/$proxyUser"] = $proxyUser
+   Settings["Translators/Google/$proxyPass"] = $proxyPass
   
+   Settings["Translators/Google/connectionTout"] = $tOut
+   Settings["Translators/Google/userAgent"] = $strUserAgent
+   Settings["Translators/Google/urlIni"] = $strIniUrl
+   Settings["Translators/Google/urlTranslate"] = $strTranslateUrl
+  
+   Settings["Translators/Google/sourceLanguages"] = $sourceLang
+   Settings["Translators/Google/targetLanguages"] = $targetLang
+  
+  Settings.Save
 End
 
-Public Function getTargetLanguages() As String[]
-  
-End
 
-private function updateGoogleData()	''Retrive Source and Target Languages.
+Public Function updateGoogleData() 	''Retrive Source and Target Languages.
 
-  swHttpON=True	''Start the Request to Google.
+  $swHttpON = True 	''Start the Request to Google.
   
-  http = New HttpForm
-  ''Object.Attach(http, Me, "GoogleHttp")
+  $http = New HttpForm
+  Object.Attach($http, Me, "GoogleHttp")
   
-  http.CookiesFile = $cookiesFile
-  http.UpdateCookies = True
-  http.Debug = True
-  http.URL = $strIniUrl
-  http.Timeout = $tOut
+  $http.CookiesFile = $cookiesFile
+  $http.UpdateCookies = True
+  $http.UserAgent = $strUserAgent
+  
+  $http.Debug = True
+  $http.URL = $strIniUrl
+  $http.Timeout = $tOut
   
   
-  http.Add("text", "Juanma: Traduce esto!")
+'   http.Add("text", "Juanma: Traduce esto!")
   
-  http.Submit
+  $http.Submit
+  $http.Clear
 End
 
 Public Sub GoogleHttp_Finished()
   Dim sline As String = "", sTotLines As String = ""
-  Dim htDoc As HTMDocument, htElm As HTMElement, arrHtElm As HTMElement[]
+  Dim htElm As HTMElement, arrHtElm As HTMElement[]
   
-  If http.code = 200 Then
-    For Each sLine In http.Lines
+  If $http.code = 200 Then
+    For Each sLine In $http.Lines
       sTotLines &= sLine
     Next
     
     ''Print "======================>" & sTotLines
-    htDoc = New HTMDocument(sTotLines)
-    htDoc.objectStats(True)
+    $htDoc = New HTMDocument(sTotLines)
+    '$htDoc.objectStats(True)
     
     
-    'TextArea1.Text = "SOURCE LANGUAGES (gt-sl):\n"
-    htElm = htDoc.getElementById("gt-sl")
+    ''SOURCE LANGUAGES (gt-sl)
+    htElm = $htDoc.getElementById("gt-sl") '
     If htElm <> Null Then
       arrHtElm = htElm.childNodes
       For Each htElm In arrHtElm
         If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
-          'TextArea1.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
-          ComboBox1.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
+          $sourceLang.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
         Endif
       Next
     Endif
-    
-    'TextArea2.Text = "TARGET LANGUAGES (gt-tl):\n"
-    htElm = htDoc.getElementById("gt-tl")
+
+    ''TARGET LANGUAGES (gt-tl)
+    htElm = $htDoc.getElementById("gt-tl")
     If htElm <> Null Then
       arrHtElm = htElm.childNodes
       For Each htElm In arrHtElm
         If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
-          'TextArea2.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
-          ComboBox2.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
+          $targetLang.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
         Endif
       Next
     Endif
     
-    htDoc = Null
     htElm = Null
     arrHtElm.Clear
     arrHtElm = Null
   Else
-      Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
+      Debug "ERROR en la conexion HTTP. Code: " & $http.Code & gb.CrLf & "Razon: " & $http.Reason
   Endif  
   
-  swHttpON=False	''Finish the Request to Google..
+  $swHttpON = False 	''Finish the Request to Google..
 End
 
-' Public Sub GoogleHttp_Cancel()
-'   
-' End
+Public Sub GoogleHttp_Cancel()
+  $swHttpON = False
+End
 ' Public Sub GoogleHttp_Connect()
 '   
 ' End
 Public Sub GoogleHttp_Error()
-  Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
+  Debug "ERROR en la conexion HTTP. Code: " & $http.Code & gb.CrLf & "Razon: " & $http.Reason
+  $swHttpON = False
 End
 ' Public Sub GoogleHttp_Progress()
 '   
@@ -114,3 +182,4 @@ End
 ' Public Sub GoogleHttp_Read()
 '   
 ' End
+

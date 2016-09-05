@@ -1,115 +1,35 @@
 ' Gambas class file
 
+' 
+' Static Private strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+' Static Private strIniUrl As String = "https://translate.google.com/"
+' Static Private strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
+' Static Private tOut As Integer = 5
+' 
+' Private http As HttpForm
+' 
+' 
+' Private arrSourceLang As String[]
+' Private arrTargetLang As String[]
+' 
+' Private htDoc As HTMDocument
 
-Static Private strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
-Static Private strIniUrl As String = "https://translate.google.com/"
-Static Private strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
-Static Private tOut As Integer = 5
-
-Private http As HttpForm
-
-
-Private arrSourceLang As String[]
-Private arrTargetLang As String[]
-
-Private htDoc As HTMDocument
+Private $googTrans As GoolgleTranslator
 
 
 Public Sub Form_Open()
-
+  Dim i As Integer = 0
   
-  http = New HttpForm
+  $googTrans = New GoolgleTranslator
   
-  Object.Attach(http, Me, "http")
+  '$googTrans.updateGoogleData
   
-  http.CookiesFile = "/tmp/" & Application.Name & Application.Id & ".cookies"
-  http.UpdateCookies = True
-  http.Debug = True
-  http.URL = strIniUrl
-  http.Timeout = tOut
+  For i = 0 To $googTrans.sourceLang.Count - 1
+    ComboBox1.Add($googTrans.sourceLang[i])
+  Next
   
-  
-  http.Add("text", "Juanma: Traduce esto!")
-  
-  http.Submit
-  
-  
-    ' htDoc = New HTMDocument
-    ' htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/peticionGoogleTranslator.html")
-    ' 'htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/pruPeque.html")
-    ' htDoc.objectStats(True)
-    ' 
+  For i = 0 To $googTrans.targetLang.Count - 1
+    ComboBox2.Add($googTrans.targetLang[i])
+  Next
 End
 
-
-Public Sub http_Finished()
-
-  Dim sline As String = "", sTotLines As String = ""
-  Dim htDoc As HTMDocument, htElm As HTMElement, arrHtElm As HTMElement[]
-  
-  
-  If http.code = 200 Then
-    For Each sLine In http.Lines
-      sTotLines &= sLine
-    Next
-    
-    ''Print "======================>" & sTotLines
-    htDoc = New HTMDocument(sTotLines)
-    htDoc.objectStats(True)
-    
-    
-    'TextArea1.Text = "SOURCE LANGUAGES (gt-sl):\n"
-    htElm = htDoc.getElementById("gt-sl")
-    If htElm <> Null Then
-      arrHtElm = htElm.childNodes
-      For Each htElm In arrHtElm
-        If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
-          'TextArea1.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
-          ComboBox1.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
-        Endif
-      Next
-    Endif
-    
-    'TextArea2.Text = "TARGET LANGUAGES (gt-tl):\n"
-    htElm = htDoc.getElementById("gt-tl")
-    If htElm <> Null Then
-      arrHtElm = htElm.childNodes
-      For Each htElm In arrHtElm
-        If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
-          'TextArea2.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
-          ComboBox2.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
-        Endif
-      Next
-    Endif
-    
-    htDoc = Null
-    htElm = Null
-    arrHtElm.Clear
-    arrHtElm = Null
-    
-  Else
-      Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
-  Endif  
-End
-
-' Public Sub http_Cancel()
-'   
-' End
-' Public Sub http_Connect()
-'   
-' End
-Public Sub http_Error()
-  Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
-End
-' Public Sub http_Progress()
-'   
-' End  
-' Public Sub http_Read()
-'   
-' End
-
-
-Public Sub Form_Close()
-  ' htDoc.destroyDOM()
-  ' htDoc = Null
-End

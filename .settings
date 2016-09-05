@@ -1,5 +1,6 @@
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint[1]="HTMDocument.126"
 
 [DebugWindow]
 Count=0
@@ -806,11 +807,14 @@ Geometry=[-3,0,224,280]
 Geometry=[-3,0,367,470]
 
 [OpenFile]
-Active=3
+Active=4
 File[1]=".src/HTMLDom/_HTMCONSTS.class:0.3"
-File[2]=".src/HTMLDom/HTMDocument.class:0.2"
-File[3]=".src/HTMLDom/HTMElement.class:75.68"
-Count=3
+File[2]=".src/HTMLDom/HTMDocument.class:0.126"
+File[3]=".src/HTMLDom/HTMElement.class:8.107"
+Count=6
+File[4]=".src/Google/GoolgleTranslator.class:0.40"
+File[5]=".src/FPruebas.form"
+File[6]=".src/FPruebas.class:6.20"
 
 [Watches]
 Count=4

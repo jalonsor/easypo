@@ -32,4 +32,5 @@ Private Sub frmSaveSettings()
   
   Settings["Window/Hsplit"] = HSplit1.Layout
   Settings["Window/Vsplit"] = VSplit1.Layout
+  Settings.Save
 End
