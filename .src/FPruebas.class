@@ -29,12 +29,9 @@ Public Sub Form_Open()
   http.Timeout = tOut
   
   
-  
   http.Add("text", "Juanma: Traduce esto!")
   
   http.Submit
-  
-  
   
   
     ' htDoc = New HTMDocument
@@ -42,7 +39,6 @@ Public Sub Form_Open()
     ' 'htDoc.fromFile("/home/juanma/Trabajo/W-Bas/easypo/Pruebas/pruPeque.html")
     ' htDoc.objectStats(True)
     ' 
-  
 End
 
 

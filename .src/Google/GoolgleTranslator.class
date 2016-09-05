@@ -2,23 +2,115 @@
 
 
 
-Static Private userAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
-Static Private strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
-Static Private strIniUrl As String = "https://translate.google.com/"
-Static Private strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
-Static Private tOut As Integer = 5
+Private $userAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+Private $cookiesFile As String=""
 
-Private http As HttpForm
+Private $strUserAgent As String = "Mozilla/5.0 (X11; Fedora; Linux; rv:47.0) Gecko/20100101 Firefox/47.0"
+Private $strIniUrl As String = "https://translate.google.com/"
+Private $strUrl As String = "https://translate.google.com/?hl=es#es/en/Hello%20my%20world."
+Private $tOut As Integer = 5
+
+Private http As HttpForm As "GoogleHttp"
+Private swHttpON as Boolean=False
 Private htDoc As HTMDocument
 
 
 Public Sub _new()
-  
+    ''Object.Attach(http, Me, "GoogleHttp")
+	''/tmp/gambas.[id Usuario]*/*[id Proceso]*/*[Nombre].tmp
+	$cookiesFile=Temp$("cookies")
+	
 End
 
 
 Public Function getSourceLanguages() As String[]
   
-  
+End
+
+Public Function getTargetLanguages() As String[]
   
 End
+
+private function updateGoogleData()	''Retrive Source and Target Languages.
+
+  swHttpON=True	''Start the Request to Google.
+  
+  http = New HttpForm
+  ''Object.Attach(http, Me, "GoogleHttp")
+  
+  http.CookiesFile = $cookiesFile
+  http.UpdateCookies = True
+  http.Debug = True
+  http.URL = $strIniUrl
+  http.Timeout = $tOut
+  
+  
+  http.Add("text", "Juanma: Traduce esto!")
+  
+  http.Submit
+End
+
+Public Sub GoogleHttp_Finished()
+  Dim sline As String = "", sTotLines As String = ""
+  Dim htDoc As HTMDocument, htElm As HTMElement, arrHtElm As HTMElement[]
+  
+  If http.code = 200 Then
+    For Each sLine In http.Lines
+      sTotLines &= sLine
+    Next
+    
+    ''Print "======================>" & sTotLines
+    htDoc = New HTMDocument(sTotLines)
+    htDoc.objectStats(True)
+    
+    
+    'TextArea1.Text = "SOURCE LANGUAGES (gt-sl):\n"
+    htElm = htDoc.getElementById("gt-sl")
+    If htElm <> Null Then
+      arrHtElm = htElm.childNodes
+      For Each htElm In arrHtElm
+        If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
+          'TextArea1.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
+          ComboBox1.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
+        Endif
+      Next
+    Endif
+    
+    'TextArea2.Text = "TARGET LANGUAGES (gt-tl):\n"
+    htElm = htDoc.getElementById("gt-tl")
+    If htElm <> Null Then
+      arrHtElm = htElm.childNodes
+      For Each htElm In arrHtElm
+        If htElm.attributes["value"] <> "auto" And If htElm.attributes["value"] <> "separator" Then
+          'TextArea2.Text &= htElm.attributes["value"] & "-->" & htElm.firstChild.nodeValue & "\n"
+          ComboBox2.Add(htElm.attributes["value"] & "\t- " & htElm.firstChild.nodeValue)
+        Endif
+      Next
+    Endif
+    
+    htDoc = Null
+    htElm = Null
+    arrHtElm.Clear
+    arrHtElm = Null
+  Else
+      Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
+  Endif  
+  
+  swHttpON=False	''Finish the Request to Google..
+End
+
+' Public Sub GoogleHttp_Cancel()
+'   
+' End
+' Public Sub GoogleHttp_Connect()
+'   
+' End
+Public Sub GoogleHttp_Error()
+  Message("ERROR en la conexion HTTP. Code: " & http.Code & gb.CrLf & "Razon: " & http.Reason)
+End
+' Public Sub GoogleHttp_Progress()
+'   
+' End  
+' Public Sub GoogleHttp_Read()
+'   
+' End
