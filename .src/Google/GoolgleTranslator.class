@@ -26,18 +26,37 @@ Private $sourceLang As String[]
 Property Read targetLang As String[]
 Private $targetLang As String[]
 
+ ''Google Translator FORM
+ Private $frmFieldNameSourceText As String
+ Private $frmFieldNameSourceLanguage As String
+ Private $frmFieldNameTargetLanguage As String
+ Private $frmFieldIDResult As String
+ Private $frmFieldIDComboSourceLanguage As String
+ Private $frmFieldIDComboTargetLanguage As String
+
 
 
 Public Sub _new()
-  ''/tmp/gambas.[id Usuario]*/*[id Proceso]*/*[Nombre].tmp
-  $cookiesFile = Temp$("cookies")
-
   loadSettings
+
+  $cookiesFile = Temp$("cookies")	''/tmp/gambas.[id Usuario]*/*[id Proceso]*/*[Nombre].tmp
+
+  $http = New HttpForm
+  Object.Attach($http, Me, "GoogleHttp")
+  
+  $http.CookiesFile = $cookiesFile
+  $http.UpdateCookies = True
+  $http.UserAgent = $strUserAgent
+  
+  $http.Debug = True
+  $http.Timeout = $tOut
 End
 
 Public Sub _free() ''***Se invoca al destruir el objeto
   saveSettings
-  
+
+
+  $htDoc.destroyDOM
   $htDoc = Null
   $http = Null
 End
@@ -56,9 +75,9 @@ End
 Private Function targetLang_Read() As String[]
   If $targetLang = Null Or If $targetLang.Count < 1 Then
     updateGoogleData
-    ' While $swHttpON = True
-    '   Wait 0.1
-    ' Wend
+    While $swHttpON = True
+      Wait 0.1
+    Wend
   Endif
   
   Return $targetLang
@@ -77,8 +96,15 @@ Private Sub loadSettings()
   
   $sourceLang = Settings["Translators/Google/sourceLanguages", []]
   $targetLang = Settings["Translators/Google/targetLanguages", []]
-End
 
+   ''Google Translator FORM
+   $frmFieldNameSourceText=Settings["Translators/Google/frmFieldNameSourceText", "text"]
+   $frmFieldNameSourceLanguage=Settings["Translators/Google/frmFieldNameSourceLanguage", "sl"]
+   $frmFieldNameTargetLanguage=Settings["Translators/Google/frmFieldNameTargetLanguage", "tl"]
+   $frmFieldIDResult=Settings["Translators/Google/frmFieldIDResult", "result_box"]
+   $frmFieldIDComboSourceLanguage=Settings["Translators/Google/frmFieldIDComboSourceLanguage", "gt-sl"]
+   $frmFieldIDComboTargetLanguage=Settings["Translators/Google/frmFieldIDComboTargetLanguage", "gt-tl"]
+End
 
 Public Sub saveSettings()
    Settings["Translators/Google/proxyUrl"] = $proxyUrl
@@ -93,49 +119,77 @@ Public Sub saveSettings()
   
    Settings["Translators/Google/sourceLanguages"] = $sourceLang
    Settings["Translators/Google/targetLanguages"] = $targetLang
+   
+   ''Google Translator FORM
+   Settings["Translators/Google/frmFieldNameSourceText"] = $frmFieldNameSourceText
+   Settings["Translators/Google/frmFieldNameSourceLanguage"] = $frmFieldNameSourceLanguage
+   Settings["Translators/Google/frmFieldNameTargetLanguage"] = $frmFieldNameTargetLanguage
+   Settings["Translators/Google/frmFieldIDResult"] = $frmFieldIDResult	'"result_box"
+   Settings["Translators/Google/frmFieldIDComboSourceLanguage"] = $frmFieldIDComboSourceLanguage	'"gt-sl"
+   Settings["Translators/Google/frmFieldIDComboTargetLanguage"] = $frmFieldIDComboTargetLanguage			''"gt-tl"
   
   Settings.Save
 End
 
-
-Public Function updateGoogleData() 	''Retrive Source and Target Languages.
-
+Public Function translate(str As String, srcLang as String, trgtLang as String) As String 	''Translates the "str" from Source "srcLang" to Target "trgtLang".
+  Dim strRet As string=""
+  Dim htElm As HTMElement
+  
   $swHttpON = True 	''Start the Request to Google.
+
+  $http.URL = $strTranslateUrl
   
-  $http = New HttpForm
-  Object.Attach($http, Me, "GoogleHttp")
+  $http.Add("js", "n")			'No JS.
+  $http.Add("hl", "es")		''TODO: Get GUI Language
+  $http.Add("ie", "UTF-8")	''TODO: Get GUI Language
   
-  $http.CookiesFile = $cookiesFile
-  $http.UpdateCookies = True
-  $http.UserAgent = $strUserAgent
+  $http.Add($frmFieldNameSourceText, str)		'Text To translate.
+  $http.Add($frmFieldNameSourceLanguage, srcLang)	'Translate from .....
+  $http.Add($frmFieldNameTargetLanguage, trgtLang)	'Translate to ..... 
   
-  $http.Debug = True
-  $http.URL = $strIniUrl
-  $http.Timeout = $tOut
-  
-  
-'   http.Add("text", "Juanma: Traduce esto!")
+'~ type="hidden" id="gt-sl" name="sl" value="en"
+'~ type="hidden" id="gt-tl" name="tl" value="es"
+'~ type="submit" class="jfk-button jfk-button-action" tabindex="0" value="Traducir" id="gt-submit"
+'~ type="hidden" id="js" value="y" name="js"
+'~ type="hidden" id="prev" value="_t" name="prev"
+'~ type="hidden" id="hl" value="es" name="hl"
+'~ type="hidden" value="UTF-8" name="ie"
   
   $http.Submit
-  $http.Clear
-End
-
-Public Sub GoogleHttp_Finished()
-  Dim sline As String = "", sTotLines As String = ""
-  Dim htElm As HTMElement, arrHtElm As HTMElement[]
+  
+  While $swHttpON = True	''Wait to Http Finished ...
+    Wait 0.1
+  Wend
   
   If $http.code = 200 Then
-    For Each sLine In $http.Lines
-      sTotLines &= sLine
-    Next
-    
-    ''Print "======================>" & sTotLines
-    $htDoc = New HTMDocument(sTotLines)
-    '$htDoc.objectStats(True)
-    
-    
+    htElm = $htDoc.getElementById($frmFieldIDResult) ''Resultado de la traducción.
+	If htElm <> Null Then
+	  strRet=htElm.innerTEXT
+	EndIf
+  EndIf
+  
+  $http.Clear
+  htElm = Null
+
+  Return strRet
+End
+
+
+Public Function updateGoogleData() 	''Retrive Source and Target Languages.
+  Dim htElm As HTMElement, arrHtElm As HTMElement[]
+  
+  $swHttpON = True 	''Start the Request to Google.
+
+  $http.URL = $strIniUrl
+  $http.Submit
+  
+  While $swHttpON = True	''Wait to Http Finished ...
+    Wait 0.1
+  Wend
+  
+  If $http.code = 200 Then
     ''SOURCE LANGUAGES (gt-sl)
-    htElm = $htDoc.getElementById("gt-sl") '
+    htElm = $htDoc.getElementById($frmFieldIDComboSourceLanguage)
     If htElm <> Null Then
       arrHtElm = htElm.childNodes
       For Each htElm In arrHtElm
@@ -146,7 +200,7 @@ Public Sub GoogleHttp_Finished()
     Endif
 
     ''TARGET LANGUAGES (gt-tl)
-    htElm = $htDoc.getElementById("gt-tl")
+    htElm = $htDoc.getElementById($frmFieldIDComboTargetLanguage)
     If htElm <> Null Then
       arrHtElm = htElm.childNodes
       For Each htElm In arrHtElm
@@ -155,31 +209,47 @@ Public Sub GoogleHttp_Finished()
         Endif
       Next
     Endif
-    
-    htElm = Null
-    arrHtElm.Clear
-    arrHtElm = Null
   Else
       Debug "ERROR en la conexion HTTP. Code: " & $http.Code & gb.CrLf & "Razon: " & $http.Reason
-  Endif  
+  Endif
+  
+  $http.Clear
+  htElm = Null
+  arrHtElm.Clear
+  arrHtElm = Null
+End
+
+Private Sub GoogleHttp_Finished()
+  Dim sline As String = "", sTotLines As String = ""
+  
+  If $http.code = 200 Then
+    For Each sLine In $http.Lines
+      sTotLines &= sLine
+    Next
+    
+    $htDoc = New HTMDocument(sTotLines)
+    '$htDoc.objectStats(True)
+  Else
+      Debug "ERROR en la conexion HTTP. Code: " & $http.Code & gb.CrLf & "Razon: " & $http.Reason
+  Endif
   
   $swHttpON = False 	''Finish the Request to Google..
 End
 
-Public Sub GoogleHttp_Cancel()
+Private Sub GoogleHttp_Cancel()
   $swHttpON = False
 End
-' Public Sub GoogleHttp_Connect()
+' Private Sub GoogleHttp_Connect()
 '   
 ' End
-Public Sub GoogleHttp_Error()
+Private Sub GoogleHttp_Error()
   Debug "ERROR en la conexion HTTP. Code: " & $http.Code & gb.CrLf & "Razon: " & $http.Reason
   $swHttpON = False
 End
-' Public Sub GoogleHttp_Progress()
+' Private Sub GoogleHttp_Progress()
 '   
 ' End  
-' Public Sub GoogleHttp_Read()
+' Private Sub GoogleHttp_Read()
 '   
 ' End
 
